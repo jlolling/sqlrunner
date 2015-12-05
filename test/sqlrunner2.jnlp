@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="6.0+" codebase="https://10.33.90.35:8443/sqlrunner2/">
+
+<information>
+<title>SQLRunner Test</title>
+<vendor>Java User Group Berlin-Brandenburg / Jan Lolling</vendor>
+<description kind="short">Database client to manipulate database directly with SQL with input and export capabilities</description>
+<icon href="sqlrunner.gif"/>
+<offline-allowed/>
+<shortcut online="true">
+<desktop/>
+<menu submenu="T-Systems"/>
+</shortcut>
+<association extensions="sql" mime-type="text/x-sql"/>
+</information>
+
+<update check="always" policy="timeout" />
+
+<security>
+<all-permissions/>
+</security>
+
+<resources>
+<j2se version="1.6+" max-heap-size="1024m"/>
+<jar href="db2jcc4.jar"/>
+<jar href="db2jcc_license_cu.jar"/>
+<jar href="derby.jar"/>
+<jar href="dom4j-1.6.1.jar"/>
+<jar href="hsqldb.jar"/>
+<jar href="ifxjdbc.jar"/>
+<jar href="jconn3.jar"/>
+<jar href="ldapjdbc.jar"/>
+<jar href="liquidlnf.jar"/>
+<jar href="log4j-1.2.15.jar"/>
+<jar href="looks-2.1.4.jar"/>
+<jar href="mssql2000_jdbc.jar"/>
+<jar href="mysql-connector-java-5.1.12-bin.jar"/>
+<jar href="ojdbc6_g-11.1.0.7.0.jar"/>
+<jar href="poi-3.6-20100309.jar"/>
+<jar href="poi-ooxml-3.6-20100309.jar"/>
+<jar href="poi-ooxml-schemas-3.6-20100309.jar"/>
+<jar href="postgresql-8.4-702.jdbc3.jar"/>
+<jar href="sapdbc-7_6_00_30_5567.jar"/>
+<jar href="servlet.jar"/>
+<jar href="sqljdbc.jar"/>
+<jar href="sqlrunner2.jar"/>
+<jar href="xmlbeans-2.3.0.jar"/>
+<jar href="sqlrunner-jws.jar"/>
+</resources>
+
+<application-desc main-class="sqlrunner.Main">
+</application-desc>
+
+</jnlp>

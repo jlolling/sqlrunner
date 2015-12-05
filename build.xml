@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<project name="SQLRunner" default="all" basedir=".">
+
+	<property name="project" location="." />
+	<property name="src" location="src/main/java" />
+    <property name="websrc" location="src/main/website" />
+	<property name="bin" location="classes" />
+    <property name="build" location="build" />
+	<property name="lib" location="libs" />
+	<property name="distrib" location="distrib" />
+    <property name="appname" value="SQLRunner" />
+    <property name="mainclass" value="sqlrunner.Main" />
+	<property name="javawebstart" location="distrib/javawebstart" />
+	<property name="macappdir" location="distrib/${appname}MacOSX" />
+	<property name="localapp" location="distrib/localapp" />
+    <property name="linuxdir" location="/usr/lib/sqlrunner" />
+	<property name="jws-jar-filename" value="sqlrunner-jws.jar" />
+	
+	<path id="project.class.path">
+		<fileset dir="${lib}" includes="**/*.jar" />
+	</path>
+	
+    <path id="build.class.path">
+        <fileset dir="${build}" includes="**/*.jar" />
+    </path>
+
+	<target name="loadversion" description="Initalize">
+		<loadfile property="version" srcFile="${src}/VERSION" >
+			<filterchain>
+				<striplinebreaks/>
+			</filterchain>
+		</loadfile>
+        <property name="jarfilename" value="sqlrunner-${version}.jar" />
+	</target>
+
+	<target name="clean" description="cleans the output folder">
+		<delete failonerror="false" includeemptydirs="true" dir="${bin}" />
+		<mkdir dir="${bin}" />
+	</target>
+
+	<target name="generateIconCode">
+	  <taskdef name="iconCodeGen" classname="org.jugbb.ant.iconcodegen.IconCodeGenTask" classpathref="build.class.path"/>
+	  <iconCodeGen 
+	  	sourceDir="${src}" 
+	    iconPackage="sqlrunner.resources"
+	  	iconFileExtensions="png gif jpg"
+	  	encoding="UTF-8"
+	  />
+	</target> 
+	
+	<target name="generateImageCode">
+	  <taskdef name="imageCodeGen" classname="org.jugbb.ant.iconcodegen.ImageCodeGenTask" classpathref="build.class.path" />
+	  <imageCodeGen 
+	  	sourceDir="${src}" 
+	    imagePackage="sqlrunner.resources.images"
+	  	imageFileExtensions="png gif jpg"
+	  	encoding="UTF-8"
+	  />
+	</target> 
+
+	<target name="compile" depends="clean, generateIconCode, generateImageCode" description="compile the source">
+		<javac 
+			classpathref="project.class.path"
+		    debug="true"
+		    deprecation="true"
+		    nowarn="false"
+		    srcdir="${src}"
+		    encoding="UTF-8"
+		    source="1.7"
+		    target="1.7"
+		    destdir="${bin}" />
+		<copy todir="${bin}">
+			<fileset dir="${src}">
+				<include name="**/*" />
+				<exclude name="**/*.java" />
+				<exclude name="**/*.psd" />
+				<exclude name="**/messages*.properties" />
+				<exclude name="CVS" />
+			</fileset>
+		</copy>
+		<native2ascii 
+			encoding="UTF-8"
+		    includes="**/messages*.properties"
+		    src="${src}"
+		    dest="${bin}" />
+	</target>
+
+	<target name="run" depends="compile">
+		<java classname="${mainclass}" fork="true">
+			<jvmarg value="-Xmx512m" />
+			<classpath>
+				<path refid="project.class.path" />
+				<path location="${bin}" />
+			</classpath>
+		</java>
+	</target>
+
+    <path id="jar.class.path">
+        <fileset dir="${lib}">
+            <include name="*.jar" />
+        	<include name="mssql_license" />
+            <exclude name="ui.jar" />
+        </fileset>
+    </path>
+
+	<target name="jar"
+	        depends="compile, loadversion"
+	        description="create the main jar">
+	    <mkdir dir="${distrib}"/>
+		<delete failonerror="false">
+			<fileset dir="${distrib}">
+				<include name="*.jar" />
+				<include name="*src.zip" />
+			</fileset>
+		</delete>
+		<manifestclasspath property="classpathvalue"
+		                   jarfile="${lib}/${jarfilename}">
+			<classpath refid="project.class.path" />
+		</manifestclasspath>
+		<jar jarfile="${distrib}/${jarfilename}" basedir="${bin}">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Class-Path" value="${classpathvalue}" />
+				<attribute name="Main-Class" value="${mainclass}" />
+			</manifest>
+		</jar>
+		<zip destfile="${distrib}/${jarfilename}-src.zip">
+			<fileset dir="${src}">
+				<include name="**/*.properties" />
+				<include name="*.cfg" />
+				<include name="*.txt" />
+				<include name="**/*.gif" />
+				<include name="**/*.png" />
+				<include name="**/*.jpg" />
+				<include name="**/*.java" />
+			</fileset>
+		</zip>
+		<copy todir="${distrib}" flatten="true">
+			<fileset dir="${src}">
+				<include name="**/sqlrunner.png" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="all"
+	        depends="clean, localapp, deb, dmg, dmg_linux, webstart"
+	        description="create complete distribution" />
+
+	<target name="webstart" depends="jar" description="sign all jars">
+		<delete failonerror="false"
+		        includeemptydirs="true"
+		        dir="${javawebstart}" />
+		<mkdir dir="${javawebstart}" />
+		<copy todir="${javawebstart}">
+			<fileset dir="${lib}">
+				<include name="*.jar" />
+				<exclude name="jnlp.jar" />
+                <exclude name="ui.jar" />
+				<exclude name="servlet.jar" />
+			</fileset>
+		</copy>
+		<copy file="${distrib}/${jarfilename}" tofile="${javawebstart}/${jws-jar-filename}" />
+		<copy todir="${javawebstart}">
+			<fileset dir="${distrib}">
+				<include name="sqlrunner.png" />
+			</fileset>
+		</copy>
+		<signjar keystore="jan.keystore"
+		         alias="jan"
+		         storepass="lolli2" >
+			<path>
+				<fileset dir="${javawebstart}" includes="*.jar" />
+			</path>
+		</signjar>
+		<taskdef name="jnlp" classname="org.jugbb.ant.jws.JNLPTask" classpathref="build.class.path" />
+		<jnlp 
+			title="SQLRunner" 
+			vendor="Java User Group Berlin-Brandenburg / Jan Lolling"
+			description="Database client to manipulate database directly with SQL with input and export capabilities"
+			folderwithsignedjars="${javawebstart}"
+			iconhref="sqlrunner.png"
+			codebase="http://www.jan-lolling.de/sqlrunner/jws/"
+			createdesktopshortcut="true"
+			createmenuentry="true"
+			subMenuName="Java User Group Berlin"
+			javaversion="1.7+"
+			javamaxheapsize="1024m"
+            mainJarFile="${jws-jar-filename}"
+			associatewithfileextensions="sql"
+			associatewithmimetype="text/x-sql"
+			jnlpfilename="sqlrunner.jnlp"
+			mainclass="${mainclass}"
+			offlineallowed="true"
+			jnlpversion="7.0+"
+		/>
+	</target>
+
+	<target name="localapp" depends="jar" description="sign all jars">
+		<delete failonerror="false">
+			<fileset dir="${distrib}">
+				<include name="*.zip" />
+				<exclude name="*-src.zip" />
+			</fileset>
+		</delete>
+		<delete failonerror="false" includeemptydirs="true" dir="${localapp}" />
+		<mkdir dir="${localapp}" />
+		<copy todir="${localapp}">
+			<fileset dir="${src}">
+				<include name="sqlrunner.sh" />
+				<include name="sqlrunner.cmd" />
+				<include name="sqlrunner.ico" />
+			</fileset>
+		</copy>
+		<chmod perm="ugo+rx">
+			<fileset dir="${localapp}">
+				<include name="sqlrunner.sh" />
+			</fileset>
+		</chmod>
+		<copy todir="${localapp}">
+			<fileset dir="${lib}">
+				<include name="*.jar" />
+                <exclude name="ui.jar" />
+			</fileset>
+		</copy>
+		<copy tofile="${localapp}/sqlrunner.jar" file="${distrib}/${jarfilename}" />
+        <zip destfile="${distrib}/sqlrunner-${version}.zip">
+			<fileset dir="${localapp}">
+				<exclude name="**/.Spotlight*" />
+			</fileset>
+		</zip>
+	</target>
+
+	<target name="macapp"
+	        depends="jar"
+	        description="build Mac OS X application bundle">
+		<delete failonerror="false"
+		        includeemptydirs="true"
+		        dir="${macappdir}" />
+		<mkdir dir="${macappdir}" />
+		<taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" classpathref="build.class.path" />
+		<jarbundler dir="${macappdir}"
+		            name="${appname}"
+		            shortname="${appname}"
+		            infostring="Version ${version} Copyright Jan Lolling"
+		            icon="${src}/sqlrunner.icns"
+		            version="${version}"
+		            mainclass="${mainclass}"
+		            jvmversion="1.7+"
+		            vmoptions="-Xmx1024m -Dcom.sun.management.jmxremote=true -Dapple.awt.graphics.UseQuartz=true">
+			<jarfileset dir="${lib}">
+				<include name="*.jar" />
+                <exclude name="ui.jar" />
+			</jarfileset>
+			<jarfileset dir="${distrib}">
+				<include name="${jarfilename}" />
+			</jarfileset>
+			<documenttype 
+				name="SQL script" 
+				extensions="sql" role="Editor" />
+			<documenttype 
+				name="SQLRunner CSV Import Configuration"
+			    extensions="importconfig"
+			    role="Editor" />
+		</jarbundler>
+		<mkdir dir="${macappdir}/${appname}.app/Contents/Resources/German.lproj" />
+		<mkdir dir="${macappdir}/${appname}.app/Contents/Resources/English.lproj" />
+		<delete file="${macappdir}/${appname}.app/Contents/MacOS/JavaApplicationStub" />
+		<echo>copy JavaApplicationStub</echo>
+		<exec executable="cp">
+			<arg line="${build}/JavaApplicationStub" />
+			<arg value="${macappdir}/${appname}.app/Contents/MacOS/JavaApplicationStub" />
+		</exec>
+		<chmod perm="guo+x" file="${macappdir}/${appname}.app/Contents/MacOS/JavaApplicationStub"></chmod>
+		<available file="/usr/bin/hdiutil" property="hdiutil.present"/>
+	</target>
+
+	<target name="dmg" depends="macapp" if="hdiutil.present">
+		<delete failonerror="false">
+			<fileset dir="${distrib}">
+				<include name="*.dmg" />
+			</fileset>
+		</delete>
+		<exec executable="hdiutil">
+			<arg line="create -srcfolder ${macappdir} ${distrib}/sqlrunner-${version}.dmg" />
+		</exec>
+	</target>
+
+	<target name="dmg_linux" depends="macapp" unless="hdiutil.present">
+		<delete failonerror="false">
+			<fileset dir="${distrib}">
+				<include name="*.dmg" />
+			</fileset>
+		</delete>
+		<exec executable="genisoimage">
+			<arg line="-V SQLRunner -r -apple -l -o ${distrib}/sqlrunner-${version}.dmg ${macappdir}"/>
+		</exec>
+	</target>
+
+	<target name="source_distrib">
+		<zip destfile="${distrib}/sql-complete-${version}.zip">
+			<fileset dir="${project}" includes="src/ libs/ build/ nbproject/">
+				<exclude name="**/.Spotlight*" />
+			</fileset>
+		</zip>
+	</target>
+
+	<target name="deb" depends="jar" description="build the i386 deb file">
+		<delete failonerror="false">
+			<fileset dir="${distrib}">
+				<include name="sqlrunner*.deb" />
+				<include name="sqlrunner*.desktop" />
+			</fileset>
+		</delete>
+		<taskdef name="desktopentry" classname="com.googlecode.ant_deb_task.DesktopEntry">
+		  	<classpath>
+		  		<pathelement path="build/ant-deb.jar"/>
+	  		</classpath>
+		</taskdef>
+		<desktopentry toFile="${distrib}/sqlrunner.desktop"
+		              name="${appname}"
+		              comment="Database SQL Client"
+		              icon="${linuxdir}/sqlrunner.png"
+		              exec="java -jar ${linuxdir}/${jarfilename} %f"
+		              type="Application"
+		              terminal="false"
+		              mimeType="text/x-sql"
+		              path="${linuxdir}"
+		              categories="Development;" />
+		<taskdef name="deb" classname="com.googlecode.ant_deb_task.Deb">
+		  	<classpath>
+		  		<pathelement path="build/ant-deb.jar"/>
+	  		</classpath>
+		</taskdef>
+		<deb todir="${distrib}"
+		     package="sqlrunner"
+		     section="devel"
+		     architecture="all"
+			 debfilenameproperty="debfilename"
+		     depends="default-jre|openjdk-7-jre|sun-java7-jre|openjdk-8-jre">
+			<version upstream="${version}" />
+			<maintainer name="Jan Lolling" email="jan.lolling@gmail.com" />
+			<changelog file="${src}/ReleaseNotes.txt" format="plain" />
+			<description synopsis="Java based database client">
+SQLRunner is a Java programm to handle database with an easy to use SQL interface.
+The SQLRunner has advanced import and export capabilities.
+SQLRunner ships with a large number of JDBC driver (e.g. Oracle, Postgres, DB2, MS-SQL, Informix, Derby, Sybase, MaxDB, MySQL).
+
+Homepage:
+[http://www.jan-lolling.de/Home/SQLRunner.html]
+            </description>
+			<tarfileset dir="${lib}" prefix="${linuxdir}">
+				<include name="*.jar" />
+                <exclude name="ui.jar" />
+			</tarfileset>
+			<tarfileset file="${distrib}/${jarfilename}"
+			            prefix="${linuxdir}" />
+			<tarfileset file="${distrib}/sqlrunner.png"
+			            prefix="${linuxdir}" />
+			<tarfileset file="${src}/sqlrunner.sh"
+			            prefix="${linuxdir}"
+			            filemode="755" />
+			<tarfileset file="${distrib}/sqlrunner.desktop"
+			            prefix="/usr/share/applications" />
+		</deb>
+		<echo>deb file: ${debfilename}</echo>
+	</target>
+	
+</project>

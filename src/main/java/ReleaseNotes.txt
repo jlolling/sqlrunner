@@ -1,0 +1,654 @@
+﻿Author: Jan Lolling, email: jan.lolling@gmail.com
+Located in Berlin, Germany
+
+http://www.jan-lolling.de/Home/SQLRunner.html
+
+release notes
+-------------
+Release 12.1
+- for none DML statements the update count will be retrieved and shown in the history view
+
+Release 12.0
+- EXASol database support added with explain support
+
+Release 11.3
+- Fix problem with wrong quote chars
+
+Release 11.2
+- Fix for display Teradata meta data with correct line breaks
+
+Release 11.1
+- Teradata driver added
+
+Release 11.0
+- Date converter added to the tools
+
+Release 10.0
+- Compatible to Java 7+ and to OSX Yosemite
+
+Release 9.5
+- can handle binary data (update in value editor and using them as primary key)
+
+Release 9.4
+- SQL code generator: Table order follows now foreign key constraints
+- SQL code generator: identifier equals to keywords will be enclosed (char depends on database type)
+- Editor: Highlighting take care of enclosing char
+- Talend Schema Export from Query Function added
+- Value editor: date format now always in synch with the date format from the result table renderer
+
+Version 9.3
+- Regex tester: Checkbox Case sensitive added
+
+Version 9.2
+- Fixed Bug: latest table used for updates was always lower case. In some case in MySQL this is a problem if the table is case sensitive created.
+
+Version 9.1
+- After load of SQL scripts all comments are correct colored. 
+
+Version 8.8
+- Import flat files: Import configuration can be saved as Talend Schema.
+- OSX: A click on the application in the dock restores the current window and does not open a new window.
+
+Version 8.6
+- Regex tester fixed: Test text field does not scroll
+- Talend Schema Export: For number types, the length and precision is taken into account for choosing Java class
+
+Version 8.5
+- Talend Schema Export sets the pattern attribute in case of Date columns
+
+Version 8.4
+- Bug fixed: Table cell editor does not use the given data format
+- DB2: more keywords added
+
+Version 8.3
+- Editor: bug fixed: if a script runs from a selected text it fails in set caret for current statement position
+
+Version 8.2
+- Editor: Paste smart: paste multiple line clipboard content into multiple line text
+          You can pickup the line position by pattern (select text)
+- Editor: selected line count appears in status
+
+Version 8.1
+- Importer differentiate between Double, Integer, Long
+- Data model view: filters only tables, views and procedures
+- Data model view: if catalog name is missing, a default catalog (database) node will be created
+- Talend Schema Export: Number and Decimal data types will be mapped to BigDecinal 
+
+Version 8.0
+- Data model view: Send To Editor function added in context menu
+- Data model view: Export table as Talend schema XML file.
+
+Version 7.14:
+- Boolean data type: bug solved: null values enabled
+- Database type Informix: URL part SCHEMA renamed to DATABASE
+
+Version 7.13
+- Data model view: filter for object names added
+- Data model view: Bug in refreshing table view solved
+- Data model view: select coalesce all fields add to context menu
+- DB2 extension: Explain feature updated
+- Login dialog: Bug fixed in extending url with properties
+
+Version 7.12
+- Preferences: Editor font chooser added
+- Bug fixed: comment font unchanged after change editor font
+
+Version 7.11
+- Bug fixed:
+  * Loading schemas stops if security exceptions raise
+  * Meta model some times does not disappears correctly after close connection
+- MS SQL Server 2008r2 supported with JTDS driver from sourceforge.org
+- Encapsulating $ in identifier inn generated SQL code
+- DB2: Source code from views and procedures are available
+
+Version 7.10
+- Bug fixes:
+  * current schemas is selected correctly (using for code completion feature)
+  * data model expands the tree for current selected schema 
+- Select and run a statement with CTRL+Enter works also if code is already selected
+	
+Version 7.9a
+- Bug fixes in import of flat file: 
+  * automatically created field import description starts not with the first field.
+  * tables without schema in name fail in create import description
+    
+Version 7.9
+- Import configuration recognize boolean field correctly
+- EXASol database added to the configuration
+
+Version 7.8
+- SQLDataModel API changes
+- Reconnect action added to Database menu
+- Datamodel view: hit enter on databases or schemas puts there names into the editor
+- Datamodel view: added an info panel with count and comment panel
+- History detail view shows URL and user of statements
+
+Version 7.7
+- avoid pasting \00
+- Help menu contains links to help pages and the homepage
+
+Version 7.6
+- MySQL Extension added (supports explain)
+- avoid useless collecting metadata for references if query is based on views or explains
+- Comments will be added as SQL commands to update meta data
+- Data model view shows database nodes
+- Line comments will be replaced with space because of a lack of parsing feature in MySQL
+- Bug fixed: if statement ends with ; explain failed
+- Explain statements will not registered in history
+
+Version 7.5
+- Explain feature for Derby database implemented
+- Column width of result table will fit to the available width
+- H2 Database included in configuration
+
+Version 7.4
+- Changes in data model API
+- Next SQLExceptions will be displayed in message dialogs and logs
+- Avoid (useless) exception after connect to database if no current selected schema is available
+- Integer column type added to GenericDatabaseExtension to avoid useless length term in code generator
+- Data model reflects new tables and views without the need of collapse and open tree nodes
+- Data model fixed comparison of views
+
+Version 7.3
+- CTRL+Enter runs the current text block (limited by empty lines)
+- Key binding changed: SHIFT+CTRL+a for select current text block 
+- Export to Excel fixed (avoid NullPointerException while exporting null values)
+- Abort connecting can be done with a new menu entry in menu Database
+- Fixed syntax highlighting for escaped string constants
+- Meta data view can handle broken network connections to database
+
+Version 7.2
+- Create code can handle spaces within identifiers
+- Goto line dialog can jump to position (also relative to selected text)
+- Fixed wrong check if files in newer then loaded file
+- Fixed Excel date format in exports
+- Fixed highlighting current word under Windows
+- Model comparison includes procedures
+
+Version 7.1
+- Keybinging CTRL+7 added for toggling line comment
+- Keybinding SHIFT+CTRL+A for select current line
+- Keybinding in data model changed for ENTER: sends selected element name to editor
+- Regex-Tester: added a text field for escaping java strings
+- Code creation for schema includes now all views
+- History view can take over multiple statements (only copy sql in editor)
+
+Version 7.0
+- Syntax completion in editor implemented
+- Data model dialog now always on top
+
+Version 6.2
+- Productive property added to connections (to change the background in editor)
+- Compatibility to previous versions in Import API restored
+- Import set commit size to batch size if set
+
+Version 6.1
+- Use database specific modules to improve code creation and functionality
+- Provide an Explain button (if database provide this feature)
+  * PostgreSQL and Oracle (partial) implemented
+- Can execute scripts with a large number of statements
+- logging extended
+- Data model shows new models from new opened connections
+- Added sum and max converting of selected text (e.g. "column" becomes "sum(column) as column")
+- Run time of current statement/script shown in the status bar
+- Code generation for procedure calls fixed
+- Status of commit and rollback button set to disabled if auto commit
+- Auto commit is now per default set on
+
+Version 5.2a
+- Increasing of session pool for meta data view avoided
+- Fix Windows problem with table context menu
+- Can set custom window title
+
+Version 5.2
+- Create SQL for update schema now asynchronously
+- Added more look&feels: Tiny, Nimbus, new version of JGoodies
+- PostgreSQL driver changed to version for 9.1
+- Little changes because of Nimbus Look&Feel bugs
+- Shows in result table header the value class name
+
+Version 5.1
+- Result table: can select all rows of an column (per mouse context menu)
+- Result table: can select a range with mouse+shift
+- Inline comments within statements will be send to the database because of 
+  getting the correct error position in case of syntax errors.
+
+Version 5.0
+- Data model comparison implemented
+  In datamodel view select two schemas and choose menu Schema Comparison
+
+Version 4.60a
+- Data model knows indexes and provide SQL statements for them
+- Bug fix for strange Oracle driver bug in meta data
+- Code generation fixed for drop tables for a schema
+
+Version 4.54b
+- Import recognize \N as null value
+- bug fixed: auto indention works also in next windows
+- bug fixed: opened window will be deiconified 
+- bug fixed: new added row in table will rendered with an asterix at start
+- can delete or copy to clipboard more than one row
+- named prepared statements are working now for postgreSQL database
+
+Version 4.52a
+- Result table renders null values as grey cells
+- more tolerant against network problems
+
+Version 4.51
+- Editor: Auto indention is now always on
+- Create table statement creation fixed (date and boolean corrected)
+- Import: skip rows function skips empty rows (no break if row is empty until skipped rows are reached)
+- Driver for Siemens SESAM-DB added
+- SQL code generation encapsulates names containing minus (e.g. SESAM DB)
+
+version 4.50
+- Flat file import supports batch sql processing to improve the import performance
+
+Version 4.43
+- more bug fixes because of specialities of postgresql database
+- auto rollback if statement failed and user decided to abort script
+- Support for Boolean data type
+- Abort statement fixed, avoid CircularityException
+- type cast (::) can be used (and will not misunderstood as parameter)
+
+Version 4.41
+- Info dialog shows L&F defaults
+- Data model view fixed for postgreSQL databases
+- postgreSQL keywords and data types 
+
+Version 4.40
+- Export of result table provides native Excel format
+
+Version 4.32
+- Import of XLS files: fixed bug: file handle won't close
+
+Version 4.31
+- Deprecated API calls for OSX integration replaced
+
+Version 4.30
+- Import-API provides last values for each imported columns.
+
+Version 4.20a
+- Cancel fetching data fixed
+
+Version 4.20
+- complete renewed method to run sql script with start or @ calls (like SQLPlus).
+  * referenced scripts will not be loaded visible in a new window, instead they will be loaded silent and parsed to the history.
+  * referenced scripts can recursivly call scripts via start or @ commands, there ist no limit for the deep of call hierachy.
+- Text converter can split output files by line number
+
+Version 4.10
+- ConnectionDescription in dbtools API can set InitSQL
+
+Version 4.9a
+- API of DatabaseSessionPool fixed
+
+Version 4.9
+- in deb package dependencies fixed
+- Database pool use case insensitive connection names
+- Datamodel view: smart including of schema names if objects from other schemas are involved
+- Bugs fixed in SQL parser (Performance and PL/SQL check fixed)
+- Result table can use monospaced font (usefull for viewing explain plan)
+
+Version 4.8a
+- Bug fixed occured in OSX: | and @ cannot be typed 
+- Datamodel view: context menue for procedures provide JDBC call code creation
+- Bug fixed in ImportConfiguration in field editor (change datatype to date fails)
+- Bug fixed in handling unknown file types for import
+
+Version 4.7a
+- Bug solved in file converter
+- some encoding problem solved in message files
+
+Version 4.7
+- Query export dialog shows correct end status
+- Named statement parameter (:myParamName) can be used like SQLPlus
+
+Version 4.6
+- Informix, Sybase and MySQL driver updated
+- deployment of Apple libs avoided
+
+Version 4.5a
+- Datamodel view: create sql code for tables fixed: primary key appears twice.
+
+Version 4.5
+- Datamodel view: procedures sorted in tree
+- Datamodel view: improved status information
+- Datamodel view: bug solved: refresh ignores procedures 
+- Datamodel view: bug solved: primary keys will be shown in column table
+- Datamodel view: bug solved: NullPointerException while refreshing tables
+
+Version 4.4a
+- Import: able to ignore blank rows in spreadsheets
+- Import configurator: dummy fields will always sorted at the end of the list
+- Import configurator: bug solved: damaged import configuration when dummy field within not dummy fields
+- Import configurator: bug solved: sort list change the selection
+- avoid NullPointerExceptions while loading large number of columns and switch to other table
+
+Version 4.3c
+- Problems caused by failed builds fixed
+- Import properties sorted in cliboard and in stored file
+
+Version 4.3b
+- Import can use by name specified sheets
+- Import: count dataset fixed
+- Import: CVS count dataset fixed, run preprocessing sql fixed
+
+Version 4.2
+- new POI library used to support newer Excel file types
+- datamodel view changed for procedures
+- datamodel view refresh will be done asynchronously
+- datamodel view expands current schema
+
+Version 4.1
+- List of connection in login dialog can be sorted
+
+Version 4.0
+- SQL parser can parse SQLPlus scripts
+- Datamodel shows overloaded sql procedures correctly
+- new Oracle JDBC driver used (necessary to separate overloaded sql procedures)
+- with a double click on a procedure in the datamodel browser you can create code to call this procedure
+
+Version 3.34
+- In datamodel view the current schema will be selected
+- Loading metadata will be done asynchronously
+
+Version 3.32
+- reading Oracle LONG columns fixed
+
+Version 3.31
+- File Import: if a field is invalid, the whole dataset can be ignored without notified in logs
+  e.g. this can be used to filter invalid datasets 
+
+Version 3.30
+- Unknown SQL types can be mapped to known types
+  (to confige in user.cfg with properties customSqlTypeEnabled and customSqlTypeMap
+  value="sqlType=basicType, sqlType2=basicType2...")
+
+Version 3.22
+- GUI changes to reflect better to Mac OS X GUI guidlines
+
+Version 3.21
+- Cancel statement fixed
+- Status shows count of selected rows and columns in table
+
+Version 3.20
+- Import: Sort field descriptions enabled
+- Datamodel: drag&drop the table with columns as HTML text to provide
+  an easy way to make documentations of data model
+
+Version 3.19
+- XML export fixed: xml header fits now to the xml specification
+- XML import performance improved: avoid unnecessary loading of table columns
+
+Version 3.18a
+- option to handle a file always as cvs file will be stored in import configuration file
+
+Version 3.18
+- File importer dialog has option to accept all file types as CVS file 
+
+Version 3.17
+- Component FileImporter can accept customized file extensions to import file as csv file
+- application icon bug removed
+- text file converter added to tools  
+- Log4J panel fixed (Trace is now adjustable)
+
+Version 3.16c
+- Log4J Configuration panel has now a refresh button
+
+Version 3.16b
+- internal icon structure consolidated
+
+Version 3.16a
+- some misplaced window positions corrected
+- internal structure of window handling concentrated in a specialized class
+- code of Login dialog refactored for more speed and reliability
+
+Version 3.15
+- sum calculation when selecting number data in result table
+
+Version 3.14
+- former restrictions for insert clobs in Oracle DB are removed
+
+Version 3.13
+- Bug fixed in handling of prepared selects using null values in chars
+- Info dialog has database pool info register
+- Info dialog has a logging output register
+
+Version 3.12
+- Highlighting of content between brackets can be switched off
+- some layout improvements
+
+Version 3.11
+- Window menbu improved with window list
+- highlight the content between brackets
+
+Version 3.10
+- avoid showing last database error message when closing session
+- Editor: shows bracket more clever
+
+Version 3.9b
+- window reset to 0:0 woll only proceeded at start of program
+- avoid highlighting whole editor pane after loading a new document
+
+Version 3.9
+- Editor: highlight line under cursor does not interferr with text selection
+- Preferences: line highlighting can be switched on/off
+
+Version 3.8a
+- File handling improved: warnings if a file will be loaded more than once.
+- Editor: highlight line under cursor
+
+Version 3.7a
+- main window: handling of splitpane improved
+
+Version 3.7
+- Import: minus at the end of the number will be correctly processed.
+- Import: Locale list now sorted
+- Import: self defined locale will be used correctly
+- History dialog will not placed outside the screen
+
+Version 3.6
+- Import: wrong field types in xls files will be tolerated
+
+Version 3.5a
+- Export of filled result table is possible after disconnect from database.
+
+Version 3.5 OSS
+- Import: Number and Date fields can configured for different locales
+
+Version 3.4a OSS
+- Import: empty row will not cause abort of import
+
+Version 3.4 OSS
+- Import: more tolerant support for XLS files
+- Import: introduce new import data type "SQL code"
+- Import: possibility to skip amount of rows until import starts
+
+Version 3.3b OSS
+- Handling of some dialogs (closing) fixed
+- History view contains currently running statement
+- Import data file will be released when import finished
+
+Version 3.2a OSS
+- bug in running prepared statements fixed (introduced in 3.2)
+
+Version 3.2 OSS
+- take care of long running action before closing a main window
+- do rollback in a separate thread to avoid blocked GUI
+- layout problems in prepared statement parameter config resolved
+
+Version 3.1b OSS
+- Fileimport handle unknown file type as CSV and operate now properly with Windows files 
+- Cancel statement is now proceeded in a separate thread
+
+Version 3.1 OSS
+- CSV Import: able to jump to a specific line
+- Export as module in external application usable 
+
+Version 3.0 OSS
+- CSV-Import can handle XLS files
+
+Version 2.22 OSS
+- XML Export can define fetchSize (default = 1000)
+- CSV import: can send and receive import properties per drag and drop as string
+
+Verion 2.21b OSS
+- CSV import: fixed bug in save configuration
+- drag&drop for import configuration enabled
+
+Version 2.21 OSS
+- CSV import: configuration extension is now .importconfig
+  .importconfig is assigned to SQLRunner as default editor
+- CSV import: test import configuration will be created for CSV files 
+- desktop enhancements of Java 6 will be used
+
+Version 2.20c OSS
+- CSV import: line preview removed (will be replaced by test field descriptions)
+- CSV import: bug fixed in handling of complex line delimiters
+
+Version 2.20b OSS
+- 2 bugs in csv configuration fixed (introduced in 2.20)
+
+Version 2.20 OSS
+- CSV import complete code reorganized
+- CSV import preview shows parsed data (not only the extracted data)
+
+Version 2.10 OSS
+- JMX support implemented
+
+Version 2.9 OSS
+- CSV field can now use an alternative field if its own value is null
+- CSV import configuration is accessable without connect to database
+
+Version 2.8 OSS
+- Parameter for SQL code in CSV import can be added with GUI
+
+Version 2.7b OSS
+- improved capabilities of DatabaseSessionPool for creating subclasses of DatabaseSession
+- build process enhanced to compatible with Sun resource bundle specification
+
+Version 2.7 OSS
+- CSV-Import can execute pre import sql statements (same syntax like post process sql)
+
+Version 2.6 OSS
+- encrypted transfer of database access information
+
+Version 2.5 OSS
+- XML-Import fixed (usage of old values bug)
+- CSV-Import trim option added
+
+Version 2.4e OSS
+- if errors occurse while setting parameters in prepared statements than 
+  run statement will be avoided.
+- datamodel frame will be located within the main frame and can change them window state
+
+Version 2.4d OSS
+- CSV-Import: post processing sql charset problem fixed
+
+Version 2.4c OSS
+- order of toolbars changed
+- out of memory error better handled within proceeding result sets
+
+Version 2.4b OSS
+- CSV-Import: Testmode: counting fixed 
+
+Version 2.4a OSS
+- XML Import: avoid dataset exists check when table deleted and update disabled
+- XML Export/Import: avoid problems with different default charsets of operating systems
+  in Base64 transcoding
+- XML Export/Import: close window asks when export/import is running
+
+Version 2.3a OSS
+- detecting pk field within selects fixed
+- XML Import: show status fixed
+- XML Import: dialog layout fixed
+- XML Import: performance of dataset count improved
+- XML Import: log file will be created in directory of data file
+- XML Import: "value length=1" bug fixed
+- XML Export: data value will be exported as long
+- XML Export: xml code much more compact
+
+Version 2.3 OSS
+- date presentation will be stored as a long value in XML files
+
+Version 2. OSS
+- XML import provide progress information
+
+Version 2.1a OSS
+- fixed some location bugs
+
+Version 2.1 OSS
+- add test mode to CSV import
+
+Version 2.0d OSS
+- JDBC driver from year 2000 integrated (because MS generated incompatibilities)
+
+Version 2.0c OSS
+- stability imploved
+- new MySQL driver and DB2 type 4 driver integrated
+
+Version 2.0a OSS
+- fixed some issues with MySQL database (JDBC metadata does not provide schema information)
+
+Version 2.0 OSS
+- DataModel storage completly changed
+- more then one database connection are showing in datamodel view  
+
+##### switch to Java 5 as minimum required Java runtime ################
+
+Version 1.8a OSS
+- close the input file stream when import dialog will be closed
+- Logfile mismatch in CSV import cleared
+- failure of initial SQL rejects connection
+
+Version 1.8 OSS
+- fetch size for statements are configurable
+- check dialog window bounds to always fit in screen bounds
+
+Version 1.7 OSS
+- CSV import can filter an already extracted field value with regex expressions
+- various helper tools moved in a separet main menue item "Tools"
+- A regex expression tester added to tools menue
+
+Version 1.6 OSS
+- Import able to create a number sequence
+- post processing SQL can be improved with values from properties or default value
+  from a field description
+  possible tags are {prop.<key>.value} or {field.<name>.defaultValue}
+- CSV-import dialog is more intiuitive and ask for save when config is changed
+- CSV-import dialog has a menue to new/open/save configuration instead of buttons to do that
+
+Version 1.5a OSS
+- fixed: Exception is thrown in writing import configuration without text enclosure
+- fixed: changed date format will not immediatly reflected in table
+- fixed: csv import aborts if header line will interpreted as data
+- import now more tolerant against wrong data files:
+  all proper datasets will be imported without cancel whole import
+
+Version 1.5 OSS
+- CSV export and import take care of text enclosure like " or '
+
+Version 1.4b OSS
+- CSV-Importmodul use log4j instead own logfile creation
+- Logfile contains date in name
+- abort of statements more reliable designed
+
+Version 1.4 OSS
+- fixed minor layout bugs in horozontal table design
+- CSV-Import can now define/ensure not null fields
+- bug fixed in CVS import: TAB as delimiter does not work
+
+Version 1.3 OSS
+- multiple hints from findBugs fixed
+- JDBC driver updated: MySQL, MaxDB, PostGres
+- JGoodies Look&Feel updated
+- tool windows (history, datamodel) set they heights like mainframe. 
+
+Version 1.2 OSS
+- XML Exportdialog are able to change the schema term for retrieving table informations
+
+Version 1.1 OSS
+- Vertical mode for result table near complete implemented
+  (toggle with ALT+V between horizontal and vertical mode when table has focus) 
+- currently supported languages: German, English.

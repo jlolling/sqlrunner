@@ -1,0 +1,20 @@
+Copy of data sets internal to paste them in new connection and table
+
+export one or more data sets as insert or update statements
+and use compressed insert statements (more than one record in one statement)
+
+SHIFT+F5 select current statement and run it
+
+improve code completion (can start within a name)
+
+search in history
+
+Search and replace with regex
+
+Add option to load tables and columns of a schema with one call.
+
+Compare 2 tables (additional to 2 schemas)
+
+Search in history
+
+backport csv parser from talend component.
