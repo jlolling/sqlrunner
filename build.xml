@@ -180,7 +180,7 @@
 			description="Database client to manipulate database directly with SQL with input and export capabilities"
 			folderwithsignedjars="${javawebstart}"
 			iconhref="sqlrunner.png"
-			codebase="http://www.jan-lolling.de/sqlrunner/jws/"
+			codebase="http://jan-lolling.de/sqlrunner/jws/"
 			createdesktopshortcut="true"
 			createmenuentry="true"
 			subMenuName="Java User Group Berlin"
@@ -347,7 +347,7 @@ The SQLRunner has advanced import and export capabilities.
 SQLRunner ships with a large number of JDBC driver (e.g. Oracle, Postgres, DB2, MS-SQL, Informix, Derby, Sybase, MaxDB, MySQL).
 
 Homepage:
-[http://www.jan-lolling.de/Home/SQLRunner.html]
+[http://jan-lolling.de/Home/SQLRunner.html]
             </description>
 			<tarfileset dir="${lib}" prefix="${linuxdir}">
 				<include name="*.jar" />

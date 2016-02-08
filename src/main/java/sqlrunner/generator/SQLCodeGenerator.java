@@ -368,14 +368,20 @@ public class SQLCodeGenerator {
                     firstLoop = true;
                     SQLConstraint pkConstraint = table.getPrimaryKeyConstraint();
                     if (pkConstraint != null) {
-                        sb.append(",\n   ");
-                        sb.append(buildConstraintSQLCode(pkConstraint, fullName, alternativeSchemaName));
+                    	String sql = buildConstraintSQLCode(pkConstraint, fullName, alternativeSchemaName);
+                    	if (sql != null && sql.isEmpty() == false) {
+                            sb.append(",\n   ");
+                            sb.append(sql);
+                    	}
                     }
                     // add rest of constraints
                     for (SQLConstraint constraint : table.getConstraints()) {
                     	if (constraint.getType() != SQLConstraint.PRIMARY_KEY) {
-                            sb.append(",\n   ");
-                            sb.append(buildConstraintSQLCode(constraint, fullName, alternativeSchemaName));
+                        	String sql = buildConstraintSQLCode(constraint, fullName, alternativeSchemaName);
+                        	if (sql != null && sql.isEmpty() == false) {
+                                sb.append(",\n   ");
+                                sb.append(sql);
+                        	}
                     	}
                     }
                     sb.append(");\n");
@@ -994,7 +1000,7 @@ public class SQLCodeGenerator {
             }
             sb.append(')');
             return sb.toString();
-        } else if (constraint.getType() == SQLConstraint.FOREIGN_KEY) {
+        } else if (constraint.getType() == SQLConstraint.FOREIGN_KEY && constraint.getReferencedTable() != null) {
             StringBuilder sb = new StringBuilder();
             sb.append("constraint ");
             sb.append(getEncapsulatedName(constraint.getName()));

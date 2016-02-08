@@ -846,7 +846,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
     
     private void openHelpPage() {
     	Desktop desktop = Desktop.getDesktop();
-		String url = "http://www.jan-lolling.de/sqlrunner/help/SQLRunner.html";
+		String url = "http://jan-lolling.de/sqlrunner/help/SQLRunner.html";
     	URI uri = null;
 		try {
 			uri = new URI(url);
@@ -860,7 +860,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
     
     private void openHomePage() {
     	Desktop desktop = Desktop.getDesktop();
-		String url = "http://www.jan-lolling.de/";
+		String url = "http://jan-lolling.de/";
     	URI uri = null;
 		try {
 			uri = new URI(url);
@@ -3259,7 +3259,6 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
         dmFrame.setState(Frame.NORMAL);
         dmFrame.toFront();
         Rectangle r = WindowHelper.getCurrentScreenBounds(this);
-        System.out.println(r);
         WindowHelper.locateAtRightSideOfScreen(r, dmFrame);
         dmFrame.setMainFrame(this);
         dmFrame.selectCurrentSchema();

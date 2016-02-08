@@ -5,8 +5,12 @@ http://www.jan-lolling.de/Home/SQLRunner.html
 
 release notes
 -------------
+Release 12.2
+- Bug fixed: If constraint are inconsistent, SQL code damaged
+
 Release 12.1
 - for none DML statements the update count will be retrieved and shown in the history view
+- Sybase connection improved and new driver release included
 
 Release 12.0
 - EXASol database support added with explain support
