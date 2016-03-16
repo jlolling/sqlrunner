@@ -4486,8 +4486,8 @@ public final class Database implements TableModel {
 	public int convertFromLogicalToVerticalRowSelection(int verticalRowIndex) {
 		return verticalRowIndex * columnNames.length;
 	}
-
-    public double calculateColumnValueSum(int[] rows, int column) {
+	
+	public double calculateColumnValueSum(int[] rows, int column) {
         double result = 0;
         if (rows.length > 1) {
             for (int row : rows) {
@@ -4497,18 +4497,25 @@ public final class Database implements TableModel {
         return result;
     }
     
-    public String getDataValueRangeInfo(int[] rows, int column) {
-    	StringBuilder sb = new StringBuilder();
-    	
-    	return sb.toString();
-    }
-
-    public String getDataValueRangeInfo(int row, int[] columns) {
-    	StringBuilder sb = new StringBuilder();
-    	
-    	return sb.toString();
-    }
-
+	public Statistic getRowStatistics(int[] rows, int column) {
+		Statistic stat = null;
+		if (rows.length > 1) {
+			Object first =  resultSetResults.get(rows[0])[column];
+			if (first instanceof Date) {
+				stat = new StatisticDate();
+				for (int r : rows) {
+					stat.addValue(resultSetResults.get(r)[column]);
+				}
+			} else {
+				stat = new StatisticDouble();
+				for (int r : rows) {
+					stat.addValue(resultSetResults.get(r)[column]);
+				}
+			}
+		}
+		return stat;
+	}
+	
     public double calculateRowValueSum(int row, int[] columns) {
         double result = 0;
         if (columns.length > 1) {
@@ -4517,30 +4524,6 @@ public final class Database implements TableModel {
             }
         }
         return result;
-    }
-
-    public Date calculateRowValueTimeMax(int row, int[] columns) {
-    	Date maxDate = null;
-        if (columns.length > 1) {
-            for (int column : columns) {
-            	Date cd = getFailSaveDate(row, column);
-            	if (cd != null) {
-            		if (maxDate == null || cd.after(maxDate)) {
-            			maxDate = cd;
-            		} 
-            	}
-            }
-        }
-        return maxDate;
-    }
-    
-    private Date getFailSaveDate(int row, int column) {
-    	Date date = null;
-        Object value = resultSetResults.get(row)[column];
-        if (value != null) {
-        	
-        }
-    	return date;
     }
 
     private double getFailSaveNumberValue(int row, int column) {

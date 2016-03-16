@@ -5,6 +5,9 @@ http://www.jan-lolling.de/Home/SQLRunner.html
 
 release notes
 -------------
+Release 13.0
+- Row statistics improved
+
 Release 12.2
 - Bug fixed: If constraint are inconsistent, SQL code damaged
 

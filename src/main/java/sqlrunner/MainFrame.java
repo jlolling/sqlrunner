@@ -1691,8 +1691,8 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
                         }
                     }
                     if (selectedColumns.length == 1 && selectedRows.length > 1) {
-                        double sum = database.calculateColumnValueSum(selectedRows, selectedColumns[0]);
-                        setStatusMessage("sum=" + sum + " count rows=" + selectedRows.length);
+                        Statistic stat = database.getRowStatistics(selectedRows, selectedColumns[0]);
+                        setStatusMessage(stat.render());
                     } else if (selectedColumns.length > 1 && selectedRows.length == 1) {
                         double sum = database.calculateRowValueSum(selectedRows[0], selectedColumns);
                         setStatusMessage("sum=" + sum + " count columns=" + selectedColumns.length);
@@ -1700,7 +1700,6 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
                 }
             }
             status.tablePos.setText(String.valueOf(selectedRowIndex + 1));
-
         }
     }
 
@@ -3514,7 +3513,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
     /**
      * Statusbar
      */
-    public static final class StatusBar extends JPanel {
+    public final class StatusBar extends JPanel {
 
         private static final long serialVersionUID = 1L;
         private final BoxLayout box = new BoxLayout(this, BoxLayout.X_AXIS);
@@ -3524,12 +3523,12 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
         private JLabel infoOverWrite = new FixedLabel("INS"); 
         private JLabel infoAction = new FixedLabel();
         private JLabel tableName = new FixedLabel();
-        final static int LINE_NUM_WIDTH = 100;
+        final static int LINE_NUM_WIDTH = 80;
         final static int TEXTPOS_WIDTH = 100;
         final static int INFO_OVERWRITE_WIDTH = 30;
         final static int INFO_ACTION_WIDTH = 50;
         final static int STATUS_HEIGHT = 25;
-        final static int TABLENAME_WIDTH = 100;
+        final static int TABLENAME_WIDTH = 200;
 
         public StatusBar() {
             setLayout(box);
@@ -3560,6 +3559,18 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
             tableName.setOpaque(true);
             tableName.setBorder(BorderFactory.createLoweredBevelBorder());
             tableName.setPreferredSize(new Dimension(TABLENAME_WIDTH, STATUS_HEIGHT));
+            tableName.addMouseListener(new MouseAdapter() {
+
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					if (e.getClickCount() == 2) {
+						if (tableName.getText() != null && tableName.getText().isEmpty() == false) {
+							insertOrReplaceText(tableName.getText());
+						}
+					}
+				}
+            	
+			});
             add(message);
             add(tableName);
             add(tablePos);
@@ -3619,7 +3630,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
 
         // diese Klasse sichert, dass die Label auch in einer festen Groesse
         // dargestellt werden
-        final static class FixedLabel extends JLabel {
+        final class FixedLabel extends JLabel {
 
             private static final long serialVersionUID = 1L;
 
@@ -3642,14 +3653,13 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
             }
         }
 
-        // Klasse stellt fest wenn Text in Meldung sich geaedert hat
-        // und setzt als Tooltip den Inhalt des Textes
         class MeldungPropertyChangeListener implements PropertyChangeListener {
 
             public void propertyChange(PropertyChangeEvent evt) {
                 message.setToolTipText(message.getText());
             }
         }
+        
     } // class StatusBar
 
     private String createTabReplacement() {
