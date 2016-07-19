@@ -6,8 +6,10 @@ import java.util.List;
 
 import sqlrunner.datamodel.Field;
 import sqlrunner.datamodel.SQLProcedure;
+import sqlrunner.datamodel.SQLSchema;
 import sqlrunner.datamodel.SQLSequence;
 import sqlrunner.datamodel.SQLTable;
+import sqlrunner.datamodel.SQLTrigger;
 import dbtools.ConnectionDescription;
 import dbtools.DatabaseSession;
 
@@ -67,10 +69,19 @@ public interface DatabaseExtension {
 	public String setupProcedureSQLCode(DatabaseSession session, SQLProcedure proc);
 	
 	/**
-	 * collects all sequences
-	 * @return list of sequences (never null)
+	 * sets the code into the procedure
+	 * @param proc
+	 * @return the code
 	 */
-	public List<SQLSequence> getSequences(DatabaseSession session);
+	public String setupTriggerSQLCode(DatabaseSession session, SQLTrigger proc);
+
+	/**
+	 * sets the code into the procedure
+	 * @param conn
+	 * @param sequence
+	 * @return the code
+	 */
+	public String setupSequenceSQLCode(Connection conn, SQLSequence sequence);
 	
 	/**
 	 * change data type to more appropriated types
@@ -187,5 +198,16 @@ public interface DatabaseExtension {
 	public String getIdentifierQuoteString();
 	
 	public void setIdentifierQuoteString(String quote);
+	
+	public boolean hasSequenceFeature();
+	
+	public List<SQLSequence> listSequences(Connection conn, SQLSchema schema);
+	
+	/**
+	 * returns the SQL code to get the next value from the sequence
+	 * @param sequence
+	 * @return SQL code
+	 */
+	public String getSequenceNextValSQL(SQLSequence sequence);
 	
 }

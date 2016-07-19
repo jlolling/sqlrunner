@@ -1,0 +1,11 @@
+CREATE OR REPLACE TRIGGER TEST_AGG_test
+  BEFORE DELETE OR INSERT OR UPDATE ON TEST_AGG
+  FOR EACH ROW
+WHEN (new.VALUE > 0)
+DECLARE
+    diff number;
+BEGIN
+    diff  := :new.VALUE  - :old.VALUE;
+    :new.VALUE_2 := diff;
+END;
+/

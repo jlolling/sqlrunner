@@ -75,8 +75,10 @@ import sqlrunner.datamodel.SQLIndex;
 import sqlrunner.datamodel.SQLObject;
 import sqlrunner.datamodel.SQLProcedure;
 import sqlrunner.datamodel.SQLSchema;
+import sqlrunner.datamodel.SQLSequence;
 import sqlrunner.datamodel.SQLTable;
 import sqlrunner.datamodel.gui.SQLDataTreeTableModel.ProcedureFolder;
+import sqlrunner.datamodel.gui.SQLDataTreeTableModel.SequenceFolder;
 import sqlrunner.datamodel.gui.SQLDataTreeTableModel.TableFolder;
 import sqlrunner.datamodel.gui.SQLDataTreeTableModel.ViewFolder;
 import sqlrunner.export.QueryExportFrame;
@@ -1270,6 +1272,27 @@ public final class DataModelFrame extends JFrame {
 		}
     };
 
+    final Action sqlCallProcedureAction = new AbstractAction() {
+
+		private static final long serialVersionUID = 1L;
+
+    	@Override
+		public void actionPerformed(ActionEvent e) {
+        	if (treeAndTableModel.getCurrentSQLProcedure() != null) {
+        		if (mainFrame != null) {
+                    if (miOverwrite.isSelected()) {
+                        mainFrame.setScriptText(SQLCodeGenerator.getInstance().buildSQLCallStatement(treeAndTableModel.getCurrentSQLProcedure(), useFullName()));
+                        mainFrame.setTextSaveEnabled(false);
+                    } else {
+                        mainFrame.insertOrReplaceText(SQLCodeGenerator.getInstance().buildSQLCallStatement(treeAndTableModel.getCurrentSQLProcedure(), useFullName()));
+                    }
+                    mainFrame.setState(Frame.NORMAL);
+                    mainFrame.toFront();
+        		}
+        	}
+		}
+    };
+
     final Action dropProcedureAction = new AbstractAction() {
 
 		private static final long serialVersionUID = 1L;
@@ -1283,6 +1306,69 @@ public final class DataModelFrame extends JFrame {
                         mainFrame.setTextSaveEnabled(false);
                     } else {
                         mainFrame.insertOrReplaceText(SQLCodeGenerator.getInstance().buildDropStatement(treeAndTableModel.getCurrentSQLProcedure(), useFullName()));
+                    }
+                    mainFrame.setState(Frame.NORMAL);
+                    mainFrame.toFront();
+        		}
+        	}
+		}
+    };
+
+    final Action callSequenceAction = new AbstractAction() {
+
+		private static final long serialVersionUID = 1L;
+
+    	@Override
+		public void actionPerformed(ActionEvent e) {
+        	if (treeAndTableModel.getCurrentSQLSequence() != null) {
+        		if (mainFrame != null) {
+                    if (miOverwrite.isSelected()) {
+                        mainFrame.setScriptText(treeAndTableModel.getCurrentSQLSequence().getNextvalCode());
+                        mainFrame.setTextSaveEnabled(false);
+                    } else {
+                        mainFrame.insertOrReplaceText(treeAndTableModel.getCurrentSQLSequence().getNextvalCode());
+                    }
+                    mainFrame.setState(Frame.NORMAL);
+                    mainFrame.toFront();
+        		}
+        	}
+		}
+    };
+
+    final Action createSequenceAction = new AbstractAction() {
+
+		private static final long serialVersionUID = 1L;
+
+    	@Override
+		public void actionPerformed(ActionEvent e) {
+        	if (treeAndTableModel.getCurrentSQLSequence() != null) {
+        		if (mainFrame != null) {
+                    if (miOverwrite.isSelected()) {
+                        mainFrame.setScriptText(treeAndTableModel.getCurrentSQLSequence().getCreateCode());
+                        mainFrame.setTextSaveEnabled(false);
+                    } else {
+                        mainFrame.insertOrReplaceText(treeAndTableModel.getCurrentSQLSequence().getCreateCode());
+                    }
+                    mainFrame.setState(Frame.NORMAL);
+                    mainFrame.toFront();
+        		}
+        	}
+		}
+    };
+
+    final Action dropSequenceAction = new AbstractAction() {
+
+		private static final long serialVersionUID = 1L;
+
+    	@Override
+		public void actionPerformed(ActionEvent e) {
+        	if (treeAndTableModel.getCurrentSQLSequence() != null) {
+        		if (mainFrame != null) {
+                    if (miOverwrite.isSelected()) {
+                        mainFrame.setScriptText(SQLCodeGenerator.getInstance().buildDropStatement(treeAndTableModel.getCurrentSQLSequence(), useFullName()));
+                        mainFrame.setTextSaveEnabled(false);
+                    } else {
+                        mainFrame.insertOrReplaceText(SQLCodeGenerator.getInstance().buildDropStatement(treeAndTableModel.getCurrentSQLSequence(), useFullName()));
                     }
                     mainFrame.setState(Frame.NORMAL);
                     mainFrame.toFront();
@@ -1764,11 +1850,25 @@ public final class DataModelFrame extends JFrame {
 	            final JMenuItem mi = new JMenuItem(Messages.getString("DataModelFrame.procedureCallStatement"));
 	            mi.addActionListener(callProcedureAction);
 	            popup.add(mi);
+	            final JMenuItem misql = new JMenuItem(Messages.getString("DataModelFrame.procedureSQLCallStatement"));
+	            misql.addActionListener(sqlCallProcedureAction);
+	            popup.add(misql);
 	            final JMenuItem miCreate = new JMenuItem(Messages.getString("DataModelFrame.createProcedureStatement"));
 	            miCreate.addActionListener(createProcedureAction);
 	            popup.add(miCreate);
 	            final JMenuItem miDrop = new JMenuItem(Messages.getString("DataModelFrame.dropProcedureStatement"));
 	            miDrop.addActionListener(dropProcedureAction);
+	            popup.add(miDrop);
+	        } else if (object instanceof SQLSequence) {
+	            popup = new JPopupMenu();
+	            final JMenuItem mi = new JMenuItem(Messages.getString("DataModelFrame.sequenceCallStatement"));
+	            mi.addActionListener(callSequenceAction);
+	            popup.add(mi);
+	            final JMenuItem miCreate = new JMenuItem(Messages.getString("DataModelFrame.createSequenceStatement"));
+	            miCreate.addActionListener(createSequenceAction);
+	            popup.add(miCreate);
+	            final JMenuItem miDrop = new JMenuItem(Messages.getString("DataModelFrame.dropSequenceStatement"));
+	            miDrop.addActionListener(dropSequenceAction);
 	            popup.add(miDrop);
 	        } else if (object instanceof TableFolder) {
 	            status.messageLabel.setText(countChildren + " tables");
@@ -1776,6 +1876,8 @@ public final class DataModelFrame extends JFrame {
 	            status.messageLabel.setText(countChildren + " views");
 	        } else if (object instanceof ProcedureFolder) {
 	            status.messageLabel.setText(countChildren + " procedures");
+	        } else if (object instanceof SequenceFolder) {
+	            status.messageLabel.setText(countChildren + " sequences");
 	        }
         	tree.setComponentPopupMenu(popup);
     	}

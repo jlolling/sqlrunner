@@ -15,6 +15,7 @@ import sqlrunner.datamodel.SQLObject;
 import sqlrunner.datamodel.SQLProcedure;
 import sqlrunner.datamodel.SQLProcedure.Parameter;
 import sqlrunner.datamodel.SQLSchema;
+import sqlrunner.datamodel.SQLSequence;
 import sqlrunner.datamodel.SQLTable;
 import sqlrunner.dbext.DatabaseExtension;
 import sqlrunner.dbext.DatabaseExtensionFactory;
@@ -1179,10 +1180,6 @@ public class SQLCodeGenerator {
 		}
 		sb.append("(");
 		for (int i = 0; i < p.getParameterCount(); i++) {
-//			if (i == 0 && p.isFunction()) {
-//				// the first parameter is the return value
-//				continue;
-//			}
 			Parameter param = p.getParameterAt(i);
 			if (i > 0) {
 				sb.append(",");
@@ -1204,6 +1201,34 @@ public class SQLCodeGenerator {
 		return sb.toString();
 	}
 	
+	public String buildSQLCallStatement(SQLProcedure p, boolean fullName) {
+    	setupEnclosureChar(p);
+		final StringBuilder sb = new StringBuilder();
+		if (fullName) {
+			sb.append(p.getAbsoluteName());
+		} else {
+			sb.append(p.getName());
+		}
+		sb.append("(");
+		for (int i = 0; i < p.getParameterCount(); i++) {
+			Parameter param = p.getParameterAt(i);
+			if (i > 0) {
+				sb.append(",");
+			}
+			sb.append(param.getName());
+			sb.append("/*");
+			sb.append(param.getTypeName());
+			if (param.getIoType() == DatabaseMetaData.functionColumnInOut) {
+				sb.append("[io]");
+			} else if (param.getIoType() == DatabaseMetaData.functionColumnOut) {
+				sb.append("[o]");
+			}
+			sb.append("*/");
+		}
+		sb.append(")");
+		return sb.toString();
+	}
+
 	public String buildDropStatement(SQLProcedure p, boolean fullName) {
     	setupEnclosureChar(p);
 		final StringBuilder sb = new StringBuilder();
@@ -1221,7 +1246,19 @@ public class SQLCodeGenerator {
 		return sb.toString();
 	}
 
-    public static void completeTableAndColumns(SQLSchema schema) {
+	public String buildDropStatement(SQLSequence p, boolean fullName) {
+    	setupEnclosureChar(p);
+		final StringBuilder sb = new StringBuilder();
+		sb.append("drop sequence ");
+		if (fullName) {
+			sb.append(p.getAbsoluteName());
+		} else {
+			sb.append(p.getName());
+		}
+		return sb.toString();
+	}
+
+	public static void completeTableAndColumns(SQLSchema schema) {
 		SQLTable sqlTable = null;
 		for (int x = 0; x < schema.getTableCount(); x++) {
 			sqlTable = schema.getTableAt(x);

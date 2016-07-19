@@ -34,6 +34,7 @@ import sqlrunner.datamodel.SQLField;
 import sqlrunner.datamodel.SQLIndex;
 import sqlrunner.datamodel.SQLProcedure;
 import sqlrunner.datamodel.SQLSchema;
+import sqlrunner.datamodel.SQLSequence;
 import sqlrunner.datamodel.SQLTable;
 
 public final class SQLDataTreeTableModel extends DefaultTreeModel
@@ -57,6 +58,7 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
     private transient SQLProcedure  currentSQLProcedure = null;
     private transient SQLConstraint currentSQLConstraint = null;
     private transient SQLIndex      currentSQLIndex = null;
+    private transient SQLSequence   currentSQLSequence = null;
     private Object                  currentUserObject;
     private DefaultMutableTreeNode  currentNode;
     private DefaultMutableTreeNode  currentFilterStartNode;
@@ -350,6 +352,19 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
                 
     }
 
+    public static final class SequenceFolder extends Folder {
+        
+        public SequenceFolder(SQLSchema schema) {
+            super(schema);
+        }
+        
+        @Override
+        public String toString() {
+            return Messages.getString("SQLDataTreeModel.sequenceFolderName");
+        }
+                
+    }
+
     public static final class TableConstraintsFolder extends Folder {
         
         public TableConstraintsFolder(SQLTable table) {
@@ -384,6 +399,8 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
                 return currentSQLTable.getFieldCount();
             } else if (currentUserObject == currentSQLProcedure) {
                 return currentSQLProcedure.getParameterCount();
+            } else if (currentUserObject == currentSQLSequence) {
+                return 4; // start, stop, increment, current
             } else if (currentUserObject == currentSQLConstraint) {
             	return currentSQLConstraint.getColumnCount();
             } else if (currentUserObject == currentSQLIndex) {
@@ -452,6 +469,50 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
             	} else {
             		return null;
             	}
+            } else if (currentUserObject == currentSQLSequence) {
+            	switch (rowIndex) {
+            	case 0: {
+            		if (columnIndex == 0) {
+            			return "Start";
+            		} else if (columnIndex == 1) {
+            			return currentSQLSequence.getStartsWith();
+                	} else {
+                		return null;
+                	}
+            	}
+            	case 1: {
+            		if (columnIndex == 0) {
+            			return "End";
+            		} else if (columnIndex == 1) {
+            			return currentSQLSequence.getEndsWith();
+                	} else {
+                		return null;
+                	}
+            	}
+            	case 2: {
+            		if (columnIndex == 0) {
+            			return "Step";
+            		} else if (columnIndex == 1) {
+            			return currentSQLSequence.getStepWith();
+                	} else {
+                		return null;
+                	}
+            	}
+            	case 3: {
+            		if (columnIndex == 0) {
+            			return "Current";
+            		} else if (columnIndex == 1) {
+            			if (currentSQLSequence.getCurrentValue() > currentSQLSequence.getStartsWith()) {
+                			return currentSQLSequence.getCurrentValue();
+            			} else {
+                    		return null;
+            			}
+                	} else {
+                		return null;
+                	}
+            	}
+            	default: return null;
+            	}
             } else {
                 return null;
             }
@@ -515,7 +576,11 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
         // those that are interested in this event
         for (int i = listeners.length - 2; i >= 0; i -= 2) {
             if (listeners[i] == TableModelListener.class) {
-                ((TableModelListener) listeners[i + 1]).tableChanged(e);
+            	try {
+            		((TableModelListener) listeners[i + 1]).tableChanged(e);
+            	} catch (Exception ex) {
+            		// ignore
+            	}
             }
         }
     }
@@ -710,8 +775,18 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
             } else if (currentUserObject instanceof SQLProcedure) {
                 currentSQLConstraint = null;
                 currentSQLTable = null;
+                currentSQLSequence = null;
                 currentSQLProcedure = (SQLProcedure) currentUserObject;
                 currentSQLSchema = currentSQLProcedure.getSchema();
+                currentSQLDataModel = currentSQLSchema.getModel();
+                nextSelectedSchema = null;
+                fireTableChanged();
+            } else if (currentUserObject instanceof SQLSequence) {
+                currentSQLConstraint = null;
+                currentSQLTable = null;
+                currentSQLSequence = (SQLSequence) currentUserObject;
+                currentSQLProcedure = null;
+                currentSQLSchema = currentSQLSequence.getSchema();
                 currentSQLDataModel = currentSQLSchema.getModel();
                 nextSelectedSchema = null;
                 fireTableChanged();
@@ -747,6 +822,8 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
         } else if (userObject instanceof SQLCatalog) {
 			currentFilterStartNode = node;
         } else if (userObject instanceof SQLProcedure) {
+			currentFilterStartNode = (DefaultMutableTreeNode) node.getParent();
+        } else if (userObject instanceof SQLSequence) {
 			currentFilterStartNode = (DefaultMutableTreeNode) node.getParent();
         } else if (userObject instanceof SQLDataModel) {
 			currentFilterStartNode = node;
@@ -851,6 +928,9 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
         } else if (userObject instanceof ProcedureFolder) {
             final SQLSchema schema = ((Folder) userObject).getSchema();
             buildNodesForFunctions(schema, parentNode);
+        } else if (userObject instanceof SequenceFolder) {
+            final SQLSchema schema = ((Folder) userObject).getSchema();
+            buildNodesForSequences(schema, parentNode);
         } else {
         	return;
         }
@@ -912,7 +992,7 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
     		}
     	}
     	if (logger.isDebugEnabled()) {
-    		logger.info("doBuildNodes parentNode=" + parentNode + " newListOfChildUserObjects=" + currentNewChildren);
+    		logger.debug("doBuildNodes parentNode=" + parentNode + " newListOfChildUserObjects=" + currentNewChildren);
     	}
     	int parentNodeChildCount = parentNode.getChildCount();
     	for (int i = 0; i < currentNewChildren.size(); i++) {
@@ -1022,6 +1102,16 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
         buildNodes(functionFolderNode, list);
     }
 
+    private void buildNodesForSequences(SQLSchema schema, DefaultMutableTreeNode sequenceFolderNode) {
+        SQLSequence seq = null;
+        ArrayList<SQLSequence> list = new ArrayList<SQLSequence>();
+        for (int i = 0; i < schema.getSequenceCount(); i++) {
+            seq = schema.getSequenceAt(i);
+            list.add(seq);
+        }
+        buildNodes(sequenceFolderNode, list);
+    }
+
     private void buildNodesForSchemaFolders(SQLSchema schema, DefaultMutableTreeNode schemaNode) {
     	ArrayList<Object> list = new ArrayList<Object>();
     	TableFolder tf = new TableFolder(schema);
@@ -1030,6 +1120,8 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
         list.add(vf);
         ProcedureFolder pf = new ProcedureFolder(schema);
         list.add(pf);
+        SequenceFolder sf = new SequenceFolder(schema);
+        list.add(sf);
         buildNodes(schemaNode, list);
     }
     
@@ -1067,6 +1159,10 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
     
     public SQLProcedure getCurrentSQLProcedure() {
         return currentSQLProcedure;
+    }
+    
+    public SQLSequence getCurrentSQLSequence() {
+        return currentSQLSequence;
     }
     
     public SQLConstraint getCurrentSQLConstraint() {

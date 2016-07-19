@@ -25,12 +25,12 @@
 	<classpathentry kind="lib" path="libs/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libs/xml-apis-1.0.b2.jar"/>
 	<classpathentry kind="lib" path="libs/joda-time-2.9.2.jar" sourcepath="libs/joda-time-2.9.2-sources.zip"/>
+	<classpathentry kind="lib" path="libs/h2-1.4.192.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="lib" path="libs/sapdbc-7_6_00_30_5567.jar"/>
 	<classpathentry kind="lib" path="libs/db2jcc_license_cu.jar"/>
 	<classpathentry kind="lib" path="libs/db2jcc4.jar"/>
 	<classpathentry kind="lib" path="libs/log4j-1.2.15.jar" sourcepath="libs/log4j-1.2.15-src.zip"/>
-	<classpathentry kind="lib" path="libs/h2-1.2.135.jar"/>
 	<classpathentry kind="lib" path="libs/jgoodies-looks-2.4.2.jar"/>
 	<classpathentry kind="lib" path="libs/tinylaf.jar"/>
 	<classpathentry kind="lib" path="libs/vertica_4.1.7_jdk_5.jar"/>

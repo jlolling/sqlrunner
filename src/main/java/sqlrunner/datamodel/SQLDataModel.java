@@ -439,6 +439,38 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 		fireDatamodelEvent("Loading tables and views finished", DatamodelEvent.ACTION_MESSAGE_EVENT);
 		return ok;
 	}
+	
+	public boolean loadSequences(SQLSchema schema) {
+		if (databaseExtension.hasSequenceFeature()) {
+			if (schema.isLoadingTables()) {
+				return false;
+			}
+			if (Thread.currentThread().isInterrupted()) {
+				return false;
+			}
+			if (logger.isDebugEnabled()) {
+				logger.debug("loadSequences schema=" + schema);
+			}
+			DatabaseSession session = null;
+			Connection conn = connection;
+			if (conn == null) {
+				session = getDatabaseSession();
+				if (session == null) {
+					return false;
+				}
+				conn = session.getConnection();
+				session.setLastSQL("loadSequences schema=" + schema);
+			}
+			if (conn == null) {
+				return false;
+			}
+			fireDatamodelEvent("Loading sequences...", DatamodelEvent.ACTION_MESSAGE_EVENT);
+			databaseExtension.listSequences(conn, schema);
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	/**
 	 * load procedure and functions
@@ -612,6 +644,7 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 		}
 		table.setLoadingColumns(true);
 		if (Thread.currentThread().isInterrupted()) {
+			table.setLoadingColumns(false);
 			return false;
 		}
 		if (logger.isDebugEnabled()) {
@@ -628,6 +661,7 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 			session.setLastSQL("loadColumns table=" + table);
 		}
 		if (conn == null) {
+			table.setLoadingColumns(false);
 			return false;
 		}
 		try {
@@ -659,7 +693,6 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 							databaseExtension.setupDataType(field);
 							table.addField(field);
 						}
-						table.setFieldsLoaded();
 						rs.close();
 					}
 					fireDatamodelEvent("Loading columns finished", DatamodelEvent.ACTION_MESSAGE_EVENT);
@@ -677,7 +710,11 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 						session.error(errorMessage, sqle);
 					}
 					fireDatamodelEvent("Loading columns for table=" + table + " failed", DatamodelEvent.ACTION_MESSAGE_EVENT);
+					table.setLoadingColumns(false);
 					return false;
+				} finally {
+					table.setLoadingColumns(false);
+					table.setFieldsLoaded();
 				}
 			}	
 		} catch (Exception e) {
@@ -690,6 +727,7 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 				DatabaseSessionPool.release(session);
 			}
 			table.setLoadingColumns(false);
+			table.setFieldsLoaded();
 		}
 		return true;
 	}

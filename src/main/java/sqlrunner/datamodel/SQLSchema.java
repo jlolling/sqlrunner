@@ -7,19 +7,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
-/**
- * @author jan
- * Ein Datenbankschema ist in der Regel identisch mit einem User.
- */
 public class SQLSchema extends SQLObject {
 
     private final Vector<SQLTable> tableList = new Vector<SQLTable>();
     private final HashMap<String, SQLTable> tableMap = new HashMap<String, SQLTable>();
     private final ArrayList<SQLProcedure> procedureList = new ArrayList<SQLProcedure>();
+    private final ArrayList<SQLSequence> sequenceList = new ArrayList<SQLSequence>();
     private boolean loadingTables = false;
     private boolean loadingProcedures = false;
     private boolean tablesLoaded = false;
     private boolean procedureLoaded = false;
+    private boolean loadingSequences = false;
+    private boolean sequencesLoaded = false;
     private SQLCatalog catalog;
 
     public void setProcedureLoaded() {
@@ -29,6 +28,24 @@ public class SQLSchema extends SQLObject {
     public boolean isProceduresLoaded() {
         return procedureLoaded;
     } 
+    
+    public void addSequence(SQLSequence sequence) {
+    	sequenceList.add(sequence);
+    }
+    
+    public List<SQLSequence> getSequences() {
+    	if (sequencesLoaded == false && loadingSequences == false) {
+    		getModel().loadSequences(this);
+    	}
+    	return sequenceList;
+    }
+    
+    public int getSequenceCount() {
+        if (sequencesLoaded == false) {
+            getModel().loadSequences(this);
+        }
+        return sequenceList.size();
+    }
 
     public void addProcedure(SQLProcedure procedure) {
         procedureList.add(procedure);
@@ -84,6 +101,13 @@ public class SQLSchema extends SQLObject {
         return procedureList.get(index);
     }
     
+    public SQLSequence getSequenceAt(int index) {
+        if (sequencesLoaded == false) {
+            getModel().loadSequences(this);
+        }
+        return sequenceList.get(index);
+    }
+    
     public void clearProcedures() {
         procedureList.clear();
         procedureLoaded = false;
@@ -91,6 +115,14 @@ public class SQLSchema extends SQLObject {
     
     public boolean isTablesLoaded() {
         return tablesLoaded;
+    }
+    
+    public void setSequencesLoaded() {
+        sequencesLoaded = true;
+    }
+
+    public boolean isSequencesLoaded() {
+        return sequencesLoaded;
     }
     
     public void setTablesLoaded() {
@@ -115,6 +147,7 @@ public class SQLSchema extends SQLObject {
         tableList.clear();
         tableMap.clear();
         tablesLoaded = false;
+        sequencesLoaded = false;
     }
 
     public int getTableCount() {
@@ -167,6 +200,10 @@ public class SQLSchema extends SQLObject {
         return getModel().loadProcedures(this);
     }
     
+    public boolean loadSequences() {
+        return getModel().loadSequences(this);
+    }
+
     @Override
     public int hashCode() {
     	return getName().hashCode();
@@ -191,6 +228,14 @@ public class SQLSchema extends SQLObject {
 
 	public boolean isLoadingProcedures() {
 		return loadingProcedures;
+	}
+
+	public void setLoadingSequences(boolean loading) {
+		this.loadingSequences = loading;
+	}
+
+	public boolean isLoadingSequences() {
+		return loadingSequences;
 	}
 
 	public void setLoadingProcedures(boolean loadingProcedures) {

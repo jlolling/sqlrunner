@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import sqlrunner.datamodel.SQLObject;
 import sqlrunner.dbext.extensions.DB2Extension;
 import sqlrunner.dbext.extensions.DerbyExtension;
-import sqlrunner.dbext.extensions.EXASolExtension;
+import sqlrunner.dbext.extensions.EXASolutionExtension;
 import sqlrunner.dbext.extensions.MSSqlExtension;
 import sqlrunner.dbext.extensions.MySQLExtension;
 import sqlrunner.dbext.extensions.OracleExtension;
@@ -80,7 +80,7 @@ public class DatabaseExtensionFactory {
 			listExtensions.add(new MySQLExtension());
 			listExtensions.add(new MSSqlExtension());
 			listExtensions.add(new TeradataExtension());
-			listExtensions.add(new EXASolExtension());
+			listExtensions.add(new EXASolutionExtension());
 		}
 	}
 

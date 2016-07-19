@@ -10,9 +10,11 @@ import java.util.List;
 
 import sqlrunner.datamodel.Field;
 import sqlrunner.datamodel.SQLProcedure;
+import sqlrunner.datamodel.SQLSchema;
 import sqlrunner.datamodel.SQLProcedure.Parameter;
 import sqlrunner.datamodel.SQLSequence;
 import sqlrunner.datamodel.SQLTable;
+import sqlrunner.datamodel.SQLTrigger;
 import sqlrunner.flatfileimport.BasicDataType;
 import dbtools.ConnectionDescription;
 import dbtools.DatabaseSession;
@@ -27,6 +29,11 @@ public class GenericDatabaseExtension implements DatabaseExtension {
 	private SimpleDateFormat sdfTimestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss");
 	private String quote = "\"";
 	
+	public GenericDatabaseExtension() {
+		addSQLKeyword("user");
+		addSQLKeywords("password");
+	}
+
 	public void addDriverClassName(String driverClass) {
 		listDriverClasses.add(driverClass);
 	}
@@ -64,11 +71,6 @@ public class GenericDatabaseExtension implements DatabaseExtension {
 	@Override
 	public String setupProcedureSQLCode(DatabaseSession session, SQLProcedure proc) {
 		return null;
-	}
-
-	@Override
-	public List<SQLSequence> getSequences(DatabaseSession session) {
-		return new ArrayList<SQLSequence>();
 	}
 
 	@Override
@@ -241,5 +243,51 @@ public class GenericDatabaseExtension implements DatabaseExtension {
 			this.quote = quote;
 		}
 	}
+
+	@Override
+	public String setupTriggerSQLCode(DatabaseSession session, SQLTrigger trigger) {
+		return null;
+	}
+
+	@Override
+	public boolean hasSequenceFeature() {
+		return false;
+	}
+
+	@Override
+	public List<SQLSequence> listSequences(Connection conn, SQLSchema schema) {
+		List<SQLSequence> result = new ArrayList<SQLSequence>();
+		return result;
+	}
+
+	@Override
+	public String setupSequenceSQLCode(Connection conn, SQLSequence sequence) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("create sequence ");
+		if (sequence.getSchema() != null) {
+			sql.append(sequence.getSchema().getName());
+			sql.append(".");
+		}
+		sql.append(sequence.getName());
+		sql.append(" start with ");
+		sql.append(sequence.getStartsWith());
+		if (sequence.getStepWith() > 0) {
+			sql.append(" maxvalue ");
+			sql.append(sequence.getEndsWith());
+		}
+		if (sequence.getStepWith() > 0) {
+			sql.append(" increment by ");
+			sql.append(sequence.getStepWith());
+		}
+		sequence.setCreateCode(sql.toString());
+		sequence.setNextvalCode(getSequenceNextValSQL(sequence));
+		return null;
+	}
+	
+	@Override
+	public String getSequenceNextValSQL(SQLSequence sequence) {
+		return "";
+	}
+
 
 }

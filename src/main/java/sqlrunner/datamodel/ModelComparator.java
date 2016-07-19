@@ -30,6 +30,9 @@ public final class ModelComparator {
     private List<SQLProcedure> proceduresToAdd = new ArrayList<SQLProcedure>();
     private List<SQLProcedure> proceduresToRemove = new ArrayList<SQLProcedure>();
     private List<SQLProcedure> proceduresToChange = new ArrayList<SQLProcedure>();
+    private List<SQLSequence> sequencesToAdd = new ArrayList<SQLSequence>();
+    private List<SQLSequence> sequencesToRemove = new ArrayList<SQLSequence>();
+    private List<SQLSequence> sequencesToChange = new ArrayList<SQLSequence>();
     private DatamodelListener dml;
     private SQLSchema targetSchema;
     

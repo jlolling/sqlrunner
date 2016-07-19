@@ -2,21 +2,21 @@
 /C1"Keywords"
 add alter all and any as asc ascending avg authorization at
 by between
-call cascade case cast chr column commit connect constraint create coalesce cross comment
+cache call cascade case cast chr column commit connect constraint create coalesce cross comment cycle
 decode delete desc descending distinct drop
 each explain plan except
 primary from foreign
 grant group
 having
-identified index insert intersect into inner instr
+identified increment index insert intersect into inner instr
 join
 key
 references replace rollback right
 select sequence set start substr sysdate
 table to_char to_date to_number type
 left like lower limit
-nextval not null nvl
-max materialized min minus mod modify
+nextval not null nvl nocache
+max maxvalue materialized min minvalue minus mod modify
 or order outer owner over
 partition
 round rank dense_rank nulls first last

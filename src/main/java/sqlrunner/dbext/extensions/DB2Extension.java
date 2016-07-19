@@ -1,14 +1,20 @@
 package sqlrunner.dbext.extensions;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import sqlrunner.datamodel.Field;
 import sqlrunner.datamodel.SQLProcedure;
 import sqlrunner.datamodel.SQLProcedure.Parameter;
+import sqlrunner.datamodel.SQLSchema;
+import sqlrunner.datamodel.SQLSequence;
 import sqlrunner.datamodel.SQLTable;
+import sqlrunner.datamodel.SQLTrigger;
 import sqlrunner.dbext.GenericDatabaseExtension;
 import sqlrunner.flatfileimport.BasicDataType;
 import dbtools.DatabaseSession;
@@ -219,6 +225,56 @@ public class DB2Extension extends GenericDatabaseExtension {
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	public boolean hasSequenceFeature() {
+		return true;
+	}
+
+	@Override
+	public String setupTriggerSQLCode(DatabaseSession session, SQLTrigger trigger) {
+		// TODO Auto-generated method stub
+		return super.setupTriggerSQLCode(session, trigger);
+	}
+
+	@Override
+	public List<SQLSequence> listSequences(Connection conn, SQLSchema schema) {
+		schema.setLoadingSequences(true);
+		StringBuilder sb = new StringBuilder();
+		sb.append("select SEQNAME,START,MAXVALUE,INCREMENT from SYSCAT.SEQUENCES where SEQSCHEMA='");
+		sb.append(schema.getName().toUpperCase());
+		sb.append("'");
+		try {
+			Statement stat = conn.createStatement();
+			ResultSet rs = stat.executeQuery(sb.toString());
+			while (rs.next()) {
+				SQLSequence seq = new SQLSequence(schema, rs.getString(1));
+				seq.setStartsWith(rs.getLong(2));
+				seq.setEndsWith(rs.getLong(3));
+				seq.setStepWith(rs.getLong(4));
+				setupSequenceSQLCode(conn, seq);
+				schema.addSequence(seq);
+			}
+			rs.close();
+			stat.close();
+			schema.setSequencesLoaded();
+		} catch (SQLException sqle) {
+			logger.error("listSequences for schema=" + schema + " failed: " + sqle.getMessage(), sqle);
+		}
+		schema.setLoadingSequences(false);
+		return schema.getSequences();
+	}
+
+	@Override
+	public String getSequenceNextValSQL(SQLSequence sequence) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("(nextval for ");
+		sql.append(sequence.getSchema().getName());
+		sql.append(".");
+		sql.append(sequence.getName());
+		sql.append(")");
+		return sql.toString();
 	}
 
 }

@@ -255,6 +255,8 @@ public final class Database implements TableModel {
 	 * @see DatabaseSession.connect
 	 */
 	public boolean connect() {
+		// we have to do this before we connect because we are able to set env variables before
+		databaseExtension = DatabaseExtensionFactory.getDatabaseExtension(session.getConnectionDescription());
 		final boolean ok = session.connect();
 		dataModel = null;
 		if (Thread.currentThread().isInterrupted()) {
@@ -265,7 +267,6 @@ public final class Database implements TableModel {
 				logger.debug("setup meta data...");
 				dbmd = session.getConnection().getMetaData();
 				dataModel = new SQLDataModel(session.getConnectionDescription());
-				databaseExtension = DatabaseExtensionFactory.getDatabaseExtension(session.getConnectionDescription());
 				databaseExtension.setupConnection(session.getConnection());
 				databaseExtension.setIdentifierQuoteString(dbmd.getIdentifierQuoteString());
 				SQLCodeGenerator.getInstance().setEnclosureChar(databaseExtension.getIdentifierQuoteString());

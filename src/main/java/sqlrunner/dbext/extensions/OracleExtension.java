@@ -1,7 +1,9 @@
 package sqlrunner.dbext.extensions;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,8 +12,10 @@ import org.apache.log4j.Logger;
 import sqlrunner.datamodel.Field;
 import sqlrunner.datamodel.SQLProcedure;
 import sqlrunner.datamodel.SQLProcedure.Parameter;
+import sqlrunner.datamodel.SQLSchema;
 import sqlrunner.datamodel.SQLSequence;
 import sqlrunner.datamodel.SQLTable;
+import sqlrunner.datamodel.SQLTrigger;
 import sqlrunner.dbext.GenericDatabaseExtension;
 import sqlrunner.flatfileimport.BasicDataType;
 import dbtools.DatabaseSession;
@@ -44,18 +48,17 @@ public class OracleExtension extends GenericDatabaseExtension {
 	@Override
 	public String setupViewSQLCode(DatabaseSession session, SQLTable table) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("select TEXT from USER_VIEWS where VIEW_NAME='");
+		sb.append("select dbms_metadata.get_ddl('VIEW','");
 		sb.append(table.getName().toUpperCase());
-		sb.append("'");
+		sb.append("', '");
+		sb.append(table.getSchema().getName().toUpperCase());
+		sb.append("') from dual");
 		ResultSet rs = session.executeQuery(sb.toString());
 		if (session.isSuccessful()) {
 			StringBuilder code = new StringBuilder();
 			try {
 				if (rs.next()) {
-					code.append("create or replace view ");
-					code.append(table.getName());
-					code.append(" as\n");
-					code.append(rs.getString(1));
+					code.append(rs.getString(1).trim());
 				}
 				rs.close();
 				if (code.length() > 1) {
@@ -71,8 +74,10 @@ public class OracleExtension extends GenericDatabaseExtension {
 	@Override
 	public String setupProcedureSQLCode(DatabaseSession session, SQLProcedure proc) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("select TEXT from user_source where NAME='");
+		sb.append("select TEXT from ALL_SOURCE where NAME='");
 		sb.append(proc.getName().toUpperCase());
+		sb.append("' and OWNER='");
+		sb.append(proc.getSchema().getName().toUpperCase());
 		sb.append("' order by LINE");
 		ResultSet rs = session.executeQuery(sb.toString());
 		if (session.isSuccessful()) {
@@ -95,12 +100,6 @@ public class OracleExtension extends GenericDatabaseExtension {
 			} 
 		}
 		return sb.toString();
-	}
-
-	@Override
-	public List<SQLSequence> getSequences(DatabaseSession session) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -175,4 +174,98 @@ public class OracleExtension extends GenericDatabaseExtension {
 		}
 	}
 	
+	@Override
+	public String setupTriggerSQLCode(DatabaseSession session, SQLTrigger trigger) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("select dbms_metadata.get_ddl('TRIGGER','");
+		sb.append(trigger.getName().toUpperCase());
+		sb.append("', '");
+		sb.append(trigger.getTable().getSchema().getName().toUpperCase());
+		sb.append("') from dual");
+		ResultSet rs = session.executeQuery(sb.toString());
+		if (session.isSuccessful()) {
+			StringBuilder code = new StringBuilder();
+			try {
+				while (rs.next()) {
+					code.append(rs.getString(1).trim());
+				}
+				rs.close();
+				return code.toString();
+			} catch (SQLException e) {
+				logger.error("getTriggerCode for trigger=" + trigger.getName() + " failed:" + e.getMessage(), e);
+			} 
+		}
+		return sb.toString();
+	}
+	
+	@Override
+	public String setupSequenceSQLCode(Connection conn, SQLSequence sequence) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("select dbms_metadata.get_ddl('SEQUENCE','");
+		sb.append(sequence.getName().toUpperCase());
+		sb.append("', '");
+		sb.append(sequence.getSchema().getName().toUpperCase());
+		sb.append("') from dual");
+		try {
+			Statement stat = conn.createStatement();
+			ResultSet rs = stat.executeQuery(sb.toString());
+			while (rs.next()) {
+				sequence.setCreateCode(rs.getString(1).trim());
+			}
+			rs.close();
+			stat.close();
+			sequence.setNextvalCode(getSequenceNextValSQL(sequence));
+			return sequence.getCreateCode();
+		} catch (SQLException e) {
+			logger.error("setupSequenceSQLCode for trigger=" + sequence.getName() + " failed:" + e.getMessage(), e);
+		} 
+		return null;
+	}
+	
+	@Override
+	public boolean hasSequenceFeature() {
+		return true;
+	}
+
+	@Override
+	public List<SQLSequence> listSequences(Connection conn, SQLSchema schema) {
+		schema.setLoadingSequences(true);
+		StringBuilder sb = new StringBuilder();
+		sb.append("select SEQUENCE_NAME,MIN_VALUE,MAX_VALUE,INCREMENT_BY,LAST_NUMBER from all_sequences");
+		sb.append(" where SEQUENCE_OWNER='");
+		sb.append(schema.getName().toUpperCase());
+		sb.append("'");
+		try {
+			Statement stat = conn.createStatement();
+			ResultSet rs = stat.executeQuery(sb.toString());
+			while (rs.next()) {
+				SQLSequence seq = new SQLSequence(schema, rs.getString(1));
+				seq.setStartsWith(rs.getLong(2));
+				seq.setEndsWith(rs.getBigDecimal(3).longValue());
+				seq.setStepWith(rs.getLong(4));
+				seq.setCurrentValue(rs.getLong(5));
+				setupSequenceSQLCode(conn, seq);
+				schema.addSequence(seq);
+			}
+			rs.close();
+			stat.close();
+			schema.setSequencesLoaded();
+		} catch (SQLException sqle) {
+			logger.error("listSequences for schema=" + schema + " failed: " + sqle.getMessage(), sqle);
+			schema.setSequencesLoaded();
+		}
+		schema.setLoadingSequences(false);
+		return schema.getSequences();
+	}
+
+	@Override
+	public String getSequenceNextValSQL(SQLSequence sequence) {
+		StringBuilder sql = new StringBuilder();
+		sql.append(sequence.getSchema().getName());
+		sql.append(".");
+		sql.append(sequence.getName());
+		sql.append(".nextval");
+		return sql.toString();
+	}
+
 }

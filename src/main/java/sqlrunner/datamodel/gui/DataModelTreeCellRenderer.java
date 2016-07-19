@@ -11,6 +11,7 @@ import sqlrunner.datamodel.SQLCatalog;
 import sqlrunner.datamodel.SQLDataModel;
 import sqlrunner.datamodel.SQLProcedure;
 import sqlrunner.datamodel.SQLSchema;
+import sqlrunner.datamodel.SQLSequence;
 import sqlrunner.datamodel.SQLTable;
 import sqlrunner.datamodel.gui.SQLDataTreeTableModel.Folder;
 import sqlrunner.resources.ApplicationIcons;
@@ -56,6 +57,9 @@ public final class DataModelTreeCellRenderer extends DefaultTreeCellRenderer {
                 setDisabledIcon(ApplicationIcons.PROCEDURE_PNG);
                 setIcon(ApplicationIcons.PROCEDURE_PNG);
         	}
+        } else if (node.getUserObject() instanceof SQLSequence) {
+            setDisabledIcon(ApplicationIcons.SEQUENCE_PNG);
+            setIcon(ApplicationIcons.SEQUENCE_PNG);
         } else if (node.getUserObject() instanceof SQLTable) {
             if (((SQLTable) node.getUserObject()).getType().equals(SQLTable.TYPE_TABLE)) {
                 setDisabledIcon(ApplicationIcons.TABLE_PNG);

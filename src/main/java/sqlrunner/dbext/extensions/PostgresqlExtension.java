@@ -1,7 +1,9 @@
 package sqlrunner.dbext.extensions;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import sqlrunner.datamodel.Field;
 import sqlrunner.datamodel.SQLProcedure;
+import sqlrunner.datamodel.SQLSchema;
 import sqlrunner.datamodel.SQLProcedure.Parameter;
 import sqlrunner.datamodel.SQLSequence;
 import sqlrunner.datamodel.SQLTable;
@@ -140,14 +143,6 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 			return code.toString();
 		} catch (SQLException sqle) {
 			logger.error("setupProcedureSQLCode for proc " + proc.getAbsoluteName() + " failed: " + sqle.getMessage(), sqle);
-		}
-		return null;
-	}
-
-	@Override
-	public List<SQLSequence> getSequences(DatabaseSession session) {
-		if (logger.isDebugEnabled()) {
-			logger.debug("getSequences");
 		}
 		return null;
 	}
@@ -285,6 +280,51 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	public List<SQLSequence> listSequences(Connection conn, SQLSchema schema) {
+		schema.setLoadingSequences(true);
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT sequence_name,start_value,maximum_value,increment FROM information_schema.sequences\n");
+		sb.append("where sequence_schema='");
+		sb.append(schema.getName().toLowerCase());
+		sb.append("'");
+		try {
+			Statement stat = conn.createStatement();
+			ResultSet rs = stat.executeQuery(sb.toString());
+			while (rs.next()) {
+				SQLSequence seq = new SQLSequence(schema, rs.getString(1));
+				seq.setStartsWith(rs.getLong(2));
+				seq.setEndsWith(rs.getLong(3));
+				seq.setStepWith(rs.getLong(4));
+				setupSequenceSQLCode(conn, seq);
+				schema.addSequence(seq);
+			}
+			rs.close();
+			stat.close();
+			schema.setSequencesLoaded();
+		} catch (SQLException sqle) {
+			logger.error("listSequences for schema=" + schema + " failed: " + sqle.getMessage(), sqle);
+		}
+		schema.setLoadingSequences(false);
+		return schema.getSequences();
+	}
+
+	@Override
+	public boolean hasSequenceFeature() {
+		return true;
+	}
+
+	@Override
+	public String getSequenceNextValSQL(SQLSequence sequence) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("nextval('");
+		sql.append(sequence.getSchema().getName());
+		sql.append(".");
+		sql.append(sequence.getName());
+		sql.append("')");
+		return sql.toString();
 	}
 
 }

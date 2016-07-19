@@ -11,12 +11,12 @@ import sqlrunner.datamodel.SQLProcedure;
 import sqlrunner.datamodel.SQLTable;
 import sqlrunner.dbext.GenericDatabaseExtension;
 
-public class EXASolExtension extends GenericDatabaseExtension {
+public class EXASolutionExtension extends GenericDatabaseExtension {
 	
-	private Logger logger = Logger.getLogger(EXASolExtension.class);
+	private Logger logger = Logger.getLogger(EXASolutionExtension.class);
 	private static final String driverClassName = "com.exasol.jdbc.EXADriver";
 	
-	public EXASolExtension() {
+	public EXASolutionExtension() {
         addDriverClassName(driverClassName);
         addSQLKeyword("flush statistics");
         addSQLKeyword("distribute");
