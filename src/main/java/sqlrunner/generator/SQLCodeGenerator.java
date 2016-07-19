@@ -201,14 +201,13 @@ public class SQLCodeGenerator {
 		if (code != null && code.isEmpty() == false) {
 			if (fullName) {
 				StringReplacer sr = new StringReplacer(code);
-				String schemaName = null;
-				if (alternativeSchemaName != null) {
-					schemaName = alternativeSchemaName;
-				} else {
-					schemaName = proc.getSchema().getName();
+				String originalSchemaName = proc.getSchema().getName();
+				if (alternativeSchemaName == null) {
+					alternativeSchemaName = originalSchemaName;
 				}
-				if (code.indexOf(schemaName + "." + proc.getName()) == -1) {
-					sr.replace(proc.getName(), schemaName + "." + proc.getName());
+				if (code.indexOf(originalSchemaName + "." + proc.getName()) != -1) {
+					// schema+name
+					sr.replace(originalSchemaName + "." + proc.getName(), alternativeSchemaName + "." + proc.getName());
 				}
 				return sr.getResultText();
 			} else {
@@ -223,6 +222,28 @@ public class SQLCodeGenerator {
 		}
 	}
 	
+	public String buildCreateStatement(SQLSequence seq, boolean fullName, String alternativeSchemaName) {
+		String code = seq.getCreateCode();
+		if (code != null && code.isEmpty() == false) {
+			if (fullName) {
+				StringReplacer sr = new StringReplacer(code);
+				String originalSchemaName = seq.getSchema().getName();
+				if (alternativeSchemaName == null) {
+					alternativeSchemaName = originalSchemaName;
+				}
+				if (code.indexOf(originalSchemaName + "." + seq.getName()) != -1) {
+					// schema+name
+					sr.replace(originalSchemaName + "." + seq.getName(), alternativeSchemaName + "." + seq.getName());
+				}
+				return sr.getResultText();
+			} else {
+				return code;
+			}
+		} else {
+			return "-- create sequence " + seq.getName() + " (no source available)";
+		}
+	}
+
 	public String buildCreateStatement(SQLIndex index, boolean fullName, String alternativeSchemaName) { 
 		if (index != null) {
 	    	setupEnclosureChar(index);
@@ -410,7 +431,7 @@ public class SQLCodeGenerator {
                     				firstIndex = false;
                                 	sb.append("\n");
                     			}
-                            	sb.append(buildCreateStatement(index, fullName));
+                            	sb.append(buildCreateStatement(index, fullName, alternativeSchemaName));
                 				sb.append(";\n");
                     		}
                     	}
@@ -1491,7 +1512,7 @@ public class SQLCodeGenerator {
         		sb.append(buildDropStatement(field, true, alternativeSchemaName));
         		sb.append(";\n");
         		sb.append(buildCreateStatement(field, true, alternativeSchemaName));
-        		sb.append(";\n\n");
+        		sb.append(";\n");
         	}
     	}
     	List<SQLFieldNotNullConstraint> listNncToAdd = comparator.getNotNullsToAdd();
@@ -1534,7 +1555,7 @@ public class SQLCodeGenerator {
         		sb.append(buildDropStatement(constr, true, alternativeSchemaName));
         		sb.append(";\n");
         		sb.append(buildAddToTableStatement(constr, true, alternativeSchemaName));
-        		sb.append(";\n\n");
+        		sb.append(";\n");
         	}
     	}
     	List<SQLIndex> listIndicesToAdd = comparator.getIndicesToAdd();
@@ -1560,39 +1581,52 @@ public class SQLCodeGenerator {
         		sb.append(buildDropStatement(index, true, alternativeSchemaName));
         		sb.append(";\n");
         		sb.append(buildCreateStatement(index, true, alternativeSchemaName));
-        		sb.append(";\n\n");
+        		sb.append(";\n");
         	}
     	}
     	List<SQLProcedure> listProceduresToRemove = comparator.getProceduresToRemove();
     	if (listProceduresToRemove.isEmpty() == false) {
     		sb.append("\n\n-- ############ Procedures to remove ############\n");
-    		sb.append("\n/\n");
     		for (SQLProcedure p : listProceduresToRemove) {
     			sb.append(buildDropStatement(p, true));
-        		sb.append(";\n");
-        		sb.append("\n/\n");
+        		sb.append(";");
+        		sb.append("\n/\n\n");
     		}
     	}
     	List<SQLProcedure> listProceduresToAdd = comparator.getProceduresToAdd();
     	if (listProceduresToAdd.isEmpty() == false) {
     		sb.append("\n\n-- ############ Procedures to add ############\n");
-    		sb.append("\n/\n");
     		for (SQLProcedure p : listProceduresToAdd) {
     			sb.append(buildCreateStatement(p, true, alternativeSchemaName));
-        		sb.append(";\n");
-        		sb.append("\n/\n");
+        		sb.append(";");
+        		sb.append("\n/\n\n");
     		}
     	}
     	List<SQLProcedure> listProceduresToChange = comparator.getProceduresToChange();
     	if (listProceduresToChange.isEmpty() == false) {
     		sb.append("\n\n-- ############ Procedures to change ############\n");
-    		sb.append("\n/\n");
     		for (SQLProcedure p : listProceduresToChange) {
     			sb.append(buildDropStatement(p, true));
         		sb.append(";\n");
     			sb.append(buildCreateStatement(p, true, alternativeSchemaName));
+        		sb.append(";");
+        		sb.append("\n/\n\n");
+    		}
+    	}
+    	List<SQLSequence> listSequencesToRemove = comparator.getSequencesToRemove();
+    	if (listSequencesToRemove.isEmpty() == false) {
+    		sb.append("\n\n-- ############ Sequences to remove ############\n");
+    		for (SQLSequence seq : listSequencesToRemove) {
+    			sb.append(buildDropStatement(seq, true));
         		sb.append(";\n");
-        		sb.append("\n/\n");
+    		}
+    	}
+    	List<SQLSequence> listSequencesToAdd = comparator.getSequencesToAdd();
+    	if (listSequencesToAdd.isEmpty() == false) {
+    		sb.append("\n\n-- ############ Sequences to add ############\n");
+    		for (SQLSequence seq : listSequencesToAdd) {
+    			sb.append(buildCreateStatement(seq, true, alternativeSchemaName));
+        		sb.append(";\n");
     		}
     	}
     	return sb.toString();
