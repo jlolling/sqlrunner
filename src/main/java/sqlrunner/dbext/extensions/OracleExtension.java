@@ -197,7 +197,8 @@ public class OracleExtension extends GenericDatabaseExtension {
 		}
 		return sb.toString();
 	}
-	
+
+	/*
 	@Override
 	public String setupSequenceSQLCode(Connection conn, SQLSequence sequence) {
 		StringBuilder sb = new StringBuilder();
@@ -221,7 +222,7 @@ public class OracleExtension extends GenericDatabaseExtension {
 		} 
 		return null;
 	}
-	
+	*/
 	@Override
 	public boolean hasSequenceFeature() {
 		return true;

@@ -70,5 +70,14 @@ public class SQLSequence extends SQLObject {
 	public void setNextvalCode(String nextvalCode) {
 		this.nextvalCode = nextvalCode;
 	}
-	
+
+    @Override
+    public boolean equals(Object o) {
+    	if (o instanceof SQLSequence) {
+    		SQLSequence so = (SQLSequence) o;
+			return so.getName().equalsIgnoreCase(getName());
+    	}
+		return false;
+    }
+
 }

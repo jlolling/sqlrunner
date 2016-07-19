@@ -32,7 +32,7 @@ public final class ModelComparator {
     private List<SQLProcedure> proceduresToChange = new ArrayList<SQLProcedure>();
     private List<SQLSequence> sequencesToAdd = new ArrayList<SQLSequence>();
     private List<SQLSequence> sequencesToRemove = new ArrayList<SQLSequence>();
-    private List<SQLSequence> sequencesToChange = new ArrayList<SQLSequence>();
+//    private List<SQLSequence> sequencesToChange = new ArrayList<SQLSequence>();
     private DatamodelListener dml;
     private SQLSchema targetSchema;
     
@@ -145,6 +145,54 @@ public final class ModelComparator {
         		if (exists == false) {
             		proceduresToRemove.add(proc2);
             		fireEvent("- Procedure " + proc2.getName() + " count parameters:" + proc2.getParameterCount() + " must be removed");
+        		}
+        	}
+        }
+        // check missing sequences
+    	List<SQLSequence> listSeq2 = schemaTwo.getSequences();
+        for (int i = 0; i < schemaOne.getSequenceCount(); i++) {
+        	if (Thread.currentThread().isInterrupted()) {
+        		return;
+        	}
+        	SQLSequence s1 = schemaOne.getSequenceAt(i);
+        	if (listSeq2.isEmpty()) {
+        		sequencesToAdd.add(s1);
+        		fireEvent("+ Sequence " + s1.getName() + " must be added");
+        	} else {
+        		boolean exists = false;
+        		for (SQLSequence s2 : listSeq2) {
+        			if (s1.equals(s2)) {
+        				exists = true;
+        				break;
+        			}
+        		}
+        		if (exists == false) {
+        			sequencesToAdd.add(s1);
+            		fireEvent("+ Sequence " + s1.getName() + " must be added");
+        		}
+        	}
+        }
+        // check sequences to remove
+    	List<SQLSequence> listSeq1 = schemaOne.getSequences();
+        for (int i = 0; i < schemaTwo.getSequenceCount(); i++) {
+        	if (Thread.currentThread().isInterrupted()) {
+        		return;
+        	}
+        	SQLSequence s2 = schemaTwo.getSequenceAt(i);
+        	if (listSeq1.isEmpty()) {
+        		sequencesToRemove.add(s2);
+        		fireEvent("+ Sequence " + s2.getName() + " must be removed");
+        	} else {
+        		boolean exists = false;
+        		for (SQLSequence s1 : listSeq1) {
+        			if (s1.equals(s2)) {
+        				exists = true;
+        				break;
+        			}
+        		}
+        		if (exists == false) {
+        			sequencesToRemove.add(s2);
+            		fireEvent("+ Sequence " + s2.getName() + " must be removed");
         		}
         	}
         }
@@ -444,6 +492,14 @@ public final class ModelComparator {
 
 	public List<SQLProcedure> getProceduresToChange() {
 		return proceduresToChange;
+	}
+
+	public List<SQLSequence> getSequencesToAdd() {
+		return sequencesToAdd;
+	}
+
+	public List<SQLSequence> getSequencesToRemove() {
+		return sequencesToRemove;
 	}
     
 }
