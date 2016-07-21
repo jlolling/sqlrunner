@@ -240,7 +240,7 @@ public class SQLCodeGenerator {
 				return code;
 			}
 		} else {
-			return "-- create sequence " + seq.getName() + " (no source available)";
+			return "-- create or replace sequence " + seq.getName() + " (no source available)";
 		}
 	}
 
