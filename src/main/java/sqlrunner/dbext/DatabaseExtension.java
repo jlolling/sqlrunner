@@ -11,7 +11,6 @@ import sqlrunner.datamodel.SQLSequence;
 import sqlrunner.datamodel.SQLTable;
 import sqlrunner.datamodel.SQLTrigger;
 import dbtools.ConnectionDescription;
-import dbtools.DatabaseSession;
 
 public interface DatabaseExtension {
 	
@@ -59,21 +58,21 @@ public interface DatabaseExtension {
 	 * @param table (must be of type VIEW)
 	 * @return the code
 	 */
-	public String setupViewSQLCode(DatabaseSession session, SQLTable table);
+	public String setupViewSQLCode(Connection conn, SQLTable table);
 	
 	/**
 	 * sets the code into the procedure
 	 * @param proc
 	 * @return the code
 	 */
-	public String setupProcedureSQLCode(DatabaseSession session, SQLProcedure proc);
+	public String setupProcedureSQLCode(Connection conn, SQLProcedure proc);
 	
 	/**
 	 * sets the code into the procedure
 	 * @param proc
 	 * @return the code
 	 */
-	public String setupTriggerSQLCode(DatabaseSession session, SQLTrigger proc);
+	public String setupTriggerSQLCode(Connection conn, SQLTrigger proc);
 
 	/**
 	 * sets the code into the procedure

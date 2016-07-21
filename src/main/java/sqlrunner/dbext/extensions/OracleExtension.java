@@ -18,7 +18,6 @@ import sqlrunner.datamodel.SQLTable;
 import sqlrunner.datamodel.SQLTrigger;
 import sqlrunner.dbext.GenericDatabaseExtension;
 import sqlrunner.flatfileimport.BasicDataType;
-import dbtools.DatabaseSession;
 
 public class OracleExtension extends GenericDatabaseExtension {
 
@@ -46,59 +45,59 @@ public class OracleExtension extends GenericDatabaseExtension {
 	}
 
 	@Override
-	public String setupViewSQLCode(DatabaseSession session, SQLTable table) {
+	public String setupViewSQLCode(Connection conn, SQLTable table) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("select dbms_metadata.get_ddl('VIEW','");
 		sb.append(table.getName().toUpperCase());
 		sb.append("', '");
 		sb.append(table.getSchema().getName().toUpperCase());
 		sb.append("') from dual");
-		ResultSet rs = session.executeQuery(sb.toString());
-		if (session.isSuccessful()) {
-			StringBuilder code = new StringBuilder();
-			try {
-				if (rs.next()) {
-					code.append(rs.getString(1).trim());
-				}
-				rs.close();
-				if (code.length() > 1) {
-					table.setSourceCode(code.toString());
-				}
-			} catch (SQLException e) {
-				logger.error("setupViewSQLCode for view=" + table.getName() + " failed:" + e.getMessage(), e);
-			} 
-		}
+		StringBuilder code = new StringBuilder();
+		try {
+			Statement stat = conn.createStatement();
+			ResultSet rs = stat.executeQuery(sb.toString());
+			if (rs.next()) {
+				code.append(rs.getString(1).trim());
+			}
+			rs.close();
+			stat.close();
+			if (code.length() > 1) {
+				table.setSourceCode(code.toString());
+			}
+		} catch (SQLException e) {
+			logger.error("setupViewSQLCode for view=" + table.getName() + " failed:" + e.getMessage(), e);
+		} 
 		return sb.toString();
 	}
 
 	@Override
-	public String setupProcedureSQLCode(DatabaseSession session, SQLProcedure proc) {
+	public String setupProcedureSQLCode(Connection conn, SQLProcedure proc) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("select TEXT from ALL_SOURCE where NAME='");
 		sb.append(proc.getName().toUpperCase());
 		sb.append("' and OWNER='");
 		sb.append(proc.getSchema().getName().toUpperCase());
 		sb.append("' order by LINE");
-		ResultSet rs = session.executeQuery(sb.toString());
-		if (session.isSuccessful()) {
-			StringBuilder code = new StringBuilder();
-			try {
-				boolean firstLoop = true;
-				while (rs.next()) {
-					if (firstLoop) {
-						code.append("create or replace ");
-						firstLoop = false;
-					}
-					code.append(rs.getString(1));
+		StringBuilder code = new StringBuilder();
+		try {
+			Statement stat = conn.createStatement();
+			ResultSet rs = stat.executeQuery(sb.toString());
+			boolean firstLoop = true;
+			while (rs.next()) {
+				if (firstLoop) {
+					code.append("create or replace ");
+					firstLoop = false;
 				}
-				rs.close();
-				if (code.length() > 1) {
-					proc.setCode(code.toString());
-				}
-			} catch (SQLException e) {
-				logger.error("setupProcedureSQLCode for proc=" + proc.getName() + " failed:" + e.getMessage(), e);
-			} 
-		}
+				code.append(rs.getString(1));
+			}
+			rs.close();
+			stat.close();
+			if (code.length() > 1) {
+				proc.setCode(code.toString());
+			}
+		} catch (SQLException e) {
+			logger.error("setupProcedureSQLCode for proc=" + proc.getName() + " failed:" + e.getMessage(), e);
+		} 
 		return sb.toString();
 	}
 
@@ -175,26 +174,26 @@ public class OracleExtension extends GenericDatabaseExtension {
 	}
 	
 	@Override
-	public String setupTriggerSQLCode(DatabaseSession session, SQLTrigger trigger) {
+	public String setupTriggerSQLCode(Connection conn, SQLTrigger trigger) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("select dbms_metadata.get_ddl('TRIGGER','");
 		sb.append(trigger.getName().toUpperCase());
 		sb.append("', '");
 		sb.append(trigger.getTable().getSchema().getName().toUpperCase());
 		sb.append("') from dual");
-		ResultSet rs = session.executeQuery(sb.toString());
-		if (session.isSuccessful()) {
-			StringBuilder code = new StringBuilder();
-			try {
-				while (rs.next()) {
-					code.append(rs.getString(1).trim());
-				}
-				rs.close();
-				return code.toString();
-			} catch (SQLException e) {
-				logger.error("getTriggerCode for trigger=" + trigger.getName() + " failed:" + e.getMessage(), e);
-			} 
-		}
+		StringBuilder code = new StringBuilder();
+		try {
+			Statement stat = conn.createStatement();
+			ResultSet rs = stat.executeQuery(sb.toString());
+			while (rs.next()) {
+				code.append(rs.getString(1).trim());
+			}
+			rs.close();
+			stat.close();
+			return code.toString();
+		} catch (SQLException e) {
+			logger.error("getTriggerCode for trigger=" + trigger.getName() + " failed:" + e.getMessage(), e);
+		} 
 		return sb.toString();
 	}
 

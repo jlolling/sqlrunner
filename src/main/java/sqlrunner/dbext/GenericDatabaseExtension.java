@@ -64,12 +64,12 @@ public class GenericDatabaseExtension implements DatabaseExtension {
 	}
 
 	@Override
-	public String setupViewSQLCode(DatabaseSession session, SQLTable table) {
+	public String setupViewSQLCode(Connection conn, SQLTable table) {
 		return null;
 	}
 
 	@Override
-	public String setupProcedureSQLCode(DatabaseSession session, SQLProcedure proc) {
+	public String setupProcedureSQLCode(Connection conn, SQLProcedure proc) {
 		return null;
 	}
 
@@ -245,7 +245,7 @@ public class GenericDatabaseExtension implements DatabaseExtension {
 	}
 
 	@Override
-	public String setupTriggerSQLCode(DatabaseSession session, SQLTrigger trigger) {
+	public String setupTriggerSQLCode(Connection conn, SQLTrigger trigger) {
 		return null;
 	}
 

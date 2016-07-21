@@ -1,11 +1,12 @@
 package sqlrunner.dbext.extensions;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.apache.log4j.Logger;
 
-import dbtools.DatabaseSession;
 import sqlrunner.datamodel.SQLProcedure;
 import sqlrunner.datamodel.SQLTable;
 import sqlrunner.dbext.GenericDatabaseExtension;
@@ -49,7 +50,7 @@ public class TeradataExtension extends GenericDatabaseExtension {
 	}
 
 	@Override
-	public String setupViewSQLCode(DatabaseSession session, SQLTable table) {
+	public String setupViewSQLCode(Connection conn, SQLTable table) {
 		if (table.isView()) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("setupViewSQLCode view=" + table.getAbsoluteName());
@@ -61,15 +62,16 @@ public class TeradataExtension extends GenericDatabaseExtension {
 			sb.append(table.getName());
 			String source = null;
 			try {
-				ResultSet rs = session.executeQuery(sb.toString());
-				if (session.isSuccessful()) {
-					if (rs.next()) {
-						source = rs.getString(1);
-						if (source != null && source.isEmpty() == false) {
-							table.setSourceCode(StringReplacer.fixLineBreaks(source));
-						}
+				Statement stat = conn.createStatement();
+				ResultSet rs = stat.executeQuery(sb.toString());
+				if (rs.next()) {
+					source = rs.getString(1);
+					if (source != null && source.isEmpty() == false) {
+						table.setSourceCode(StringReplacer.fixLineBreaks(source));
 					}
 				}
+				rs.close();
+				stat.close();
 			} catch (SQLException sqle) {
 				logger.error("setupViewSQLCode for table " + table.getAbsoluteName() + " failed: " + sqle.getMessage(), sqle);
 			}
@@ -79,7 +81,7 @@ public class TeradataExtension extends GenericDatabaseExtension {
 	}
 
 	@Override
-	public String setupProcedureSQLCode(DatabaseSession session, SQLProcedure proc) {
+	public String setupProcedureSQLCode(Connection conn, SQLProcedure proc) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("setupProcedureSQLCode procedure=" + proc.getAbsoluteName());
 		}
@@ -88,18 +90,18 @@ public class TeradataExtension extends GenericDatabaseExtension {
 		sb.append(proc.getSchema().getName());
 		sb.append(".");
 		sb.append(proc.getName());
+		StringBuilder code = new StringBuilder();
 		try {
-			ResultSet rs = session.executeQuery(sb.toString());
-			if (session.isSuccessful()) {
-				StringBuilder code = new StringBuilder();
-				while (rs.next()) {
-					code.append(StringReplacer.fixLineBreaks(rs.getString(1)));
-					code.append("\n");
-				}
-				rs.close();
-				if (sb.length() > 0) {
-					proc.setCode(code.toString());
-				}
+			Statement stat = conn.createStatement();
+			ResultSet rs = stat.executeQuery(sb.toString());
+			while (rs.next()) {
+				code.append(StringReplacer.fixLineBreaks(rs.getString(1)));
+				code.append("\n");
+			}
+			rs.close();
+			stat.close();
+			if (sb.length() > 0) {
+				proc.setCode(code.toString());
 			}
 		} catch (SQLException sqle) {
 			logger.error("setupProcedureSQLCode for procedure " + proc.getAbsoluteName() + " failed: " + sqle.getMessage(), sqle);

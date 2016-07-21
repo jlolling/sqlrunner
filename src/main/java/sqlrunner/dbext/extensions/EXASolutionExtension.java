@@ -1,11 +1,12 @@
 package sqlrunner.dbext.extensions;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.apache.log4j.Logger;
 
-import dbtools.DatabaseSession;
 import dbtools.SQLStatement;
 import sqlrunner.datamodel.SQLProcedure;
 import sqlrunner.datamodel.SQLTable;
@@ -28,54 +29,54 @@ public class EXASolutionExtension extends GenericDatabaseExtension {
 	}
 
 	@Override
-	public String setupViewSQLCode(DatabaseSession session, SQLTable table) {
+	public String setupViewSQLCode(Connection conn, SQLTable table) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("select VIEW_TEXT from SYS.EXA_ALL_VIEWS where VIEW_SCHEMA='");
 		sb.append(table.getName().toUpperCase());
 		sb.append("' and VIEW_NAME='");
 		sb.append(table.getSchema().getName().toUpperCase());
 		sb.append("'");
-		ResultSet rs = session.executeQuery(sb.toString());
-		if (session.isSuccessful()) {
-			String code = null;
-			try {
-				if (rs.next()) {
-					code = rs.getString(1);
-				}
-				rs.close();
-				if (code != null && code.length() > 1) {
-					table.setSourceCode(code);
-				}
-			} catch (SQLException e) {
-				logger.error("setupViewSQLCode for view=" + table.getName() + " failed:" + e.getMessage(), e);
-			} 
-		}
+		String code = null;
+		try {
+			Statement stat = conn.createStatement();
+			ResultSet rs = stat.executeQuery(sb.toString());
+			if (rs.next()) {
+				code = rs.getString(1);
+			}
+			rs.close();
+			stat.close();
+			if (code != null && code.length() > 1) {
+				table.setSourceCode(code);
+			}
+		} catch (SQLException e) {
+			logger.error("setupViewSQLCode for view=" + table.getName() + " failed:" + e.getMessage(), e);
+		} 
 		return sb.toString();
 	}
 
 	@Override
-	public String setupProcedureSQLCode(DatabaseSession session, SQLProcedure proc) {
+	public String setupProcedureSQLCode(Connection conn, SQLProcedure proc) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("select FUNCTION_TEXT from SYS.EXA_ALL_FUNCTIONS where FUNCTION_NAME='");
 		sb.append(proc.getName().toUpperCase());
 		sb.append("' and FUNCTION_SCHEMA='");
 		sb.append(proc.getSchema().getName().toUpperCase());
 		sb.append("'");
-		ResultSet rs = session.executeQuery(sb.toString());
-		if (session.isSuccessful()) {
-			String code = null;
-			try {
-				if (rs.next()) {
-					code = rs.getString(1);
-				}
-				rs.close();
-				if (code != null && code.length() > 2) {
-					proc.setCode(code);
-				}
-			} catch (SQLException e) {
-				logger.error("setupProcedureSQLCode for proc=" + proc.getName() + " failed:" + e.getMessage(), e);
-			} 
-		}
+		String code = null;
+		try {
+			Statement stat = conn.createStatement();
+			ResultSet rs = stat.executeQuery(sb.toString());
+			if (rs.next()) {
+				code = rs.getString(1);
+			}
+			rs.close();
+			stat.close();
+			if (code != null && code.length() > 1) {
+				proc.setCode(code);
+			}
+		} catch (SQLException e) {
+			logger.error("setupProcedureSQLCode for proc=" + proc.getName() + " failed:" + e.getMessage(), e);
+		} 
 		return sb.toString();
 	}
 

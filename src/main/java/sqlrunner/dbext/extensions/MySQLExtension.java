@@ -15,7 +15,6 @@ import sqlrunner.dbext.GenericDatabaseExtension;
 import sqlrunner.flatfileimport.BasicDataType;
 import sqlrunner.text.StringReplacer;
 import dbtools.ConnectionDescription;
-import dbtools.DatabaseSession;
 
 public class MySQLExtension extends GenericDatabaseExtension {
 
@@ -107,7 +106,7 @@ public class MySQLExtension extends GenericDatabaseExtension {
 	}
 
 	@Override
-	public String setupViewSQLCode(DatabaseSession session, SQLTable table) {
+	public String setupViewSQLCode(Connection conn, SQLTable table) {
 		if (table.isView()) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("setupViewSQLCode view=" + table.getAbsoluteName());
@@ -120,16 +119,17 @@ public class MySQLExtension extends GenericDatabaseExtension {
 			sb.append("'");
 			String source = null;
 			try {
-				ResultSet rs = session.executeQuery(sb.toString());
-				if (session.isSuccessful()) {
-					if (rs.next()) {
-						source = rs.getString(1);
-						if (source != null && source.isEmpty() == false) {
-							source = "create or replace view " + table.getName() + " as\n" + source;
-							table.setSourceCode(source);
-						}
+				Statement stat = conn.createStatement();
+				ResultSet rs = stat.executeQuery(sb.toString());
+				if (rs.next()) {
+					source = rs.getString(1);
+					if (source != null && source.isEmpty() == false) {
+						source = "create or replace view " + table.getName() + " as\n" + source;
+						table.setSourceCode(source);
 					}
 				}
+				rs.close();
+				stat.close();
 			} catch (SQLException sqle) {
 				logger.error("setupViewSQLCode for table " + table.getAbsoluteName() + " failed: " + sqle.getMessage(), sqle);
 			}

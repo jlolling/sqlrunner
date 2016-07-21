@@ -14,10 +14,8 @@ import sqlrunner.datamodel.SQLProcedure.Parameter;
 import sqlrunner.datamodel.SQLSchema;
 import sqlrunner.datamodel.SQLSequence;
 import sqlrunner.datamodel.SQLTable;
-import sqlrunner.datamodel.SQLTrigger;
 import sqlrunner.dbext.GenericDatabaseExtension;
 import sqlrunner.flatfileimport.BasicDataType;
-import dbtools.DatabaseSession;
 
 public class DB2Extension extends GenericDatabaseExtension {
 
@@ -167,54 +165,54 @@ public class DB2Extension extends GenericDatabaseExtension {
 	}
 
 	@Override
-	public String setupViewSQLCode(DatabaseSession session, SQLTable table) {
+	public String setupViewSQLCode(Connection conn, SQLTable table) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("select TEXT from syscat.views where viewname='");
 		sb.append(table.getName().toUpperCase());
 		sb.append("' and VIEWSCHEMA='");
 		sb.append(table.getSchema().getName().toUpperCase());
 		sb.append("'");
-		ResultSet rs = session.executeQuery(sb.toString());
-		if (session.isSuccessful()) {
-			String code = null;
-			try {
-				if (rs.next()) {
-					code = rs.getString(1);
-				}
-				rs.close();
-				if (code != null && code.length() > 1) {
-					table.setSourceCode(code);
-				}
-			} catch (SQLException e) {
-				logger.error("setupViewSQLCode for view=" + table.getName() + " failed:" + e.getMessage(), e);
-			} 
-		}
+		String code = null;
+		try {
+			Statement stat = conn.createStatement();
+			ResultSet rs = stat.executeQuery(sb.toString());
+			if (rs.next()) {
+				code = rs.getString(1);
+			}
+			rs.close();
+			stat.close();
+			if (code != null && code.length() > 1) {
+				table.setSourceCode(code);
+			}
+		} catch (SQLException e) {
+			logger.error("setupViewSQLCode for view=" + table.getName() + " failed:" + e.getMessage(), e);
+		} 
 		return sb.toString();
 	}
 	
 	@Override
-	public String setupProcedureSQLCode(DatabaseSession session, SQLProcedure proc) {
+	public String setupProcedureSQLCode(Connection conn, SQLProcedure proc) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("select TEXT from SYSCAT.PROCEDURES where PROCNAME='");
 		sb.append(proc.getName().toUpperCase());
 		sb.append("' and PROCSCHEMA='");
 		sb.append(proc.getSchema().getName().toUpperCase());
 		sb.append("'");
-		ResultSet rs = session.executeQuery(sb.toString());
-		if (session.isSuccessful()) {
-			String code = null;
-			try {
-				if (rs.next()) {
-					code = rs.getString(1);
-				}
-				rs.close();
-				if (code != null && code.length() > 2) {
-					proc.setCode(code);
-				}
-			} catch (SQLException e) {
-				logger.error("setupProcedureSQLCode for proc=" + proc.getName() + " failed:" + e.getMessage(), e);
-			} 
-		}
+		String code = null;
+		try {
+			Statement stat = conn.createStatement();
+			ResultSet rs = stat.executeQuery(sb.toString());
+			if (rs.next()) {
+				code = rs.getString(1);
+			}
+			rs.close();
+			stat.close();
+			if (code != null && code.length() > 2) {
+				proc.setCode(code);
+			}
+		} catch (SQLException e) {
+			logger.error("setupProcedureSQLCode for proc=" + proc.getName() + " failed:" + e.getMessage(), e);
+		} 
 		return sb.toString();
 	}
 
@@ -230,12 +228,6 @@ public class DB2Extension extends GenericDatabaseExtension {
 	@Override
 	public boolean hasSequenceFeature() {
 		return true;
-	}
-
-	@Override
-	public String setupTriggerSQLCode(DatabaseSession session, SQLTrigger trigger) {
-		// TODO Auto-generated method stub
-		return super.setupTriggerSQLCode(session, trigger);
 	}
 
 	@Override

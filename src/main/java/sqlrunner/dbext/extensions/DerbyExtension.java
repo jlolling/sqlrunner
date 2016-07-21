@@ -1,13 +1,14 @@
 package sqlrunner.dbext.extensions;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.apache.log4j.Logger;
 
 import sqlrunner.datamodel.SQLTable;
 import sqlrunner.dbext.GenericDatabaseExtension;
-import dbtools.DatabaseSession;
 
 public class DerbyExtension extends GenericDatabaseExtension {
 
@@ -43,7 +44,7 @@ public class DerbyExtension extends GenericDatabaseExtension {
 	}
 
 	@Override
-	public String setupViewSQLCode(DatabaseSession session, SQLTable table) {
+	public String setupViewSQLCode(Connection conn, SQLTable table) {
 		if (table.isView()) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("setupViewSQLCode view=" + table.getAbsoluteName());
@@ -60,15 +61,16 @@ public class DerbyExtension extends GenericDatabaseExtension {
 			sb.append("'");
 			String source = null;
 			try {
-				ResultSet rs = session.executeQuery(sb.toString());
-				if (session.isSuccessful()) {
-					if (rs.next()) {
-						source = rs.getString(1);
-						if (source != null && source.isEmpty() == false) {
-							table.setSourceCode(source);
-						}
+				Statement stat = conn.createStatement();
+				ResultSet rs = stat.executeQuery(sb.toString());
+				if (rs.next()) {
+					source = rs.getString(1);
+					if (source != null && source.isEmpty() == false) {
+						table.setSourceCode(source);
 					}
 				}
+				rs.close();
+				stat.close();
 			} catch (SQLException sqle) {
 				logger.error("setupViewSQLCode for table " + table.getAbsoluteName() + " failed: " + sqle.getMessage(), sqle);
 			}

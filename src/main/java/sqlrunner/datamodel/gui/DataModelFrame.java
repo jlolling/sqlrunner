@@ -1,6 +1,5 @@
 package sqlrunner.datamodel.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -94,8 +93,8 @@ public final class DataModelFrame extends JFrame {
 	private static final Logger     logger = Logger.getLogger(DataModelFrame.class);
 	private static final long       serialVersionUID = 1L;
     StatusBar                       status               = new StatusBar();
+    private final JSplitPane        splitPaneModel        = new JSplitPane();
     private final JSplitPane        splitPaneMain        = new JSplitPane();
-    private final JSplitPane        splitPaneInfo        = new JSplitPane();
     private final JTextArea         commentTextArea      = new JTextArea();
     private final JScrollPane       jScrollPaneTree      = new JScrollPane();
     private final JScrollPane       jScrollPaneTable     = new JScrollPane();
@@ -184,19 +183,45 @@ public final class DataModelFrame extends JFrame {
         menuPreferences.add(miOverwrite);
         menuPreferences.add(miNewMainFrame);
         menuPreferences.add(miStartImmediately);
-        splitPaneMain.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        splitPaneModel.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        splitPaneModel.setOneTouchExpandable(true);
+        splitPaneMain.setPreferredSize(new Dimension(300, 800));
         splitPaneMain.setOneTouchExpandable(true);
-        jScrollPaneTree.setPreferredSize(new Dimension(300, 300));
-        splitPaneMain.setDividerLocation(jScrollPaneTree.getPreferredSize().height);
+        jScrollPaneTree.setPreferredSize(new Dimension(300, 400));
+        splitPaneModel.setDividerLocation(400);
         jScrollPaneTable.setPreferredSize(new Dimension(300, 200));
-        getContentPane().add(getTreeFilterPanel(), BorderLayout.NORTH);
-        getContentPane().add(splitPaneMain, BorderLayout.CENTER);
-        getContentPane().add(status, BorderLayout.SOUTH);
-        splitPaneMain.add(jScrollPaneTree, JSplitPane.TOP);
-        splitPaneMain.add(splitPaneInfo, JSplitPane.BOTTOM);
-        splitPaneInfo.setOrientation(JSplitPane.VERTICAL_SPLIT);
-        splitPaneInfo.add(jScrollPaneTable, JSplitPane.TOP);
-        splitPaneInfo.add(getInfoTabbedPane(), JSplitPane.BOTTOM);
+        getContentPane().setLayout(new GridBagLayout());
+        {
+        	GridBagConstraints gbc = new GridBagConstraints();
+        	gbc.gridx = 0;
+        	gbc.gridy = 0;
+        	gbc.anchor = GridBagConstraints.NORTH;
+        	gbc.fill = GridBagConstraints.HORIZONTAL;
+        	getContentPane().add(getTreeFilterPanel(), gbc);
+        }
+        {
+        	GridBagConstraints gbc = new GridBagConstraints();
+        	gbc.gridx = 0;
+        	gbc.gridy = 1;
+        	gbc.anchor = GridBagConstraints.NORTH;
+        	gbc.weightx = 1;
+        	gbc.weighty = 2;
+        	gbc.fill = GridBagConstraints.BOTH;
+        	getContentPane().add(splitPaneMain, gbc);
+        }
+        {
+        	GridBagConstraints gbc = new GridBagConstraints();
+        	gbc.gridx = 0;
+        	gbc.gridy = 2;
+        	gbc.anchor = GridBagConstraints.SOUTH;
+        	gbc.fill = GridBagConstraints.HORIZONTAL;
+        	getContentPane().add(status, gbc);
+        }
+        splitPaneModel.add(jScrollPaneTree, JSplitPane.TOP);
+        splitPaneModel.add(jScrollPaneTable, JSplitPane.BOTTOM);
+        splitPaneMain.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        splitPaneMain.add(splitPaneModel, JSplitPane.TOP);
+        splitPaneMain.add(getInfoTabbedPane(), JSplitPane.BOTTOM);
         jScrollPaneTree.setViewportView(tree);
         jScrollPaneTable.setViewportView(table);
         table.addMouseListener(new TableMouseListener());
@@ -444,8 +469,10 @@ public final class DataModelFrame extends JFrame {
             			try {
 							Thread.sleep(100);
 						} catch (InterruptedException e) {}
-                		int divloc = splitPaneInfo.getSize().height - countPanel.getMaximumSize().height - 10;
-                        splitPaneInfo.setDividerLocation(divloc);
+                		int divlocMain = splitPaneMain.getSize().height - countPanel.getMaximumSize().height - 10;
+                        splitPaneMain.setDividerLocation(divlocMain);
+                		int divlocModel = splitPaneModel.getSize().height - jScrollPaneTree.getPreferredSize().height;
+                		splitPaneModel.setDividerLocation(divlocModel);
             		}
             	});
             }
@@ -1463,7 +1490,7 @@ public final class DataModelFrame extends JFrame {
 				cf.setSchema1(s1);
 				cf.setSchema2(s2);
 				cf.setVisible(true);
-		        WindowHelper.locateWindowAtLeftSideWithin(DataModelFrame.this, cf, 0);
+		        WindowHelper.locateWindowAtMiddleOfDefaultScreen(cf);
 		        cf.pack();
 			} else {
 				JOptionPane.showMessageDialog(DataModelFrame.this, Messages.getString("DataModelFrame.select2Schemas"), "Info", JOptionPane.INFORMATION_MESSAGE);
@@ -1699,7 +1726,6 @@ public final class DataModelFrame extends JFrame {
     	int row = table.getSelectedRow();
     	if (row != -1) {
         	Object o = treeAndTableModel.getValueAt(row, 0);
-        	System.out.println(o);
         	if (o instanceof SQLField) {
         		JPopupMenu popup = new JPopupMenu();
                 JMenuItem mi = new JMenuItem(Messages.getString("DataModelFrame.sendToEditor"));

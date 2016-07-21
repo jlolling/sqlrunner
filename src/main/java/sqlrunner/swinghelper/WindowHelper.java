@@ -84,7 +84,7 @@ public class WindowHelper {
     public static void locateAtRightSideOfScreen(Rectangle r, Window window) {
     	int x = r.x + r.width - window.getWidth();
     	int y = r.y;
-    	int height = r.height - 30;
+    	int height = r.height - 50;
     	int width = window.getWidth();
     	window.setBounds(x, y, width, height);
     }

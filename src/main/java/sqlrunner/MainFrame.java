@@ -1126,9 +1126,6 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
             this.setLocationByPlatform(WindowHelper.isWindowPositioningEnabled() == false);
         }
         super.setVisible(visible);
-        if (visible && logger.isDebugEnabled()) {
-            logger.debug("MainFrame is visible");
-        }
     }
 
     /**

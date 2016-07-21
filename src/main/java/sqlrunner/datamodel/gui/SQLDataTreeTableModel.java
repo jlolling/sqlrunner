@@ -702,11 +702,13 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
     			final SQLTable table = currentSQLTable;
     			if (table.isFieldsLoaded() == false) {
     				if (table.isLoadingColumns() == false) {
+    					
                     	new Thread() {
                     		@Override
                     		public void run() {
                     			if (table != null) {
                                 	SwingUtilities.invokeLater(new Runnable() {
+                                		@Override
                                 		public void run() {
                                 			tree.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                                 		}
@@ -714,12 +716,14 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
                     				table.loadColumns();
                                     if (table.getFieldCount() > 0) {
                                     	SwingUtilities.invokeLater(new Runnable() {
+                                    		@Override
                                     		public void run() {
                                             	fireTableRowsInserted(0, table.getFieldCount() - 1);
                                     		}
                                     	});
                                     }
                                 	SwingUtilities.invokeLater(new Runnable() {
+                                		@Override
                                 		public void run() {
                         	    			tree.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                                 		}
@@ -730,7 +734,9 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
     				}
     			} else {
                     if (currentSQLTable.getFieldCount() > 0) {
+                    	
                     	SwingUtilities.invokeLater(new Runnable() {
+                    		@Override
                     		public void run() {
                             	fireTableRowsInserted(0, currentSQLTable.getFieldCount() - 1);
                     		}

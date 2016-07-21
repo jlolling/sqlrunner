@@ -64,6 +64,9 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 	}
 	
 	private void doFireDatemodelEvent(String message, int type) {
+		if (logger.isDebugEnabled()) {
+			logger.debug(message);
+		}
 		DatamodelEvent e = new DatamodelEvent(this, message, type);
 		for (DatamodelListener l : listener) {
 			l.eventHappend(e);
@@ -436,7 +439,7 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 			}
 			schema.setLoadingTables(false);
 		}
-		fireDatamodelEvent("Loading tables and views finished", DatamodelEvent.ACTION_MESSAGE_EVENT);
+		fireDatamodelEvent("Loading tables and views finished: " + schema.getTableCount() + " tables.", DatamodelEvent.ACTION_MESSAGE_EVENT);
 		return ok;
 	}
 	
@@ -466,6 +469,7 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 			}
 			fireDatamodelEvent("Loading sequences...", DatamodelEvent.ACTION_MESSAGE_EVENT);
 			databaseExtension.listSequences(conn, schema);
+			fireDatamodelEvent("Loading sequences for " + schema + " finished: " + schema.getSequenceCount() + " sequences.", DatamodelEvent.ACTION_MESSAGE_EVENT);
 			return true;
 		} else {
 			return false;
@@ -603,15 +607,15 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 				}
 				schema.setProcedureLoaded();
 				schema.sortProcedureList();
-				fireDatamodelEvent("Load procedure source code", DatamodelEvent.ACTION_MESSAGE_EVENT);
+				fireDatamodelEvent("Loading procedure source code", DatamodelEvent.ACTION_MESSAGE_EVENT);
 				for (int i = 0; i < schema.getProcedureCount(); i++) {
 					SQLProcedure p = schema.getProcedureAt(i);
 					if (session != null) {
-						databaseExtension.setupProcedureSQLCode(session, p);
+						databaseExtension.setupProcedureSQLCode(conn, p);
 					}
 				}
 				ok = true;
-				fireDatamodelEvent("Loading procedures for " + schema + " finished", DatamodelEvent.ACTION_MESSAGE_EVENT);
+				fireDatamodelEvent("Load procedures for " + schema + " finished: " + schema.getProcedureCount() + " procedures.", DatamodelEvent.ACTION_MESSAGE_EVENT);
 			}
 		} catch (SQLException sqle) {
 			// creates a error message to show it in GUI
@@ -701,7 +705,7 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 						loadIndexes(table);
 					} else {
 						if (session != null) {
-							databaseExtension.setupViewSQLCode(session, table);
+							databaseExtension.setupViewSQLCode(conn, table);
 						}
 					}
 				} catch (SQLException sqle) {

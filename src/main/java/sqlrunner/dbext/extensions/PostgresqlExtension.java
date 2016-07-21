@@ -17,7 +17,6 @@ import sqlrunner.datamodel.SQLSequence;
 import sqlrunner.datamodel.SQLTable;
 import sqlrunner.dbext.GenericDatabaseExtension;
 import sqlrunner.flatfileimport.BasicDataType;
-import dbtools.DatabaseSession;
 
 public class PostgresqlExtension extends GenericDatabaseExtension {
 
@@ -43,23 +42,24 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 	}
 
 	@Override
-	public String setupViewSQLCode(DatabaseSession session, SQLTable table) {
+	public String setupViewSQLCode(Connection conn, SQLTable table) {
 		if (table.isView()) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("setupViewSQLCode view=" + table.getAbsoluteName());
 			}
 			String source = null;
 			try {
-				ResultSet rs = session.executeQuery("select pg_get_viewdef('" + table.getAbsoluteName() + "', true)");
-				if (session.isSuccessful()) {
-					if (rs.next()) {
-						source = rs.getString(1);
-						if (source != null && source.isEmpty() == false) {
-							source = "create view " + table.getName() + " as\n" + source;
-							table.setSourceCode(source);
-						}
+				Statement stat = conn.createStatement();
+				ResultSet rs = stat.executeQuery("select pg_get_viewdef('" + table.getAbsoluteName() + "', true)");
+				if (rs.next()) {
+					source = rs.getString(1);
+					if (source != null && source.isEmpty() == false) {
+						source = "create view " + table.getName() + " as\n" + source;
+						table.setSourceCode(source);
 					}
 				}
+				rs.close();
+				stat.close();
 			} catch (SQLException sqle) {
 				logger.error("setupViewSQLCode for table " + table.getAbsoluteName() + " failed: " + sqle.getMessage(), sqle);
 			}
@@ -69,7 +69,7 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 	}
 
 	@Override
-	public String setupProcedureSQLCode(DatabaseSession session, SQLProcedure proc) {
+	public String setupProcedureSQLCode(Connection conn, SQLProcedure proc) {
 		try {
 			if (logger.isDebugEnabled()) {
 				logger.debug("setupProcedureSQLCode proc=" + proc.getAbsoluteName());
@@ -103,43 +103,44 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 				query.append("}'");
 			}
 			StringBuilder code = new StringBuilder();
-			ResultSet rs = session.executeQuery(query.toString());
-			if (session.isSuccessful()) {
-				if (rs.next()) {
-					String source = rs.getString(1);
-					String language = rs.getString(2);
-					if (source != null && source.isEmpty() == false) {
-						code.append("create or replace ");
-						if (proc.isFunction()) {
-							code.append("function ");
-						} else {
-							code.append("procedure ");
-						}
-						code.append(proc.getName());
-						code.append("(\n");
-						for (int i = 0; i < proc.getParameterCount(); i++) {
-							Parameter p = proc.getParameterAt(i);
-							if (i > 0) {
-								code.append(",\n");
-							}
-							code.append("    ");
-							code.append(p.getName());
-							code.append(" ");
-							code.append(p.getTypeName());
-						}
-						code.append(")\n\n");
-						if (proc.isFunction()) {
-							code.append("returns ");
-							code.append(proc.getReturnParameter().getTypeName());
-							code.append(" as $$");
-						}
-						code.append(source);
-						code.append("$$ LANGUAGE ");
-						code.append(language);
-						proc.setCode(code.toString());
+			Statement stat = conn.createStatement();
+			ResultSet rs = stat.executeQuery(query.toString());
+			if (rs.next()) {
+				String source = rs.getString(1);
+				String language = rs.getString(2);
+				if (source != null && source.isEmpty() == false) {
+					code.append("create or replace ");
+					if (proc.isFunction()) {
+						code.append("function ");
+					} else {
+						code.append("procedure ");
 					}
+					code.append(proc.getName());
+					code.append("(\n");
+					for (int i = 0; i < proc.getParameterCount(); i++) {
+						Parameter p = proc.getParameterAt(i);
+						if (i > 0) {
+							code.append(",\n");
+						}
+						code.append("    ");
+						code.append(p.getName());
+						code.append(" ");
+						code.append(p.getTypeName());
+					}
+					code.append(")\n\n");
+					if (proc.isFunction()) {
+						code.append("returns ");
+						code.append(proc.getReturnParameter().getTypeName());
+						code.append(" as $$");
+					}
+					code.append(source);
+					code.append("$$ LANGUAGE ");
+					code.append(language);
+					proc.setCode(code.toString());
 				}
 			}
+			rs.close();
+			stat.close();
 			return code.toString();
 		} catch (SQLException sqle) {
 			logger.error("setupProcedureSQLCode for proc " + proc.getAbsoluteName() + " failed: " + sqle.getMessage(), sqle);
