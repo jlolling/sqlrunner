@@ -408,12 +408,11 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 						null,
 						null);
 				if (rs != null) {
-					String tableName = null;
 					while (rs.next()) {
 						if (Thread.currentThread().isInterrupted()) {
 							break;
 						}
-						tableName = rs.getString("TABLE_NAME");
+						String tableName = rs.getString("TABLE_NAME");
 						table = new SQLTable(schema.getModel(), schema, tableName);
 						table.setType(rs.getString("TABLE_TYPE"));
 						table.setComment(rs.getString("REMARKS"));
@@ -685,17 +684,20 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 							if (Thread.currentThread().isInterrupted()) {
 								break;
 							}
-							String name = rs.getString("COLUMN_NAME");
-							field = new SQLField(this, table, name);
-							field.setType(rs.getInt("DATA_TYPE"));
-							field.setTypeName(rs.getString("TYPE_NAME"));
-							field.setLength(rs.getInt("COLUMN_SIZE"));
-							field.setDecimalDigits(rs.getInt("DECIMAL_DIGITS"));
-							field.setOrdinalPosition(rs.getInt("ORDINAL_POSITION"));
-							field.setNullValueAllowed(rs.getInt("NULLABLE") == DatabaseMetaData.columnNullable);
-							field.setComment(rs.getString("REMARKS"));
-							databaseExtension.setupDataType(field);
-							table.addField(field);
+							String tableName = rs.getString("TABLE_NAME");
+							if (table.getName().equalsIgnoreCase(tableName)) {
+								String name = rs.getString("COLUMN_NAME");
+								field = new SQLField(this, table, name);
+								field.setType(rs.getInt("DATA_TYPE"));
+								field.setTypeName(rs.getString("TYPE_NAME"));
+								field.setLength(rs.getInt("COLUMN_SIZE"));
+								field.setDecimalDigits(rs.getInt("DECIMAL_DIGITS"));
+								field.setOrdinalPosition(rs.getInt("ORDINAL_POSITION"));
+								field.setNullValueAllowed(rs.getInt("NULLABLE") == DatabaseMetaData.columnNullable);
+								field.setComment(rs.getString("REMARKS"));
+								databaseExtension.setupDataType(field);
+								table.addField(field);
+							}
 						}
 						rs.close();
 					}
@@ -795,21 +797,24 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 							if (Thread.currentThread().isInterrupted()) {
 								break;
 							}
-							String name = rs.getString("PK_NAME");
-							SQLConstraint constraint = table.getPrimaryKeyConstraint();
-							if (constraint == null) {
-								constraint = new SQLConstraint(
-										this, 
-										table,
-										SQLConstraint.PRIMARY_KEY, 
-										name);
-								table.setPrimaryKeyConstraint(constraint);
-							}
-							constraint.addPrimaryKeyFieldName(
-									rs.getString("COLUMN_NAME"), 
-									rs.getShort("KEY_SEQ"));
-							if (logger.isDebugEnabled()) {
-								logger.debug("pk constraint changed: " + constraint);
+							String tableName = rs.getString("TABLE_NAME");
+							if (table.getName().equalsIgnoreCase(tableName)) {
+								String name = rs.getString("PK_NAME");
+								SQLConstraint constraint = table.getPrimaryKeyConstraint();
+								if (constraint == null) {
+									constraint = new SQLConstraint(
+											this, 
+											table,
+											SQLConstraint.PRIMARY_KEY, 
+											name);
+									table.setPrimaryKeyConstraint(constraint);
+								}
+								constraint.addPrimaryKeyFieldName(
+										rs.getString("COLUMN_NAME"), 
+										rs.getShort("KEY_SEQ"));
+								if (logger.isDebugEnabled()) {
+									logger.debug("pk constraint changed: " + constraint);
+								}
 							}
 						}
 						rs.close();
@@ -933,38 +938,41 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 						if (Thread.currentThread().isInterrupted()) {
 							break;
 						}
-						String indexName = rs.getString("INDEX_NAME");
-						if (indexName == null) {
-							continue; // because Oracle sends here null some times
-						}
-						boolean unique = false;
-						Object nonUnique = rs.getObject("NON_UNIQUE");
-						if (nonUnique instanceof Boolean) {
-							unique = !((Boolean) nonUnique).booleanValue();
-						} else if (nonUnique instanceof Integer) {
-							unique = ((Integer) nonUnique).intValue() == 0;
-						} else if (nonUnique instanceof String) {
-							unique = !Boolean.parseBoolean((String) nonUnique);
-						}
-						short type = rs.getShort("TYPE");
-						short ordinalPosition = rs.getShort("ORDINAL_POSITION");
-						String columnName = rs.getString("COLUMN_NAME");
-						String sortOrder = rs.getString("ASC_OR_DESC");
-						int cardinality = rs.getInt("CARDINALITY");
-						String filterCondition = rs.getString("FILTER_CONDITION");
-						index = table.getIndexByName(indexName);
-						if (index == null) {
-							if (logger.isDebugEnabled()) {
-								logger.debug("add index " + indexName);
+						String tableName = rs.getString("TABLE_NAME");
+						if (table.getName().equalsIgnoreCase(tableName)) {
+							String indexName = rs.getString("INDEX_NAME");
+							if (indexName == null) {
+								continue; // because Oracle sends here null some times
 							}
-							index = new SQLIndex(table.getModel(), indexName, table);
-							index.setUnique(unique);
-							index.setType(type);
-							index.setCardinality(cardinality);
-							index.setFilterCondition(filterCondition);
-							table.addIndex(index);
+							boolean unique = false;
+							Object nonUnique = rs.getObject("NON_UNIQUE");
+							if (nonUnique instanceof Boolean) {
+								unique = !((Boolean) nonUnique).booleanValue();
+							} else if (nonUnique instanceof Integer) {
+								unique = ((Integer) nonUnique).intValue() == 0;
+							} else if (nonUnique instanceof String) {
+								unique = !Boolean.parseBoolean((String) nonUnique);
+							}
+							short type = rs.getShort("TYPE");
+							short ordinalPosition = rs.getShort("ORDINAL_POSITION");
+							String columnName = rs.getString("COLUMN_NAME");
+							String sortOrder = rs.getString("ASC_OR_DESC");
+							int cardinality = rs.getInt("CARDINALITY");
+							String filterCondition = rs.getString("FILTER_CONDITION");
+							index = table.getIndexByName(indexName);
+							if (index == null) {
+								if (logger.isDebugEnabled()) {
+									logger.debug("add index " + indexName);
+								}
+								index = new SQLIndex(table.getModel(), indexName, table);
+								index.setUnique(unique);
+								index.setType(type);
+								index.setCardinality(cardinality);
+								index.setFilterCondition(filterCondition);
+								table.addIndex(index);
+							}
+							index.addIndexField(columnName, ordinalPosition, sortOrder);
 						}
-						index.addIndexField(columnName, ordinalPosition, sortOrder);
 					}
 					table.setIndexesLoaded();
 					rs.close();

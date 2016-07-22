@@ -5,12 +5,16 @@ http://www.jan-lolling.de/Home/SQLRunner.html
 
 release notes
 -------------
+Release 14.1
+- Bug fixed: 
+	* Data model show columns from other tables if the name is only distinct by a underscore 
+
 Release 14.0
 - Sequence feature added for Oracle, PostgreSQL and DB2
 - Bug fixed: 
 	* Data model view: column table not refreshed correctly
 	* Data model update script: indexes created with wrong schema
-
+	* Data model show columns from 
 Release 13.0
 - Row statistics improved
 
