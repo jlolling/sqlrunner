@@ -463,7 +463,7 @@ public final class DataModelFrame extends JFrame {
                 }
                 break;
             }
-            case WindowEvent.WINDOW_ACTIVATED: {
+            case WindowEvent.WINDOW_OPENED: {
             	SwingUtilities.invokeLater(new Runnable() {
             		public void run() {
             			try {
@@ -475,10 +475,10 @@ public final class DataModelFrame extends JFrame {
                 		splitPaneModel.setDividerLocation(divlocModel);
             		}
             	});
+            	break;
             }
-            default:
-                super.processWindowEvent(winEvent);
         }
+        super.processWindowEvent(winEvent);
     }
 
     public boolean isScriptOverwriteSelected() {

@@ -8,7 +8,8 @@ release notes
 Release 14.1
 - Bug fixed: 
 	* Data model show columns from other tables if the name is only distinct by a underscore 
-
+	* Bug fixed: Data model view: Layout is now stable also after reactivating the window.
+	 
 Release 14.0
 - Sequence feature added for Oracle, PostgreSQL and DB2
 - Bug fixed: 
