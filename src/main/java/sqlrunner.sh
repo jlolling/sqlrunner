@@ -1,5 +1,5 @@
 #! /bin/sh
-base=`pwd`
+base=$( dirname "$0" )
 classpath=$base
 for file in `ls -1 $base/*.jar`
 do
