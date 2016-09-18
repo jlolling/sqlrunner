@@ -5,6 +5,10 @@ http://www.jan-lolling.de/Home/SQLRunner.html
 
 release notes
 -------------
+Release 14.2
+- Bug fixed:
+	* Materialized views from PostgreSQL was not shown
+	
 Release 14.1
 - Bug fixed: 
 	* Data model show columns from other tables if the name is only distinct by a underscore 

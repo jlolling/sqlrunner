@@ -28,6 +28,7 @@ public final class SQLTable extends SQLObject {
     static final int NO_REFERENCES            = 0;
     static public final String TYPE_TABLE               = "TABLE";
     static public final String TYPE_VIEW                = "VIEW";
+    static public final String TYPE_MAT_VIEW            = "MATERIALIZED VIEW";
     static public final String TYPE_SYSTEM_TABLE        = "SYSTEM TABLE";
     static public final String TYPE_GLOBAL_TEMPORARY    = "GLOBAL TEMPORARY";
     static public final String TYPE_LOCAL_TEMPORARY     = "LOCAL TEMPORARY";
@@ -375,7 +376,7 @@ public final class SQLTable extends SQLObject {
     }
 
     public boolean isView() {
-    	return TYPE_VIEW.equals(type);
+    	return TYPE_VIEW.equals(type) || TYPE_MAT_VIEW.equals(type);
     }
 
 	public String getSourceCode() {
