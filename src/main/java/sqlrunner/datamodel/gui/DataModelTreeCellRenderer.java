@@ -64,9 +64,14 @@ public final class DataModelTreeCellRenderer extends DefaultTreeCellRenderer {
             if (((SQLTable) node.getUserObject()).getType().equals(SQLTable.TYPE_TABLE)) {
                 setDisabledIcon(ApplicationIcons.TABLE_PNG);
                 setIcon(ApplicationIcons.TABLE_PNG);
-            } else if (((SQLTable) node.getUserObject()).getType().equals(SQLTable.TYPE_VIEW)) {
-                setDisabledIcon(ApplicationIcons.VIEW_PNG);
-                setIcon(ApplicationIcons.VIEW_PNG);
+            } else if (((SQLTable) node.getUserObject()).isView()) {
+                if (((SQLTable) node.getUserObject()).getType().equals(SQLTable.TYPE_MAT_VIEW)) {
+                    setDisabledIcon(ApplicationIcons.TABLE_PNG);
+                    setIcon(ApplicationIcons.TABLE_PNG);
+                } else {
+                	setDisabledIcon(ApplicationIcons.VIEW_PNG);
+                    setIcon(ApplicationIcons.VIEW_PNG);
+                }
             } else if (((SQLTable) node.getUserObject()).getType().equals(SQLTable.TYPE_ALIAS)) {
                 setDisabledIcon(ApplicationIcons.TABLE_PNG);
                 setIcon(ApplicationIcons.TABLE_PNG);

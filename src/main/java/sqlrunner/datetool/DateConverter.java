@@ -13,6 +13,7 @@ import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -127,15 +128,18 @@ public final class DateConverter extends JFrame {
 	        });
             textArea.getDocument().addDocumentListener(new DocumentListener() {
 
-                public void insertUpdate(DocumentEvent de) {
+                @Override
+				public void insertUpdate(DocumentEvent de) {
                     labelCounter.setText(String.valueOf((textArea.getText()).length()));
                 }
 
-                public void changedUpdate(DocumentEvent de) {
+                @Override
+				public void changedUpdate(DocumentEvent de) {
                     labelCounter.setText(String.valueOf((textArea.getText()).length()));
                 }
 
-                public void removeUpdate(DocumentEvent de) {
+                @Override
+				public void removeUpdate(DocumentEvent de) {
                     labelCounter.setText(String.valueOf((textArea.getText()).length()));
                 }
 
@@ -206,6 +210,8 @@ public final class DateConverter extends JFrame {
             checkBoxViewAsDate = new JCheckBox();
             checkBoxViewAsDate.setText(Messages.getString("ValueEditor.interpretasdate"));
             checkBoxViewAsDate.addActionListener(new java.awt.event.ActionListener() { 
+            	
+            	@Override
             	public void actionPerformed(java.awt.event.ActionEvent e) {    
                     String format = (String) cbDateFormat.getSelectedItem();
                     System.out.println("Format:" + format);
@@ -213,7 +219,13 @@ public final class DateConverter extends JFrame {
                     if (checkBoxViewAsDate.isSelected() == false) {
                         // dann das textuelle Datumsformat in die long-Form wandeln
                         try {
-                            java.util.Date date = sdf.parse(textArea.getText().trim());
+                        	String text = textArea.getText().trim();
+                            java.util.Date date = null;
+                        	if (text == null || text.isEmpty()) {
+                        		date = new Date();
+                        	} else {
+                        		date = sdf.parse(text);
+                        	}
                             textArea.setText(String.valueOf(date.getTime()));
                         } catch (ParseException pe) {
                             logger.warn("converting long->Date failed:"+pe.getMessage());
@@ -221,8 +233,14 @@ public final class DateConverter extends JFrame {
                     } else {
                         // die long-Form in die Datumsform wandeln
                         try {
-                        	long time = Long.parseLong(textArea.getText().trim());
-                            java.util.Date date = new java.util.Date(time);
+                        	String text = textArea.getText().trim();
+                        	Date date = null;
+                        	if (text == null || text.isEmpty()) {
+                        		date = new Date();
+                        	} else {
+                            	long time = Long.parseLong(textArea.getText().trim());
+                            	date = new java.util.Date(time);
+                        	}
                             textArea.setText(sdf.format(date));
                         } catch (NumberFormatException nfe) {
                             logger.warn("converting Date->long failed:"+nfe.getMessage());
