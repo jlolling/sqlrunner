@@ -11,12 +11,12 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
-import sqlrunner.dbext.DatabaseExtension;
-import sqlrunner.dbext.DatabaseExtensionFactory;
-import sqlrunner.generator.SQLCodeGenerator;
 import dbtools.ConnectionDescription;
 import dbtools.DatabaseSession;
 import dbtools.DatabaseSessionPool;
+import sqlrunner.dbext.DatabaseExtension;
+import sqlrunner.dbext.DatabaseExtensionFactory;
+import sqlrunner.generator.SQLCodeGenerator;
 
 public final class SQLDataModel extends SQLObject implements Comparable<SQLDataModel> {
 
@@ -25,11 +25,13 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 	private String errorMessage;
 	private final List<SQLCatalog> catalogs = new ArrayList<SQLCatalog>();
 	private boolean loadingSchemas = false;
+	private boolean loadingCatalogs = false;
 	private boolean useLowerCaseIdentifiers = false;
 	private boolean useUpperCaseIdentifiers = false;
 	private boolean userCaseSensitiveIdentifiers = false;
 	public final char delimiter = 0x00;
 	private boolean schemasLoaded = false;
+	private boolean catalogsLoaded = false;
 	private SQLSchema currentSQLSchema;
 	private SQLSchema loginSchema;
 	private String loginSchemaName;
@@ -56,6 +58,7 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 			doFireDatemodelEvent(message, type);
 		} else {
 			SwingUtilities.invokeLater(new Runnable() {
+				@Override
 				public void run() {
 					doFireDatemodelEvent(message, type);
 				}
@@ -121,12 +124,15 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 	}
 	
 	public void refresh() {
-		loadSchemas();
+		loadCatalogs();
 	}
 	
 	public void reloadSchemasAndTables() {
 		fireDatamodelEvent("Preloading metadata...", DatamodelEvent.ACTION_MESSAGE_EVENT);
-		loadSchemas();
+		loadCatalogs();
+		for (SQLCatalog cat : catalogs) {
+			loadSchemas(cat);
+		}
 		getCurrentSQLSchema();
 		if (currentSQLSchema != null && currentSQLSchema.isTablesLoaded() == false) {
 			loadTables(currentSQLSchema);
@@ -138,21 +144,94 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 		return schemasLoaded;
 	}
 	
+	public boolean isCatalogsLoaded() {
+		return catalogsLoaded;
+	}
+
 	public DatabaseSession getDatabaseSession() {
 		return DatabaseSessionPool.getDatabaseSession(cd.getUniqueId());
 	}
 	
-	public boolean loadSchemas() {
+	public boolean loadCatalogs() {
+		if (loadingCatalogs) {
+			return false;
+		}
+		loadingCatalogs = true;
+		if (Thread.currentThread().isInterrupted()) {
+			loadingSchemas = false;
+			return false;
+		}
+		if (logger.isDebugEnabled()) {
+			logger.debug("loadCatalogs");
+		}
+		DatabaseSession session = null;
+		Connection conn = connection;
+		if (conn == null) {
+			session = getDatabaseSession();
+			if (session == null) {
+				return false;
+			}
+			session.setLastSQL("loadCatalogs");
+			conn = session.getConnection();
+		}
+		if (conn == null) {
+			return false;
+		}
+		boolean ok = false;
+		try {
+			fireDatamodelEvent("Loading catalogs", DatamodelEvent.ACTION_MESSAGE_EVENT);
+			DatabaseMetaData dbmd = conn.getMetaData();
+			if (dbmd != null) {
+				useLowerCaseIdentifiers = dbmd.storesLowerCaseIdentifiers();
+				useUpperCaseIdentifiers = dbmd.storesUpperCaseIdentifiers();
+				userCaseSensitiveIdentifiers = dbmd.storesMixedCaseIdentifiers();
+				catalogsLoaded = false;
+				ResultSet rsCatalogs = dbmd.getCatalogs();
+				catalogs.clear();
+				while (rsCatalogs.next()) {
+					String catName = rsCatalogs.getString("TABLE_CAT");
+					if (catName != null && catName.isEmpty() == false) {
+						// sometimes IBM DB" returns null as name 
+	 					addCatalog(new SQLCatalog(this, catName));
+					}
+				}
+				rsCatalogs.close();
+				if (catalogs.isEmpty()) {
+					catalogs.add(new DefaultCatalog(this));
+				}
+				catalogsLoaded = true;
+			}
+		} catch (SQLException sqle) {
+			errorMessage = "loadCatalogs failed: " + sqle.getMessage();
+			logger.error(errorMessage);
+			if (session != null) {
+				session.error(errorMessage, sqle);
+			}
+		} finally {
+			if (session != null) {
+				DatabaseSessionPool.release(session);
+			}
+			loadingCatalogs = false;
+		}
+		fireDatamodelEvent("Loading catalogs finished (" + catalogs.size() + ")", DatamodelEvent.ACTION_MESSAGE_EVENT);
+		for (SQLCatalog catalog : catalogs) {
+			loadSchemas(catalog);
+		}
+		return ok;
+	}
+	
+	public boolean loadSchemas(SQLCatalog catalog) {
 		if (loadingSchemas) {
 			return false;
 		}
+		catalog.setLoadingSchemas(true);
 		loadingSchemas = true;
 		if (Thread.currentThread().isInterrupted()) {
 			loadingSchemas = false;
 			return false;
 		}
 		if (logger.isDebugEnabled()) {
-			logger.debug("loadSchemas");
+			logger.debug("loadSchemas for catalog: " + catalog.getName());
 		}
 		DatabaseSession session = null;
 		Connection conn = connection;
@@ -168,78 +247,49 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 			return false;
 		}
 		boolean ok = false;
+		fireDatamodelEvent("Loading schemas for catalog", DatamodelEvent.ACTION_MESSAGE_EVENT);
 		try {
-			fireDatamodelEvent("Loading schemas", DatamodelEvent.ACTION_MESSAGE_EVENT);
 			DatabaseMetaData dbmd = conn.getMetaData();
 			if (dbmd != null) {
-				useLowerCaseIdentifiers = dbmd.storesLowerCaseIdentifiers();
-				useUpperCaseIdentifiers = dbmd.storesUpperCaseIdentifiers();
-				userCaseSensitiveIdentifiers = dbmd.storesMixedCaseIdentifiers();
-				schemasLoaded = false;
-				ResultSet rsCatalogs = dbmd.getCatalogs();
-				catalogs.clear();
-				while (rsCatalogs.next()) {
-					String catName = rsCatalogs.getString("TABLE_CAT");
-					if (catName != null && catName.isEmpty() == false) {
-						// sometimes IBM DB" returns null as name 
-	 					addCatalog(new SQLCatalog(this, catName));
+				dbmd = conn.getMetaData();
+				catalog.clear();
+				final ResultSet rsSchemas = dbmd.getSchemas();
+				while (rsSchemas.next()) {
+					if (Thread.currentThread().isInterrupted()) {
+						break;
+					}
+					String name = rsSchemas.getString("TABLE_SCHEM");
+					SQLSchema schema = new SQLSchema(this, name);
+					catalog.addSQLSchema(schema);
+					if (schema.getName().equalsIgnoreCase(loginSchemaName)) {
+						loginSchema = schema;
 					}
 				}
-				rsCatalogs.close();
-				if (catalogs.isEmpty()) {
-					catalogs.add(new DefaultCatalog(this));
-				}
-				// preserve original catalog
-				String currentCatalog = conn.getCatalog();
-				for (SQLCatalog catalog : catalogs) {
-					try {
-						conn.setCatalog(catalog.getKey());
-						dbmd = conn.getMetaData();
-						final ResultSet rsSchemas = dbmd.getSchemas();
-						while (rsSchemas.next()) {
-							if (Thread.currentThread().isInterrupted()) {
-								break;
-							}
-							String name = rsSchemas.getString("TABLE_SCHEM");
-							SQLSchema schema = new SQLSchema(this, name);
-							catalog.addSQLSchema(schema);
-							if (schema.getName().equalsIgnoreCase(loginSchemaName)) {
-								loginSchema = schema;
-							}
-						}
-						rsSchemas.close();
-						if (catalog.getCountSchemas() == 0) {
-							SQLSchema schema = new DefaultSchema(this);
-							catalog.addSQLSchema(schema);
-							if (schema.getName().equalsIgnoreCase(loginSchemaName)) {
-								loginSchema = schema;
-							}
-						}
-					} catch (Exception e) {
-						errorMessage = "loadSchemas (schemas) for catalog: " + catalog.getName() + " failed: " + e.getMessage();
-						logger.error(errorMessage);
-						fireDatamodelEvent("Loading schemas failed.", DatamodelEvent.ACTION_MESSAGE_EVENT);
-						return false;
+				rsSchemas.close();
+				if (catalog.getCountSchemas() == 0) {
+					SQLSchema schema = new DefaultSchema(this);
+					catalog.addSQLSchema(schema);
+					if (schema.getName().equalsIgnoreCase(loginSchemaName)) {
+						loginSchema = schema;
 					}
-				}
-				// restore original catalog
-				if (currentCatalog != null && currentCatalog.trim().isEmpty() == false) {
-					conn.setCatalog(currentCatalog);
 				}
 				ok = true;
 				schemasLoaded = true;
 			}
-		} catch (SQLException sqle) {
-			errorMessage = "loadSchemas (catalogs) failed: " + sqle.getMessage();
+		} catch (Exception e) {
+			errorMessage = "loadSchemas (schemas) for catalog: " + catalog.getName() + " failed: " + e.getMessage();
 			logger.error(errorMessage);
+			fireDatamodelEvent("Loading schemas failed.", DatamodelEvent.ACTION_MESSAGE_EVENT);
 			if (session != null) {
-				session.error(errorMessage, sqle);
+				session.error(errorMessage, e);
 			}
+			return false;
 		} finally {
 			if (session != null) {
 				DatabaseSessionPool.release(session);
 			}
 			loadingSchemas = false;
+			catalog.setLoadingSchemas(false);
 		}
 		fireDatamodelEvent("Loading catalogs+schemas finished (" + catalogs.size() + ")", DatamodelEvent.ACTION_MESSAGE_EVENT);
 		return ok;
@@ -1019,6 +1069,7 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 		}
 	}
 
+	@Override
 	public int compareTo(SQLDataModel o) {
 		if (o.cd != null) {
 			return o.cd.compareTo(cd);

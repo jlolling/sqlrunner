@@ -153,7 +153,7 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
     	if (logger.isDebugEnabled()) {
     		logger.debug("refresh sqlDataModel=" + sqlDataModel);
     	}
-    	sqlDataModel.loadSchemas();
+    	sqlDataModel.loadCatalogs();
         buildTreeNodesRecursive = true;
         try {
         	buildNodes(dataModelNode);
@@ -168,11 +168,28 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
     	}
         schema.loadTables();
         schema.loadProcedures();
+        schema.loadSequences();
         // refresh the child nodes
         buildTreeNodesRecursive = true;
         this.stopBeforeColumns = stopBeforeColumns;
         try {
             buildNodes(schemaNode);
+        } finally {
+            buildTreeNodesRecursive = false;
+            this.stopBeforeColumns = false;
+        }
+    }
+
+    public void refresh(SQLCatalog catalog, DefaultMutableTreeNode node, boolean stopBeforeColumns) {
+    	if (logger.isDebugEnabled()) {
+    		logger.debug("refresh catalog=" + catalog);
+    	}
+        catalog.loadSchemas();
+        // refresh the child nodes
+        buildTreeNodesRecursive = true;
+        this.stopBeforeColumns = stopBeforeColumns;
+        try {
+            buildNodes(node);
         } finally {
             buildTreeNodesRecursive = false;
             this.stopBeforeColumns = false;
@@ -393,7 +410,8 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
 
     // -------------- Methods for interface TableModel -----------------------------------------
 
-    public int getRowCount() {
+    @Override
+	public int getRowCount() {
     	if (currentUserObject != null) {
             if (currentUserObject == currentSQLTable) {
                 return currentSQLTable.getFieldCount();
@@ -413,11 +431,13 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
     	}
     }
 
-    public int getColumnCount() {
+    @Override
+	public int getColumnCount() {
         return 5;
     }
 
-    public String getColumnName(int columnIndex) {
+    @Override
+	public String getColumnName(int columnIndex) {
         switch (columnIndex) {
             case 0:
                 return Messages.getString("SQLDataTreeModel.146"); //$NON-NLS-1$
@@ -434,14 +454,16 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
         }
     }
 
-    public Class<String> getColumnClass(int columnIndex) {
+    @Override
+	public Class<String> getColumnClass(int columnIndex) {
         switch (columnIndex) {
             default:
                 return String.class;
         }
     }
 
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
+    @Override
+	public boolean isCellEditable(int rowIndex, int columnIndex) {
         return false;
     }
 
@@ -451,7 +473,8 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
      * @param columnIndex
      * @return
      */
-    public Object getValueAt(int rowIndex, int columnIndex) {
+    @Override
+	public Object getValueAt(int rowIndex, int columnIndex) {
     	if (currentUserObject != null) {
             if (currentUserObject == currentSQLTable) {
                 return currentSQLTable.getFieldAt(rowIndex);
@@ -521,7 +544,8 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
     	}
     }
 
-    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+    @Override
+	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
     // nicht zu tun
     }
 
@@ -533,7 +557,8 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
      *
      * @param   l               the TableModelListener
      */
-    public void addTableModelListener(TableModelListener l) {
+    @Override
+	public void addTableModelListener(TableModelListener l) {
         listenerList.add(TableModelListener.class, l);
     }
 
@@ -543,7 +568,8 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
      *
      * @param   l               the TableModelListener
      */
-    public void removeTableModelListener(TableModelListener l) {
+    @Override
+	public void removeTableModelListener(TableModelListener l) {
         listenerList.remove(TableModelListener.class, l);
     }
 
@@ -562,7 +588,8 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
     		doFireTableChanged(e);
     	} else {
     		Thread t = new Thread(new Runnable() {
-    			public void run() {
+    			@Override
+				public void run() {
     				doFireTableChanged(e);
     			}
     		});
@@ -646,7 +673,8 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
      * Methode für das Interface ListSelectionListener
      * @param lse - Event
      */
-    public void valueChanged(ListSelectionEvent lse) {
+    @Override
+	public void valueChanged(ListSelectionEvent lse) {
         final ListSelectionModel lsm = ((ListSelectionModel) lse.getSource());
         if (lsm.isSelectionEmpty()) {
             currentSQLField = null;
@@ -665,7 +693,8 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
      * Methode für das Interface TreeSelectionListener
      * @param tse - Event
      */
-    public void valueChanged(final TreeSelectionEvent tse) {
+    @Override
+	public void valueChanged(final TreeSelectionEvent tse) {
 		final JTree tree = (JTree) tse.getSource();
     	TreePath[] selectedPaths = tree.getSelectionPaths();
         if (selectedPaths != null && selectedPaths.length > 0) {
@@ -689,12 +718,15 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
             if (currentUserObject instanceof SQLTable) {
                 if (currentSQLTable != null && currentSQLTable.isFieldsLoaded()) {
                 	SwingUtilities.invokeLater(new Runnable() {
-                		public void run() {
+                		@Override
+						public void run() {
                             fireTableRowsDeleted(0, currentSQLTable.getFieldCount() - 1);
                 		}
                 	});
                 }
                 currentSQLConstraint = null;
+                currentSQLProcedure = null;
+                currentSQLSequence = null;
                 currentSQLTable = (SQLTable) currentUserObject;
                 currentSQLSchema = currentSQLTable.getSchema();
                 currentSQLCatalog = currentSQLSchema.getCatalog();
@@ -750,6 +782,8 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
                 currentSQLCatalog = currentSQLSchema.getCatalog();
                 currentSQLDataModel = currentSQLConstraint.getModel();
                 nextSelectedSchema = null;
+                currentSQLProcedure = null;
+                currentSQLSequence = null;
                 fireTableChanged();
             } else if (currentUserObject instanceof SQLIndex) {
                 currentSQLIndex = (SQLIndex) currentUserObject;
@@ -758,10 +792,14 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
                 currentSQLCatalog = currentSQLSchema.getCatalog();
                 currentSQLDataModel = currentSQLIndex.getModel();
                 nextSelectedSchema = null;
+                currentSQLProcedure = null;
+                currentSQLSequence = null;
                 fireTableChanged();
             } else if (currentUserObject instanceof SQLSchema) {
                 currentSQLConstraint = null;
                 currentSQLTable = null;
+                currentSQLProcedure = null;
+                currentSQLSequence = null;
                 currentSQLSchema = (SQLSchema) currentUserObject;
                 currentSQLCatalog = currentSQLSchema.getCatalog();
                 currentSQLDataModel = currentSQLSchema.getModel();
@@ -774,9 +812,12 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
             } else if (currentUserObject instanceof SQLCatalog) {
                 currentSQLConstraint = null;
                 currentSQLTable = null;
+                currentSQLProcedure = null;
+                currentSQLSequence = null;
                 currentSQLSchema = null;
                 currentSQLCatalog = (SQLCatalog) currentUserObject;
                 currentSQLDataModel = currentSQLCatalog.getModel();
+                nextSelectedSchema = null;
                 fireTableChanged();
             } else if (currentUserObject instanceof SQLProcedure) {
                 currentSQLConstraint = null;
@@ -785,6 +826,7 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
                 currentSQLProcedure = (SQLProcedure) currentUserObject;
                 currentSQLSchema = currentSQLProcedure.getSchema();
                 currentSQLDataModel = currentSQLSchema.getModel();
+                currentSQLCatalog = currentSQLSchema.getCatalog();
                 nextSelectedSchema = null;
                 fireTableChanged();
             } else if (currentUserObject instanceof SQLSequence) {
@@ -794,19 +836,23 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
                 currentSQLProcedure = null;
                 currentSQLSchema = currentSQLSequence.getSchema();
                 currentSQLDataModel = currentSQLSchema.getModel();
+                currentSQLCatalog = currentSQLSchema.getCatalog();
                 nextSelectedSchema = null;
                 fireTableChanged();
             } else if (currentUserObject instanceof SQLDataModel) {
                 currentSQLConstraint = null;
                 currentSQLTable = null;
                 currentSQLSchema = null;
+                currentSQLCatalog = null;
                 nextSelectedSchema = null;
                 currentSQLDataModel = (SQLDataModel) currentUserObject;
                 fireTableChanged();
             } else {
                 currentSQLConstraint = null;
+                currentSQLProcedure = null;
                 currentSQLTable = null;
                 currentSQLSchema = null;
+                currentSQLCatalog = null;
                 currentSQLDataModel = null;
                 nextSelectedSchema = null;
                 fireTableChanged();
@@ -845,19 +891,23 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
     /* (non-Javadoc)
      * @see javax.swing.event.TreeWillExpandListener#treeWillCollapse(javax.swing.event.TreeExpansionEvent)
      */
-    public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {
+    @Override
+	public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {
         // nothing to do
     }
 
     /* (non-Javadoc)
      * @see javax.swing.event.TreeWillExpandListener#treeWillExpand(javax.swing.event.TreeExpansionEvent)
      */
-    public void treeWillExpand(final TreeExpansionEvent event) throws ExpandVetoException {
+    @Override
+	public void treeWillExpand(final TreeExpansionEvent event) throws ExpandVetoException {
     	new Thread() {
-    		public void run() {
+    		@Override
+			public void run() {
     			final JTree tree = (JTree) event.getSource();
     			SwingUtilities.invokeLater(new Runnable() {
-    				public void run() {
+    				@Override
+					public void run() {
     	    			tree.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     				}
     			});
@@ -866,7 +916,8 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
     	        buildNodes(node);
     	        setCurrentFilterNode(currentNode);
     			SwingUtilities.invokeLater(new Runnable() {
-    				public void run() {
+    				@Override
+					public void run() {
     	    			tree.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     				}
     			});
@@ -1022,8 +1073,8 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
     }
     
     void buildNodesForCatalogs(SQLDataModel sqlDataModel, DefaultMutableTreeNode parentNode) {
-    	if (sqlDataModel.isSchemaLoaded() == false) {
-    		sqlDataModel.loadSchemas();
+    	if (sqlDataModel.isCatalogsLoaded() == false) {
+    		sqlDataModel.loadCatalogs();
     	}
     	buildNodes(parentNode, sqlDataModel.getCatalogs());
     }

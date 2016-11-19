@@ -11,8 +11,8 @@ import org.apache.log4j.Logger;
 
 import sqlrunner.datamodel.Field;
 import sqlrunner.datamodel.SQLProcedure;
-import sqlrunner.datamodel.SQLSchema;
 import sqlrunner.datamodel.SQLProcedure.Parameter;
+import sqlrunner.datamodel.SQLSchema;
 import sqlrunner.datamodel.SQLSequence;
 import sqlrunner.datamodel.SQLTable;
 import sqlrunner.dbext.GenericDatabaseExtension;
@@ -242,6 +242,8 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 		list.add("format");
 		list.add("do");
 		list.add("instead");
+		list.add("conflict");
+		list.add("excluded");
 		return list;
 	}
 

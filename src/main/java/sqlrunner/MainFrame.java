@@ -96,6 +96,10 @@ import javax.swing.undo.UndoManager;
 
 import org.apache.log4j.Logger;
 
+import dbtools.ConnectionDescription;
+import dbtools.DatabaseSession;
+import dbtools.SQLParser;
+import dbtools.SQLStatement;
 import sqlrunner.base64.Base64Viewer;
 import sqlrunner.config.PreferencesDialog;
 import sqlrunner.datamodel.SQLDataModel;
@@ -104,13 +108,13 @@ import sqlrunner.datamodel.SQLSchema;
 import sqlrunner.datamodel.SQLTable;
 import sqlrunner.datamodel.gui.DataModelFrame;
 import sqlrunner.datetool.DateConverter;
+import sqlrunner.editor.CodeCompletionAssistent;
 import sqlrunner.editor.ExtEditorKit;
 import sqlrunner.editor.ExtEditorPane;
 import sqlrunner.editor.ExtEditorTransferHandler;
 import sqlrunner.editor.GotoLineDialog;
 import sqlrunner.editor.LineHighlightPainter;
 import sqlrunner.editor.SearchReplaceDialog;
-import sqlrunner.editor.CodeCompletionAssistent;
 import sqlrunner.editor.SyntaxContext;
 import sqlrunner.editor.SyntaxDocument;
 import sqlrunner.editor.SyntaxScanner;
@@ -131,10 +135,6 @@ import sqlrunner.talend.SchemaImportFrame;
 import sqlrunner.talend.SchemaUtil;
 import sqlrunner.xml.ExporterFrame;
 import sqlrunner.xml.ImporterFrame;
-import dbtools.ConnectionDescription;
-import dbtools.DatabaseSession;
-import dbtools.SQLParser;
-import dbtools.SQLStatement;
 
 public final class MainFrame extends JFrame implements ActionListener, ListSelectionListener {
 
@@ -346,7 +346,8 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
                 final Window self = this;
                 SwingUtilities.invokeAndWait(new Runnable() {
 
-                    public void run() {
+                    @Override
+					public void run() {
                         initComponents();
                         if (sqlHistory == null) {
                             sqlHistory = new HistoryFrame();
@@ -712,6 +713,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
         menuToolsTextFileConverter.setText(Messages.getString("MainFrame.textFileConverter"));
         menuToolsTextFileConverter.addActionListener(new ActionListener() {
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				openTextFileConverterFrame();
 			}
@@ -720,6 +722,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
         menuToolsTalendSchemaConverter.setText(Messages.getString("MainFrame.talendSchemaConverter"));
         menuToolsTalendSchemaConverter.addActionListener(new ActionListener() {
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				openTalendSchemaConverterFrame();
 			}
@@ -728,6 +731,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
         menuToolsDateTools.setText(Messages.getString("MainFrame.datetool")); 
         menuToolsDateTools.addActionListener(new ActionListener() {
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				openDateTool();
 			}
@@ -744,14 +748,17 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
         menuWindow.setEnabled(true);
         menuWindow.addMenuListener(new MenuListener() {
 
-            public void menuSelected(MenuEvent e) {
+            @Override
+			public void menuSelected(MenuEvent e) {
                 setupWindowMenu();
             }
 
-            public void menuDeselected(MenuEvent e) {
+            @Override
+			public void menuDeselected(MenuEvent e) {
             }
 
-            public void menuCanceled(MenuEvent e) {
+            @Override
+			public void menuCanceled(MenuEvent e) {
             }
 
         });
@@ -1099,7 +1106,8 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
     private void setFocusToEditor() {
         SwingUtilities.invokeLater(new Runnable() {
 
-            public void run() {
+            @Override
+			public void run() {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -1203,7 +1211,8 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
         resultTable.setToolTipText(null); // das verhindert, dass allein durch Mausbewegung Zelleninhalte neu gelesen werden
         resultTable.addKeyListener(new KeyListener() {
 
-            public void keyPressed(KeyEvent e) {
+            @Override
+			public void keyPressed(KeyEvent e) {
                 if (e.getModifiers() == KeyEvent.SHIFT_MASK) {
                     setTableSelectionToIntervalMode(true);
                 } else if (e.getModifiers() == 0) {
@@ -1211,10 +1220,12 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
                 }
             }
 
-            public void keyReleased(KeyEvent e) {
+            @Override
+			public void keyReleased(KeyEvent e) {
             }
 
-            public void keyTyped(KeyEvent e) {
+            @Override
+			public void keyTyped(KeyEvent e) {
             }
         });
         resultTable.registerKeyboardAction(
@@ -1308,7 +1319,8 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
             }
     	} else {
     		SwingUtilities.invokeLater(new Runnable() {
-    			public void run() {
+    			@Override
+				public void run() {
     		        int dividerPos = splitPane.getDividerLocation();
     		        if (dividerPos > splitPane.getMaximumDividerLocation() - 20) {
     		            moveSplitPaneDividerToMiddle();
@@ -1606,6 +1618,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
 
 					private static final long serialVersionUID = 1L;
 
+					@Override
 					public void actionPerformed(ActionEvent e) {
 						mf.setVisible(true);
 						mf.setState(Frame.NORMAL);
@@ -1669,7 +1682,8 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
     /**
      * Methode für das Interface ListSelectionListener
      */
-    public void valueChanged(ListSelectionEvent e) {
+    @Override
+	public void valueChanged(ListSelectionEvent e) {
         final ListSelectionModel lsm = ((ListSelectionModel) e.getSource());
         if (lsm.isSelectionEmpty() == false) {
             if (database.isVerticalView()) {
@@ -1705,7 +1719,8 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
      * @param ausgelöster ActionEvent
      * @see ActionListener.actionPerformed()
      */
-    public void actionPerformed(ActionEvent e) {
+    @Override
+	public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("new")) { 
             menuScriptNew_actionPerformed();
         } else if (e.getActionCommand().equals("open")) { 
@@ -1821,7 +1836,8 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
                     resultTable.setRowSelectionInterval(database.getNewRowIndex(), database.getNewRowIndex());
                     SwingUtilities.invokeLater(new Runnable() {
 
-                        public void run() {
+                        @Override
+						public void run() {
                             tableScrollPane.getVerticalScrollBar().setValue(tableScrollPane.getVerticalScrollBar().getMaximum());
                         }
                     }); // muss verzögert ausgeführt werden !
@@ -1996,14 +2012,17 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
             public void run() {
                 final LongRunningAction lra = new LongRunningAction() {
 
-                    public String getName() {
+                    @Override
+					public String getName() {
                         return "Commit";
                     }
 
-                    public void cancel() {
+                    @Override
+					public void cancel() {
                     }
 
-                    public boolean canBeCanceled() {
+                    @Override
+					public boolean canBeCanceled() {
                         return false;
                     }
                 };
@@ -2032,14 +2051,17 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
             public void run() {
                 final LongRunningAction lra = new LongRunningAction() {
 
-                    public String getName() {
+                    @Override
+					public String getName() {
                         return "Rollback";
                     }
 
-                    public void cancel() {
+                    @Override
+					public void cancel() {
                     }
 
-                    public boolean canBeCanceled() {
+                    @Override
+					public boolean canBeCanceled() {
                         return false;
                     }
                 };
@@ -2232,7 +2254,8 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
         final int y = row * resultTable.getRowHeight();
         SwingUtilities.invokeLater(new Runnable() {
 
-            public void run() {
+            @Override
+			public void run() {
                 tableScrollPane.getVerticalScrollBar().setValue(y);
             }
         }); // muss verzögert ausgeführt werden !
@@ -3033,7 +3056,8 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
         tbButtonStop.setEnabled(false);
         final Thread cancelThread = new Thread(new Runnable() {
 
-            public void run() {
+            @Override
+			public void run() {
                 if (executerThread != null) {
                 	executerThread.interrupt();
                 }
@@ -3073,7 +3097,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
     private void menuEditParse_actionPerformed() {
         final SQLParser parser = new SQLParser(getText(), menuDBDisableParserCheckBox.isSelected());
         for (int i = 0; i < parser.getStatements().size(); i++) {
-            sqlHistory.addBatch((SQLStatement) parser.getStatements().get(i), false);
+            sqlHistory.addBatch(parser.getStatements().get(i), false);
         }
         sqlHistory.setFreezed(true);
     }
@@ -3652,7 +3676,8 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
 
         class MeldungPropertyChangeListener implements PropertyChangeListener {
 
-            public void propertyChange(PropertyChangeEvent evt) {
+            @Override
+			public void propertyChange(PropertyChangeEvent evt) {
                 message.setToolTipText(message.getText());
             }
         }
@@ -3754,7 +3779,8 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
             fileLoaderBusy = true;
             // alten Cursor merken
             SwingUtilities.invokeLater(new Runnable() {
-            	public void run() {
+            	@Override
+				public void run() {
                     setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                     editor.setEditable(false); // hier geht der Caret verloren !!
                     status.message.setText(Messages.getString("MainFrame.200") + f.getName() + " ");  
@@ -3918,7 +3944,8 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
             // und in jedem Fall, denn wenn die Datei nicht existiert wird trotzdem
             // leeres Document angelegt.
             SwingUtilities.invokeLater(new Runnable() {
-            	public void run() {
+            	@Override
+				public void run() {
                     setTextSaveEnabled(false);
                     undoManager.discardAllEdits();
                     updateUndoRedoEnabled();
@@ -3986,7 +4013,8 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
         /**
          * wird bei jeder änderung der Cursorposition aufgerufen
          */
-        public final void caretUpdate(CaretEvent e) {
+        @Override
+		public final void caretUpdate(CaretEvent e) {
             final Document doc = editor.getDocument();
             // Aktualisieren der Statuszeile
             final Element root = doc.getDefaultRootElement();
@@ -4101,15 +4129,18 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
             }
         }
 
-        public void insertUpdate(DocumentEvent e) {
+        @Override
+		public void insertUpdate(DocumentEvent e) {
             test();
         }
 
-        public void removeUpdate(DocumentEvent e) {
+        @Override
+		public void removeUpdate(DocumentEvent e) {
             test();
         }
 
-        public void changedUpdate(DocumentEvent e) {
+        @Override
+		public void changedUpdate(DocumentEvent e) {
             test();
         }
     }
@@ -4319,7 +4350,8 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
 
         public boolean valid = true;
 
-        public void undoableEditHappened(UndoableEditEvent e) {
+        @Override
+		public void undoableEditHappened(UndoableEditEvent e) {
             if (valid) {
                 undoManager.addEdit(e.getEdit());
                 updateUndoRedoEnabled();
@@ -4332,7 +4364,8 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
      */
     private class MenuScriptReopenListener implements ActionListener {
 
-        public void actionPerformed(ActionEvent e) {
+        @Override
+		public void actionPerformed(ActionEvent e) {
             loadFileInDocument(true, e.getActionCommand());
         } // actionPerformed
     } // class MenuScriptReopenListener
@@ -4422,7 +4455,8 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
     		doSetDatabaseBusy(busy, message);
     	} else {
     		SwingUtilities.invokeLater(new Runnable() {
-    			public void run() {
+    			@Override
+				public void run() {
     	    		doSetDatabaseBusy(busy, message);
     			}
     		});
@@ -4434,7 +4468,8 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
     		status.setMessage(message);
     	} else {
     		SwingUtilities.invokeLater(new Runnable() {
-    			public void run() {
+    			@Override
+				public void run() {
     	    		status.setMessage(message);
     			}
     		});
@@ -4646,7 +4681,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
     private void setCellEditorUpdateEnabled(boolean enable) {
         ValueEditor cellEditor;
         for (int i = 0; i < cellEditorList.size(); i++) {
-            cellEditor = (ValueEditor) cellEditorList.elementAt(i);
+            cellEditor = cellEditorList.elementAt(i);
             if (cellEditor != null) {
                 cellEditor.setUpdateEnabled(enable);
             }
@@ -4940,7 +4975,8 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
 
     			private static final long serialVersionUID = 1L;
 
-    			public void actionPerformed(ActionEvent e) {
+    			@Override
+				public void actionPerformed(ActionEvent e) {
 					selectCurrentBlock();
     			}
             	
@@ -4973,6 +5009,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
 
 			private static final long serialVersionUID = 1L;
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				createEditorContextMenu();
 			}
@@ -4984,6 +5021,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
 
 			private static final long serialVersionUID = 1L;
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (getSyntaxChooser().isVisible() == false) {
 					showSyntaxChooser();
@@ -4997,6 +5035,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
 
 			private static final long serialVersionUID = 1L;
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (database != null && database.isConnected()) {
 					int start = editor.getSelectionStart();
@@ -5015,6 +5054,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
 
 			private static final long serialVersionUID = 1L;
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				closeSyntaxChooser();
 			}
@@ -5167,6 +5207,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
 
 		private static final long serialVersionUID = 1L;
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			TransferHandler th = resultTable.getTransferHandler();
 			if (th != null) {
@@ -5176,10 +5217,27 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
     	}
     };
     
+    private Action actionCopyAsSQLListTableContent = new AbstractAction(Messages.getString("MainFrame.menucopyAsSQLList")) {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			int[] rows = resultTable.getSelectedRows();
+			int[] cols = resultTable.getSelectedColumns();
+			if (cols != null && cols.length > 0) {
+				int col = cols[0];
+				String sql = database.createSQLList(col, rows);
+				insertOrReplaceText(sql);
+			}
+    	}
+    };
+
     private Action actionInsertNewTableLineAsCopy = new AbstractAction(Messages.getString("MainFrame.tablecontextmenucreatenewlineascopy")) {
 
 		private static final long serialVersionUID = 1L;
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
             if (database.getNewRowIndex() == -1) {
                 if (database.insertRowInTableAsCopy()) {
@@ -5187,7 +5245,8 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
                     resultTable.setRowSelectionInterval(database.getNewRowIndex(), database.getNewRowIndex());
                     SwingUtilities.invokeLater(new Runnable() {
 
-                        public void run() {
+                        @Override
+						public void run() {
                             tableScrollPane.getVerticalScrollBar().setValue(tableScrollPane.getVerticalScrollBar().getMaximum());
                         }
                     }); // muss verzögert ausgeführt werden !
@@ -5204,6 +5263,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
 
 		private static final long serialVersionUID = 1L;
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			int[] rows = resultTable.getSelectedRows();
 			if (rows != null && rows.length > 0) {
@@ -5265,6 +5325,9 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
                         popup.addSeparator();
                         mi = new JMenuItem(); 
                         mi.setAction(actionCopyTableContent);
+                        popup.add(mi);
+                        mi = new JMenuItem(); 
+                        mi.setAction(actionCopyAsSQLListTableContent);
                         popup.add(mi);
                     }
                     if (database.isReferencingColumn(col) && selectedRows == 1) {
@@ -5448,7 +5511,8 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
         JMenuItem mi = new JMenuItem(Messages.getString("MainFrame.togglecolumnaspk")); 
         mi.addActionListener(new ActionListener() {
 
-            public void actionPerformed(ActionEvent e) {
+            @Override
+			public void actionPerformed(ActionEvent e) {
                 togglePk(col);
             }
         });
@@ -5605,7 +5669,8 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
             this.dateFormatMask = mask;
         }
 
-        public Component getTableCellRendererComponent(
+        @Override
+		public Component getTableCellRendererComponent(
             JTable table,
             Object value,
             boolean isSelected,

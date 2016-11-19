@@ -61,6 +61,7 @@ import javax.swing.tree.TreePath;
 
 import org.apache.log4j.Logger;
 
+import dbtools.ConnectionDescription;
 import sqlrunner.Main;
 import sqlrunner.MainFrame;
 import sqlrunner.XmlFileFilter;
@@ -86,7 +87,6 @@ import sqlrunner.generator.JavaCreatorFrame;
 import sqlrunner.generator.SQLCodeGenerator;
 import sqlrunner.swinghelper.WindowHelper;
 import sqlrunner.talend.SchemaUtil;
-import dbtools.ConnectionDescription;
 
 public final class DataModelFrame extends JFrame {
 
@@ -144,7 +144,8 @@ public final class DataModelFrame extends JFrame {
         super.setVisible(visible);
         if (visible) {
         	Thread t = new Thread(new Runnable() {
-        		public void run() {
+        		@Override
+				public void run() {
                     treeAndTableModel.buildNodesForDataModels();
         		}
         	});
@@ -465,7 +466,8 @@ public final class DataModelFrame extends JFrame {
             }
             case WindowEvent.WINDOW_OPENED: {
             	SwingUtilities.invokeLater(new Runnable() {
-            		public void run() {
+            		@Override
+					public void run() {
             			try {
 							Thread.sleep(100);
 						} catch (InterruptedException e) {}
@@ -538,7 +540,7 @@ public final class DataModelFrame extends JFrame {
                         if (miOverwrite.isSelected()) {
                             mainFrame.setScriptText(sql);
                         } else {
-                            mainFrame.insertOrReplaceText("\n" + sql);
+                            mainFrame.insertOrReplaceText(sql);
                         }
                     }
                     mainFrame.setState(Frame.NORMAL);
@@ -574,7 +576,7 @@ public final class DataModelFrame extends JFrame {
                             mainFrame.setScriptText(sql);
                         }
                     } else {
-                        mainFrame.insertOrReplaceText("\n" + sql);
+                        mainFrame.insertOrReplaceText(sql);
                     }
                 }
                 mainFrame.setState(Frame.NORMAL);
@@ -609,7 +611,7 @@ public final class DataModelFrame extends JFrame {
                             mainFrame.setScriptText(sql);
                         }
                     } else {
-                        mainFrame.insertOrReplaceText("\n" + sql);
+                        mainFrame.insertOrReplaceText(sql);
                     }
                 }
                 mainFrame.setState(Frame.NORMAL);
@@ -633,7 +635,7 @@ public final class DataModelFrame extends JFrame {
                                 useFullName()));
                         mainFrame.setTextSaveEnabled(false);
                     } else {
-                        mainFrame.insertOrReplaceText("\n" + SQLCodeGenerator.getInstance().buildInsertStatement(
+                        mainFrame.insertOrReplaceText(SQLCodeGenerator.getInstance().buildInsertStatement(
                                 treeAndTableModel.getCurrentSQLTable(),
                                 useFullName()));
                     }
@@ -832,21 +834,24 @@ public final class DataModelFrame extends JFrame {
                     if (treeAndTableModel.getCurrentSQLSchema() != null) {
                     	new Thread() {
                     		
-                    		public void run() {
+                    		@Override
+							public void run() {
                     			SwingUtilities.invokeLater(new Runnable() {
-                    				public void run() {
+                    				@Override
+									public void run() {
                     					setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                     				}
                     			});
                             	final String code = SQLCodeGenerator.getInstance().buildCreateTableStatements(treeAndTableModel.getCurrentSQLSchema(), useFullName());
                             	SwingUtilities.invokeLater(new Runnable() {
 
-                                    public void run() {
+                                    @Override
+									public void run() {
                                         if (miOverwrite.isSelected()) {
                                         	mainFrame.setScriptText(code);
                                             mainFrame.setTextSaveEnabled(false);
                                         } else {
-                                            mainFrame.insertOrReplaceText("\n" + code);
+                                            mainFrame.insertOrReplaceText(code);
                                         }
                     					setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                                         mainFrame.setState(Frame.NORMAL);
@@ -880,15 +885,18 @@ public final class DataModelFrame extends JFrame {
                 if (mainFrame.isConnectedAndReady()) {
                     new Thread() {
 
-                        public void run() {
+                        @Override
+						public void run() {
                 			SwingUtilities.invokeLater(new Runnable() {
-                				public void run() {
+                				@Override
+								public void run() {
                 					setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 				}
                 			});
                             treeAndTableModel.refresh(treeAndTableModel.getCurrentSQLDataModel(), treeAndTableModel.getCurrentNode());
                 			SwingUtilities.invokeLater(new Runnable() {
-                				public void run() {
+                				@Override
+								public void run() {
                 					setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                 				}
                 			});
@@ -918,15 +926,18 @@ public final class DataModelFrame extends JFrame {
                     if (treeAndTableModel.getCurrentSQLSchema() != null) {
                         new Thread() {
 
-                            public void run() {
+                            @Override
+							public void run() {
                     			SwingUtilities.invokeLater(new Runnable() {
-                    				public void run() {
+                    				@Override
+									public void run() {
                     					setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                     				}
                     			});
                                 treeAndTableModel.refresh(treeAndTableModel.getCurrentSQLSchema(), treeAndTableModel.getCurrentNode(), true);
                     			SwingUtilities.invokeLater(new Runnable() {
-                    				public void run() {
+                    				@Override
+									public void run() {
                     					setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                     				}
                     			});
@@ -945,6 +956,47 @@ public final class DataModelFrame extends JFrame {
 		}
     };
 			
+    final Action refreshCatalogAction = new AbstractAction() {
+
+		private static final long serialVersionUID = 1L;
+
+    	@Override
+		public void actionPerformed(ActionEvent e) {
+            if (mainFrame != null) {
+                if (mainFrame.isConnectedAndReady()) {
+                    if (treeAndTableModel.getCurrentSQLCatalog() != null) {
+                        new Thread() {
+
+                            @Override
+							public void run() {
+                    			SwingUtilities.invokeLater(new Runnable() {
+                    				@Override
+									public void run() {
+                    					setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                    				}
+                    			});
+                                treeAndTableModel.refresh(treeAndTableModel.getCurrentSQLCatalog(), treeAndTableModel.getCurrentNode(), true);
+                    			SwingUtilities.invokeLater(new Runnable() {
+                    				@Override
+									public void run() {
+                    					setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    				}
+                    			});
+                            }
+
+                        }.start();
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(
+                            DataModelFrame.this,
+                            Messages.getString("DataModelFrame.notready"), 
+                            Messages.getString("DataModelFrame.refreshtables"), 
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+		}
+    };
+
     final Action refreshTableAction = new AbstractAction() {
 
 		private static final long serialVersionUID = 1L;
@@ -956,16 +1008,19 @@ public final class DataModelFrame extends JFrame {
 		            if (treeAndTableModel.getCurrentSQLSchema() != null) {
 		                new Thread() {
 		
-		                    public void run() {
+		                    @Override
+							public void run() {
 		            			SwingUtilities.invokeLater(new Runnable() {
-		            				public void run() {
+		            				@Override
+									public void run() {
 		            					setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		                    			status.messageLabel.setText("refresh current table");
 		            				}
 		            			});
 		                        treeAndTableModel.refreshCurrentTable();
 		            			SwingUtilities.invokeLater(new Runnable() {
-		            				public void run() {
+		            				@Override
+									public void run() {
 		            					setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		            				}
 		            			});
@@ -1063,7 +1118,7 @@ public final class DataModelFrame extends JFrame {
                         mainFrame.setScriptText(sql);
                         mainFrame.setTextSaveEnabled(false);
                     } else {
-                        mainFrame.insertOrReplaceText("\n" + sql);
+                        mainFrame.insertOrReplaceText(sql);
                     }
                     mainFrame.setState(Frame.NORMAL);
                     mainFrame.toFront();
@@ -1536,6 +1591,7 @@ public final class DataModelFrame extends JFrame {
 						status.messageLabel.setText(event.getMessage());
 					} else {
 						SwingUtilities.invokeLater(new Runnable() {
+							@Override
 							public void run() {
 								status.messageLabel.setText(event.getMessage());
 							}
@@ -1824,6 +1880,11 @@ public final class DataModelFrame extends JFrame {
 	        } else if (object instanceof SQLSchema) {
 	            popup = new JPopupMenu();
 	            {
+		            JMenuItem mi = new JMenuItem(Messages.getString("DataModelFrame.sendToEditor"));
+		            mi.addActionListener(enterInTreeAction); 
+		            popup.add(mi);
+	            }
+	            {
 		            final JMenuItem miRefresh = new JMenuItem(Messages.getString("DataModelFrame.refresh")); 
 		            miRefresh.addActionListener(refreshSchemaAction);
 		            popup.add(miRefresh);
@@ -1850,14 +1911,25 @@ public final class DataModelFrame extends JFrame {
 	            	mi.addActionListener(javaCodeGeneratorAction);
 	            	popup.add(mi);
 	            }
+	        } else if (object instanceof SQLCatalog) {
+	            popup = new JPopupMenu();
+	            {
+		            final JMenuItem mi = new JMenuItem(Messages.getString("DataModelFrame.sendToEditor"));
+		            mi.addActionListener(enterInTreeAction); 
+		            popup.add(mi);
+	            }
+	            {
+		            final JMenuItem mi = new JMenuItem(Messages.getString("DataModelFrame.refresh"));
+		            mi.addActionListener(refreshCatalogAction);
+		            popup.add(mi);
+	            }
+	            status.messageLabel.setText(countChildren + " schemas");
 	        } else if (object instanceof SQLDataModel) {
 	            popup = new JPopupMenu();
 	            final JMenuItem mi = new JMenuItem(Messages.getString("DataModelFrame.refresh"));
 	            mi.addActionListener(refreshDBAction);
 	            popup.add(mi);
 	            status.messageLabel.setText(countChildren + " databases");
-	        } else if (object instanceof SQLCatalog) {
-	            status.messageLabel.setText(countChildren + " schemas");
 	        } else if (object instanceof SQLConstraint) {
 	            popup = new JPopupMenu();
 	            final JMenuItem mi = new JMenuItem(Messages.getString("DataModelFrame.dropConstraint"));

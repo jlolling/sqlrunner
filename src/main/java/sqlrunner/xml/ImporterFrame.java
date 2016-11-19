@@ -47,6 +47,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.xml.sax.SAXException;
 
+import dbtools.ConnectionDescription;
+import dbtools.DatabaseSession;
 import sqlrunner.LongRunningAction;
 import sqlrunner.Main;
 import sqlrunner.MainFrame;
@@ -59,8 +61,6 @@ import sqlrunner.flatfileimport.Importer;
 import sqlrunner.flatfileimport.gui.ImportProgressPanel;
 import sqlrunner.resources.ApplicationIcons;
 import sqlrunner.swinghelper.WindowHelper;
-import dbtools.ConnectionDescription;
-import dbtools.DatabaseSession;
 
 /**
  * @author jan
@@ -405,7 +405,8 @@ public final class ImporterFrame extends JFrame implements ActionListener {
     	return panelTableButtons;
     }
 
-    public void actionPerformed(ActionEvent e) {
+    @Override
+	public void actionPerformed(ActionEvent e) {
         if (e.getSource() == buttonOpenFile) {
             // neue Datei öffnen
             final JFileChooser chooser = new JFileChooser();
@@ -575,7 +576,8 @@ public final class ImporterFrame extends JFrame implements ActionListener {
 
         private class MeldungPropertyChangeListener implements PropertyChangeListener {
 
-            public void propertyChange(PropertyChangeEvent evt) {
+            @Override
+			public void propertyChange(PropertyChangeEvent evt) {
                 messageLabel.setToolTipText(messageLabel.getText());
             }
         }
@@ -586,7 +588,8 @@ public final class ImporterFrame extends JFrame implements ActionListener {
         final int y = row * jTable.getRowHeight();
         SwingUtilities.invokeLater(new Runnable() {
 
-            public void run() {
+            @Override
+			public void run() {
                 scrollPaneList.getVerticalScrollBar().setValue(y);
             }
             }); // muss verzögert ausgeführt werden !
@@ -598,11 +601,13 @@ public final class ImporterFrame extends JFrame implements ActionListener {
 		private static final long serialVersionUID = 1L;
 		private final Vector<ImportDescription> impDescs = new Vector<ImportDescription>();
 
-        public int getRowCount() {
+        @Override
+		public int getRowCount() {
             return impDescs.size();
         }
 
-        public int getColumnCount() {
+        @Override
+		public int getColumnCount() {
             return 2;
         }
 
@@ -637,7 +642,8 @@ public final class ImporterFrame extends JFrame implements ActionListener {
          * @param columnIndex
          * @return
          */
-        public Object getValueAt(int rowIndex, int columnIndex) {
+        @Override
+		public Object getValueAt(int rowIndex, int columnIndex) {
             final ImportDescription impDesc = impDescs.get(rowIndex);
             switch (columnIndex) {
                 case 0:
@@ -737,9 +743,9 @@ public final class ImporterFrame extends JFrame implements ActionListener {
             tableModel.clear();
             status.messageLabel.setText(Messages.getString("ImporterFrame.loadschemas")); //$NON-NLS-1$
             if (logger.isDebugEnabled()) {
-            	logger.debug("load schemas...");
+            	logger.debug("load catalogs+schemas...");
             }
-            sqlDataModel.loadSchemas();
+            sqlDataModel.loadCatalogs();
             status.messageLabel.setText(Messages.getString("ImporterFrame.38"));
             if (logger.isDebugEnabled()) {
                 logger.debug("load tables...");
@@ -852,15 +858,18 @@ public final class ImporterFrame extends JFrame implements ActionListener {
             disableEvents(AWTEvent.WINDOW_EVENT_MASK);
             final LongRunningAction lra = new LongRunningAction() {
 
-                public String getName() {
+                @Override
+				public String getName() {
                     return "XML Import";
                 }
 
-                public void cancel() {
+                @Override
+				public void cancel() {
 
                 }
 
-                public boolean canBeCanceled() {
+                @Override
+				public boolean canBeCanceled() {
                     return false;
                 }
 
@@ -983,11 +992,13 @@ public final class ImporterFrame extends JFrame implements ActionListener {
             return ok;
         }
 
-        public long getCountMaxInput() {
+        @Override
+		public long getCountMaxInput() {
             return countAll;
         }
 
-        public long getCountCurrInput() {
+        @Override
+		public long getCountCurrInput() {
             if (importHandle != null) {
                 return importHandle.getCountCurrDatasets();
             } else {
@@ -995,7 +1006,8 @@ public final class ImporterFrame extends JFrame implements ActionListener {
             }
         }
 
-        public long getCountInserts() {
+        @Override
+		public long getCountInserts() {
             if (importHandle != null) {
                 return importHandle.getCountDatasetInserted();
             } else {
@@ -1003,7 +1015,8 @@ public final class ImporterFrame extends JFrame implements ActionListener {
             }
         }
 
-        public long getCountUpdates() {
+        @Override
+		public long getCountUpdates() {
             if (importHandle != null) {
                 return importHandle.getCountDatasetUpdated();
             } else {
@@ -1011,7 +1024,8 @@ public final class ImporterFrame extends JFrame implements ActionListener {
             }
         }
 
-        public long getCountIgnored() {
+        @Override
+		public long getCountIgnored() {
             if (importHandle != null) {
                 return importHandle.getCountCurrDatasets() - importHandle.getCountDatasetInserted() - importHandle.getCountDatasetUpdated();
             } else {
@@ -1019,23 +1033,28 @@ public final class ImporterFrame extends JFrame implements ActionListener {
             }
         }
 
-        public long getStartTime() {
+        @Override
+		public long getStartTime() {
             return startTime;
         }
 
-        public long getStopTime() {
+        @Override
+		public long getStopTime() {
             return stopTime;
         }
 
-        public boolean isStopped() {
+        @Override
+		public boolean isStopped() {
             return stopTime > 0;
         }
 
-        public boolean isRunning() {
+        @Override
+		public boolean isRunning() {
             return stopTime == 0;
         }
 
-        public int getStatusCode() {
+        @Override
+		public int getStatusCode() {
             if (importHandle != null) {
                 return importHandle.getStatus();
             } else {
@@ -1043,16 +1062,19 @@ public final class ImporterFrame extends JFrame implements ActionListener {
             }
         }
 
-        public void abort() {
+        @Override
+		public void abort() {
             logger.info("abort");
             interrupt();
         }
 
-        public String getLogFileName() {
+        @Override
+		public String getLogFileName() {
             return null;
         }
 
-        public String getCurrentAction() {
+        @Override
+		public String getCurrentAction() {
             return currentAction;
         }
 
@@ -1065,6 +1087,7 @@ public final class ImporterFrame extends JFrame implements ActionListener {
             statusCode = Importer.NOT_STARTED;
         }
 
+		@Override
 		public Object getLastValue(String columnName) {
 			// TODO Auto-generated method stub
 			return null;

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import dbtools.SQLPSParam;
+import dbtools.SQLStatement;
 import sqlrunner.datamodel.ModelComparator;
 import sqlrunner.datamodel.SQLConstraint;
 import sqlrunner.datamodel.SQLDataModel;
@@ -21,8 +23,6 @@ import sqlrunner.dbext.DatabaseExtension;
 import sqlrunner.dbext.DatabaseExtensionFactory;
 import sqlrunner.flatfileimport.BasicDataType;
 import sqlrunner.text.StringReplacer;
-import dbtools.SQLPSParam;
-import dbtools.SQLStatement;
 
 /**
  * SQL Code Generator
@@ -52,6 +52,7 @@ public class SQLCodeGenerator {
 		keywordList.add("table");
 		keywordList.add("view");
 		keywordList.add("date");
+		keywordList.add("timestamp");
 		keywordList.add("key");
 		keywordList.add("value");
 		keywordList.add("database");

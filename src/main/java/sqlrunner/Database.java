@@ -53,6 +53,12 @@ import javax.swing.table.TableModel;
 
 import org.apache.log4j.Logger;
 
+import dbtools.ConnectionDescription;
+import dbtools.DatabaseSession;
+import dbtools.DatabaseSessionPool;
+import dbtools.SQLPSParam;
+import dbtools.SQLParser;
+import dbtools.SQLStatement;
 import sqlrunner.datamodel.SQLDataModel;
 import sqlrunner.datamodel.SQLField;
 import sqlrunner.datamodel.SQLSchema;
@@ -65,12 +71,6 @@ import sqlrunner.flatfileimport.BasicDataType;
 import sqlrunner.flatfileimport.FieldDescription;
 import sqlrunner.generator.SQLCodeGenerator;
 import sqlrunner.text.GenericDateUtil;
-import dbtools.ConnectionDescription;
-import dbtools.DatabaseSession;
-import dbtools.DatabaseSessionPool;
-import dbtools.SQLPSParam;
-import dbtools.SQLParser;
-import dbtools.SQLStatement;
 
 public final class Database implements TableModel {
 
@@ -286,6 +286,7 @@ public final class Database implements TableModel {
 	
 	private void startPreloadingDataModel() {
 		preloadDataModelThread = new Thread() {
+			@Override
 			public void run() {
 				dataModel.reloadSchemasAndTables();
 			}
@@ -622,7 +623,7 @@ public final class Database implements TableModel {
 				// ist Statement vollständig ?
 				if (countPk == 0) { // so muss auch der Feldname vorhanden sein
 					// !
-					mainFrame.showDBMessageWithoutContinueAction("no primary key definied!\n"
+					mainFrame.showDBMessageWithoutContinueAction("No primary key definied!\n"
 							+ "define primary keys with context menu in the table header",
 							"delete dataset");
 					ok = false;
@@ -661,17 +662,17 @@ public final class Database implements TableModel {
 						// Fehler ausgeben, dass Testzählung nicht erfolgreich
 						mainFrame.showDBMessageWithoutContinueAction(
 								getDatabaseSession().getLastErrorMessage(),
-								"testcount for check primary key");
+								"Test count for check primary key");
 						ok = false;
 					} else if (testCount == 0) {
-						mainFrame.showDBMessageWithoutContinueAction("test count got 0 datasets ! unable to perform delete",
-								"delete dataset");
+						mainFrame.showDBMessageWithoutContinueAction("Test count got 0 datasets ! unable to perform delete",
+								"Delete dataset");
 						ok = false;
 					} else if (testCount > 1) {
-						mainFrame.showDBMessageWithoutContinueAction("test count got more than one dataset \n("
+						mainFrame.showDBMessageWithoutContinueAction("Test count got more than one dataset \n("
 								+ String.valueOf(testCount)
 								+ ") !",
-								"delete dataset");
+								"Delete dataset");
 						ok = false;
 					}
 					if (testCount == 1) {
@@ -690,7 +691,7 @@ public final class Database implements TableModel {
 						} catch (SQLException sqle) {
 							mainFrame.showDBMessage(
 									sqle.getMessage(),
-									"delete dataset");
+									"Delete dataset");
 							ok = false;
 						} finally {
 							try {
@@ -711,8 +712,8 @@ public final class Database implements TableModel {
 			}
 		} else { // if (getDatabaseSession().isConnected())
 			mainFrame.showDBMessageWithoutContinueAction(
-					"database connection disconnected!",
-					"delete");
+					"Database connection disconnected!",
+					"Delete");
 			ok = false;
 		}
 		if (ok) {
@@ -2625,6 +2626,7 @@ public final class Database implements TableModel {
 	/** List of listeners */
 	protected EventListenerList tabelModelListeners = new EventListenerList();
 
+	@Override
 	public int getRowCount() {
 		if (showsResultSet) {
 			// aus den Metadaten bilden
@@ -2655,6 +2657,7 @@ public final class Database implements TableModel {
 		}
 	}
 
+	@Override
 	public int getColumnCount() {
 		if (showsResultSet) {
 			if (verticalView) {
@@ -2671,6 +2674,7 @@ public final class Database implements TableModel {
 		}
 	}
 
+	@Override
 	public String getColumnName(int columnIndex) {
 		if (showsResultSet) {
 			if (verticalView) {
@@ -2716,6 +2720,7 @@ public final class Database implements TableModel {
 	 * 
 	 * @return class der Spalte
 	 */
+	@Override
 	public Class<?> getColumnClass(int columnIndex) {
 		if (showsResultSet) {
 			if (verticalView) {
@@ -2743,6 +2748,7 @@ public final class Database implements TableModel {
 		}
 	}
 
+	@Override
 	public Object getValueAt(int rowIndex,
 			int columnIndex) {
 		if (rowIndex == -1 || columnIndex == -1) {
@@ -2775,7 +2781,7 @@ public final class Database implements TableModel {
 				return getValueAtLogicalIndexes(rowIndex, columnIndex);
 			}
 		} else {
-			final SQLPSParam param = (SQLPSParam) outputParameters.get(rowIndex);
+			final SQLPSParam param = outputParameters.get(rowIndex);
 			switch (columnIndex) {
 			case 0:
 				return Integer.valueOf(param.getIndex());
@@ -2804,6 +2810,7 @@ public final class Database implements TableModel {
 		}
 	}
 
+	@Override
 	public void setValueAt(
 			Object value,
 			int rowIndex,
@@ -2868,6 +2875,7 @@ public final class Database implements TableModel {
 	 * @return true
 	 * @see #setValueAt
 	 */
+	@Override
 	public boolean isCellEditable(int row, int column) {
 		return false;
 	}
@@ -2969,6 +2977,7 @@ public final class Database implements TableModel {
 	 * @param l
 	 *            the TableModelListener
 	 */
+	@Override
 	public void addTableModelListener(TableModelListener l) {
 		listenerList.add(TableModelListener.class, l);
 	}
@@ -2980,6 +2989,7 @@ public final class Database implements TableModel {
 	 * @param l
 	 *            the TableModelListener
 	 */
+	@Override
 	public void removeTableModelListener(TableModelListener l) {
 		listenerList.remove(TableModelListener.class, l);
 	}
@@ -3006,6 +3016,7 @@ public final class Database implements TableModel {
 			}
 		} else {
 			SwingUtilities.invokeLater(new Runnable() {
+				@Override
 				public void run() {
 					final Object[] listeners = listenerList.getListenerList();
 					// Process the listeners last to first, notifying
@@ -3196,6 +3207,7 @@ public final class Database implements TableModel {
 
 	private final class ColumnPropertyChangeListener implements	PropertyChangeListener {
 
+		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			if (!disablePropertyChangeListener) {
 				final TableColumn column = (TableColumn) evt.getSource();
@@ -3382,8 +3394,8 @@ public final class Database implements TableModel {
             tableName = lastTable;
         }
         if (dataModel != null) {
-            if (dataModel.isSchemaLoaded() == false) {
-                dataModel.loadSchemas();
+            if (dataModel.isCatalogsLoaded() == false) {
+                dataModel.loadCatalogs();
             }
             SQLTable sqlTable = dataModel.getSQLTable(schemaName, tableName);
             if (sqlTable != null) {
@@ -3696,7 +3708,8 @@ public final class Database implements TableModel {
 						lastUpdatedAt = System.currentTimeMillis();
 			            SwingUtilities.invokeLater(new Runnable() {
 
-			                public void run() {
+			                @Override
+							public void run() {
 								if (!mainFrame.isTextSelected()
 										&& parser.getStatementCount() > 1) {
 									mainFrame.setCaretPos(sqlStat.getStartPos());
@@ -3711,7 +3724,8 @@ public final class Database implements TableModel {
 					final SQLStatement lastStatement = currStatement;
 					SwingUtilities.invokeLater(new Runnable() {
 
-		                public void run() {
+		                @Override
+						public void run() {
 							if (!mainFrame.isTextSelected()
 									&& parser.getStatementCount() > 1) {
 								mainFrame.setCaretPos(lastStatement.getStartPos());
@@ -4065,7 +4079,8 @@ public final class Database implements TableModel {
 			if (lastTable != null) {
 				SwingUtilities.invokeLater(new Runnable() {
 
-				    public void run() {
+				    @Override
+					public void run() {
 						mainFrame.status.setTablename(lastTable);
 						mainFrame.status.setToolTipText(lastTable);
 				    }
@@ -4079,7 +4094,8 @@ public final class Database implements TableModel {
 				final javax.swing.Timer timer = new javax.swing.Timer(refreshTime,
 	                new java.awt.event.ActionListener() {
 	                    // wenn Timeout erreicht ...
-	                    public void actionPerformed(ActionEvent e) {
+	                    @Override
+						public void actionPerformed(ActionEvent e) {
 	                        setRefreshNow(true);
 	                    }
 	                });
@@ -4166,7 +4182,7 @@ public final class Database implements TableModel {
 											resultRow[i] = null;
 										}
 									} else if (v instanceof byte[]) {
-										resultRow[i] = (byte[]) v;
+										resultRow[i] = v;
 									} else if (v != null) {
 										try {
 											resultRow[i] = rs.getObject(i + 1);
@@ -4289,7 +4305,8 @@ public final class Database implements TableModel {
 					final int cRowCount = rowCount; 
 					SwingUtilities.invokeLater(new Runnable() {
 
-					    public void run() {
+					    @Override
+						public void run() {
 							mainFrame.showDBMessageWithoutContinueAction("column="
 									+ String.valueOf(ci + 1)
 									+ " row="
@@ -4382,6 +4399,7 @@ public final class Database implements TableModel {
 			// angesehen und Einstellungen zum Hintergrund ignoriert!!
 		}
 
+		@Override
 		public Component getTableCellRendererComponent(JTable table,
 				Object cellValue,
 				boolean isSelected,
@@ -4567,8 +4585,8 @@ public final class Database implements TableModel {
                 schemaName = databaseExtension.getLoginSchema(session.getConnectionDescription());
                 tableName = lastTable;
             }
-            if (dataModel.isSchemaLoaded() == false) {
-                dataModel.loadSchemas();
+            if (dataModel.isCatalogsLoaded() == false) {
+                dataModel.loadCatalogs();
             }
             SQLSchema schema = dataModel.getSchema(schemaName);
     		SQLTable table = new SQLTable(dataModel, schema, tableName);
@@ -4598,4 +4616,51 @@ public final class Database implements TableModel {
         }
 	}
 
+	public String createSQLList(int column, int[] rows) {
+		// collect selected values
+		List<Object> values = new ArrayList<Object>();
+		for (int row : rows) {
+			values.add(getValueAtLogicalIndexes(row, column));
+		}
+		// check which data type column has
+		int columnType = BasicDataType.getBasicTypeByTypes(columnTypesValues[column]);
+		StringBuilder sql = new StringBuilder();
+		if (columnType == BasicDataType.LONG.getId() || columnType == BasicDataType.INTEGER.getId() || columnType == BasicDataType.DOUBLE.getId()) {
+			boolean firstLoop = true;
+			for (Object value : values) {
+				if (firstLoop) {
+					firstLoop = false;
+				} else {
+					sql.append(",\n");
+				}
+				sql.append(value);
+			}
+		} else if (columnType == BasicDataType.DATE.getId()) {
+			boolean firstLoop = true;
+			for (Object value : values) {
+				if (firstLoop) {
+					firstLoop = false;
+				} else {
+					sql.append(",\n");
+				}
+				sql.append("'");
+				sql.append(sdf.format((Date) value));
+				sql.append("'");
+			}
+		} else if (columnType == BasicDataType.CHARACTER.getId()) {
+			boolean firstLoop = true;
+			for (Object value : values) {
+				if (firstLoop) {
+					firstLoop = false;
+				} else {
+					sql.append(",\n");
+				}
+				sql.append("'");
+				sql.append((String) value);
+				sql.append("'");
+			}
+		}
+		return sql.toString();
+	}
+	
 }

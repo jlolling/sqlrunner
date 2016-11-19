@@ -2,7 +2,7 @@
 /C1"Keywords"
 add alter all and any as asc ascending avg authorization at
 by between
-cache call cascade case cast chr column commit connect constraint create coalesce cross comment cycle
+cache call cascade case cast chr column commit connect constraint create coalesce cross comment cycle conflict
 decode delete desc descending distinct drop
 each explain plan except
 primary from foreign
@@ -17,7 +17,7 @@ table to_char to_date to_number type
 left like lower limit
 nextval not null nvl nocache
 max maxvalue materialized min minvalue minus mod modify
-or order outer owner over
+or order outer owner over on
 partition
 round rank dense_rank nulls first last
 sum schema

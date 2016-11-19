@@ -5,6 +5,10 @@ http://www.jan-lolling.de/Home/SQLRunner.html
 
 release notes
 -------------
+Release 15.0
+- Data model window: Database node has context menu
+- Result table: Context menu has function to copy a selected value list as SQL list intio the editor
+
 Release 14.2
 - Bug fixed:
 	* Materialized views from PostgreSQL was not shown
