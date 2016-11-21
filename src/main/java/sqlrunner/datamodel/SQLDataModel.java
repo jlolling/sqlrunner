@@ -202,6 +202,13 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 				catalogsLoaded = true;
 			}
 		} catch (SQLException sqle) {
+			try {
+				if (conn.getAutoCommit() == false) {
+					conn.rollback();
+				}
+			} catch (SQLException e1) {
+				// ignore
+			}
 			errorMessage = "loadCatalogs failed: " + sqle.getMessage();
 			logger.error(errorMessage);
 			if (session != null) {
@@ -277,6 +284,11 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 				schemasLoaded = true;
 			}
 		} catch (Exception e) {
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				// ignore
+			}
 			errorMessage = "loadSchemas (schemas) for catalog: " + catalog.getName() + " failed: " + e.getMessage();
 			logger.error(errorMessage);
 			fireDatamodelEvent("Loading schemas failed.", DatamodelEvent.ACTION_MESSAGE_EVENT);
@@ -476,6 +488,13 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 				ok = true;
 			}	
 		} catch (SQLException sqle) {
+			try {
+				if (conn.getAutoCommit() == false) {
+					conn.rollback();
+				}
+			} catch (SQLException e1) {
+				// ignore
+			}
 			errorMessage = "loadTables for schema=" + schema + " failed: " + sqle.getMessage();
 			if (session != null) {
 				session.error(errorMessage, sqle);
@@ -667,6 +686,13 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 				fireDatamodelEvent("Load procedures for " + schema + " finished: " + schema.getProcedureCount() + " procedures.", DatamodelEvent.ACTION_MESSAGE_EVENT);
 			}
 		} catch (SQLException sqle) {
+			try {
+				if (conn.getAutoCommit() == false) {
+					conn.rollback();
+				}
+			} catch (SQLException e1) {
+				// ignore
+			}
 			// creates a error message to show it in GUI
 			errorMessage = "loadProcedures schema=" 
 				+ schema 
@@ -761,6 +787,13 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 						}
 					}
 				} catch (SQLException sqle) {
+					try {
+						if (conn.getAutoCommit() == false) {
+							conn.rollback();
+						}
+					} catch (SQLException e1) {
+						// ignore
+					}
 					logger.error("loadColumns (get columns) for table=" + table + " failed: " + sqle.getMessage());
 					if (session != null) {
 						session.error(errorMessage, sqle);
@@ -774,6 +807,11 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 				}
 			}	
 		} catch (Exception e) {
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				// ignore
+			}
 			logger.error("loadColumns failed: " + e.getMessage(), e);
 			if (session != null) {
 				session.error(errorMessage);
@@ -870,9 +908,21 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 						rs.close();
 					}
 				} catch (SQLException sqle) {
+					try {
+						if (conn.getAutoCommit() == false) {
+							conn.rollback();
+						}
+					} catch (SQLException e1) {
+						// ignore
+					}
 					logger.error("loadConstraints (pk) for table=" + table + " failed: " + sqle.getMessage());
 					if (session != null) {
 						session.error(errorMessage, sqle);
+					}
+					try {
+						connection.rollback();
+					} catch (SQLException e1) {
+						// ignore
 					}
 					table.setLoadingConstraints(false);
 					return false;
@@ -1030,6 +1080,13 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 				}
 			}
 		} catch (Exception e) {
+			try {
+				if (conn.getAutoCommit() == false) {
+					conn.rollback();
+				}
+			} catch (SQLException e1) {
+				// ignore
+			}
 			logger.error("loadIndexes failed: " + e.getMessage(), e);
 			if (session != null) {
 				session.error(errorMessage, e);

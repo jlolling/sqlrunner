@@ -313,7 +313,7 @@ public class SQLCodeGenerator {
 		return buildCreateStatement(table, fullName, null, false, false, viewAsTable);
 	}
 	
-	private void setupEnclosureChar(SQLObject so) {
+	protected void setupEnclosureChar(SQLObject so) {
 		if (so != null) {
 			DatabaseExtension ext = getDatabaseExtension(so);
 			if (ext != null) {
@@ -324,7 +324,7 @@ public class SQLCodeGenerator {
 		}
 	}
 	
-	private static DatabaseExtension getDatabaseExtension(SQLObject so) {
+	protected static DatabaseExtension getDatabaseExtension(SQLObject so) {
 		SQLDataModel model = so.getModel();
 		if (model != null) {
 			return model.getDatabaseExtension();
@@ -1641,7 +1641,7 @@ public class SQLCodeGenerator {
     	return sortedList;
     }
 
-    private static void sortByForeignKeys(SQLTable table, List<SQLTable> sortedList) {
+    protected static void sortByForeignKeys(SQLTable table, List<SQLTable> sortedList) {
     	List<SQLTable> referencedTables = table.getReferencedTables();
     	for (SQLTable rt : referencedTables) {
     		if (table.equals(rt) == false) {

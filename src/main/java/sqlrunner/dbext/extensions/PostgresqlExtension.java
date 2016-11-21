@@ -61,6 +61,11 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 				rs.close();
 				stat.close();
 			} catch (SQLException sqle) {
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					// ignore
+				}
 				logger.error("setupViewSQLCode for table " + table.getAbsoluteName() + " failed: " + sqle.getMessage(), sqle);
 			}
 			return source;
@@ -143,6 +148,11 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 			stat.close();
 			return code.toString();
 		} catch (SQLException sqle) {
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				// ignore
+			}
 			logger.error("setupProcedureSQLCode for proc " + proc.getAbsoluteName() + " failed: " + sqle.getMessage(), sqle);
 		}
 		return null;
@@ -308,6 +318,13 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 			stat.close();
 			schema.setSequencesLoaded();
 		} catch (SQLException sqle) {
+			try {
+				if (conn.getAutoCommit() == false) {
+					conn.rollback();
+				}
+			} catch (SQLException e1) {
+				// ignore
+			}
 			logger.error("listSequences for schema=" + schema + " failed: " + sqle.getMessage(), sqle);
 		}
 		schema.setLoadingSequences(false);
