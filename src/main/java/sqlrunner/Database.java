@@ -4630,16 +4630,21 @@ public final class Database implements TableModel {
 			for (Object value : values) {
 				if (firstLoop) {
 					firstLoop = false;
+					sql.append("(");
 				} else {
 					sql.append(",\n");
 				}
 				sql.append(value);
+			}
+			if (firstLoop == false) {
+				sql.append(")");
 			}
 		} else if (columnType == BasicDataType.DATE.getId()) {
 			boolean firstLoop = true;
 			for (Object value : values) {
 				if (firstLoop) {
 					firstLoop = false;
+					sql.append("(");
 				} else {
 					sql.append(",\n");
 				}
@@ -4647,17 +4652,24 @@ public final class Database implements TableModel {
 				sql.append(sdf.format((Date) value));
 				sql.append("'");
 			}
+			if (firstLoop == false) {
+				sql.append(")");
+			}
 		} else if (columnType == BasicDataType.CHARACTER.getId()) {
 			boolean firstLoop = true;
 			for (Object value : values) {
 				if (firstLoop) {
 					firstLoop = false;
+					sql.append("(");
 				} else {
 					sql.append(",\n");
 				}
 				sql.append("'");
 				sql.append((String) value);
 				sql.append("'");
+			}
+			if (firstLoop == false) {
+				sql.append(")");
 			}
 		}
 		return sql.toString();

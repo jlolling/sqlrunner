@@ -263,11 +263,12 @@ public final class SQLTable extends SQLObject {
         	if (constraintMap.isEmpty() == false) {
                 for (SQLConstraint constraint : constraintMap.values()) {
                 	if (constraint.getType() == SQLConstraint.FOREIGN_KEY) {
-                		referencedTables.add(constraint.getReferencedTable());
+                		SQLTable rt = constraint.getReferencedTable();
+                		referencedTables.add(rt);
                 	}
                 }
         	}
-    	} 
+    	}
     	return referencedTables;
     }
 

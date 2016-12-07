@@ -25,6 +25,7 @@
 	<classpathentry kind="lib" path="libs/xml-apis-1.0.b2.jar"/>
 	<classpathentry kind="lib" path="libs/joda-time-2.9.2.jar" sourcepath="libs/joda-time-2.9.2-sources.zip"/>
 	<classpathentry kind="lib" path="libs/h2-1.4.192.jar"/>
+	<classpathentry kind="lib" path="libs/jaybird-full-2.2.11.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="lib" path="libs/sapdbc-7_6_00_30_5567.jar"/>
 	<classpathentry kind="lib" path="libs/db2jcc_license_cu.jar"/>

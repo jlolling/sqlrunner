@@ -54,15 +54,17 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 	}
 	
 	private void fireDatamodelEvent(final String message, final int type) {
-		if (SwingUtilities.isEventDispatchThread()) {
-			doFireDatemodelEvent(message, type);
-		} else {
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					doFireDatemodelEvent(message, type);
-				}
-			});
+		if (listener.isEmpty() == false) {
+			if (SwingUtilities.isEventDispatchThread()) {
+				doFireDatemodelEvent(message, type);
+			} else {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						doFireDatemodelEvent(message, type);
+					}
+				});
+			}
 		}
 	}
 	

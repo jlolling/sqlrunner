@@ -1642,16 +1642,24 @@ public class SQLCodeGenerator {
     }
 
     protected static void sortByForeignKeys(SQLTable table, List<SQLTable> sortedList) {
+    	List<SQLTable> currentList = new ArrayList<SQLTable>();
+    	sortByForeignKeys(table, sortedList, currentList);
+    }
+    
+    protected static void sortByForeignKeys(SQLTable table, List<SQLTable> sortedList, List<SQLTable> currentList) {
     	List<SQLTable> referencedTables = table.getReferencedTables();
     	for (SQLTable rt : referencedTables) {
     		if (table.equals(rt) == false) {
     			// ignore self referencing tables
-        		sortByForeignKeys(rt, sortedList);
+    	    	if (currentList.contains(rt) == false) {
+    	    		currentList.add(rt);
+    	    		sortByForeignKeys(rt, sortedList, currentList);
+    	    	}
     		}
     	}
     	if (sortedList.contains(table) == false) {
         	sortedList.add(table);
     	}
     }
-    
+
 }
