@@ -32,6 +32,7 @@ import sqlrunner.datamodel.SQLConstraint;
 import sqlrunner.datamodel.SQLDataModel;
 import sqlrunner.datamodel.SQLField;
 import sqlrunner.datamodel.SQLIndex;
+import sqlrunner.datamodel.SQLObject;
 import sqlrunner.datamodel.SQLProcedure;
 import sqlrunner.datamodel.SQLSchema;
 import sqlrunner.datamodel.SQLSequence;
@@ -65,7 +66,8 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
     private HashMap<SQLDataModel, Integer> counterMap = new HashMap<SQLDataModel, Integer>();
     private boolean buildTreeNodesRecursive = false;
     private boolean stopBeforeColumns = false;
-    private String objectFilter;
+    private String objectFilter = null;
+    private List<SQLObject> currentSelectedSQLObjects = new ArrayList<SQLObject>();
 
     public SQLDataTreeTableModel() {
         super(new SQLObjectTreeNode(Messages.getString("SQLDataTreeModel.rootnode")));
@@ -697,12 +699,29 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
 	public void valueChanged(final TreeSelectionEvent tse) {
 		final JTree tree = (JTree) tse.getSource();
     	TreePath[] selectedPaths = tree.getSelectionPaths();
+    	currentSelectedSQLObjects = new ArrayList<SQLObject>();
         if (selectedPaths != null && selectedPaths.length > 0) {
-        	// TODO check class!
-        	Object o = selectedPaths[0].getLastPathComponent();
-        	if (o instanceof SQLObjectTreeNode) {
-                currentNode = (SQLObjectTreeNode) o;
-        	} else {
+        	boolean firstloop = true;
+        	for (TreePath tp : selectedPaths) {
+    			Object o = tp.getLastPathComponent();
+        		if (firstloop) {
+                	if (o instanceof SQLObjectTreeNode) {
+                        currentNode = (SQLObjectTreeNode) o;
+                	}
+                	firstloop = false;
+        		}
+        		if (o instanceof SQLObjectTreeNode) {
+        			SQLObjectTreeNode node = (SQLObjectTreeNode) o;
+        			Object userObject = node.getUserObject();
+        			if (userObject instanceof SQLObject) {
+            			currentSelectedSQLObjects.add((SQLObject) userObject);
+        			}
+        		}
+        		if (logger.isDebugEnabled()) {
+        			logger.debug(currentSelectedSQLObjects.size() + " SQLObjects selected");
+        		}
+        	}
+        	if (currentNode == null) {
         		return;
         	}
         	DefaultMutableTreeNode nextSelectedNode = null;
@@ -1222,6 +1241,36 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
         return currentSQLSequence;
     }
     
+    public List<SQLSequence> getCurrentSelectedSQLSequences() {
+    	List<SQLSequence> list = new ArrayList<SQLSequence>();
+    	for (SQLObject so : currentSelectedSQLObjects) {
+    		if (so instanceof SQLSequence) {
+    			list.add((SQLSequence) so);
+    		}
+    	}
+    	return list;
+    }
+    
+    public List<SQLTable> getCurrentSelectedSQLTables() {
+    	List<SQLTable> list = new ArrayList<SQLTable>();
+    	for (SQLObject so : currentSelectedSQLObjects) {
+    		if (so instanceof SQLTable) {
+    			list.add((SQLTable) so);
+    		}
+    	}
+    	return list;
+    }
+
+    public List<SQLProcedure> getCurrentSelectedSQLProcedures() {
+    	List<SQLProcedure> list = new ArrayList<SQLProcedure>();
+    	for (SQLObject so : currentSelectedSQLObjects) {
+    		if (so instanceof SQLProcedure) {
+    			list.add((SQLProcedure) so);
+    		}
+    	}
+    	return list;
+    }
+
     public SQLConstraint getCurrentSQLConstraint() {
         return currentSQLConstraint;
     }
@@ -1248,6 +1297,10 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
 		} else {
 			this.objectFilter = objectFilter.trim().toLowerCase();
 		}
+	}
+
+	public List<SQLObject> getCurrentSelectedSQLObjects() {
+		return currentSelectedSQLObjects;
 	}
 
 }

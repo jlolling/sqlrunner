@@ -19,6 +19,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -742,12 +743,18 @@ public final class DataModelFrame extends JFrame {
     	@Override
 		public void actionPerformed(ActionEvent e) {
             if (mainFrame != null) {
-                if (treeAndTableModel.getCurrentSQLTable() != null) {
+    			StringBuilder sql = new StringBuilder();
+    			List<SQLTable> list = treeAndTableModel.getCurrentSelectedSQLTables();
+    			for (SQLTable table : list) {
+    				sql.append(SQLCodeGenerator.getInstance().buildCreateStatement(table, useFullName()));
+    				sql.append("\n");
+    			}
+                if (list.isEmpty() == false) {
                     if (miOverwrite.isSelected()) {
-                        mainFrame.setScriptText(SQLCodeGenerator.getInstance().buildCreateStatement(treeAndTableModel.getCurrentSQLTable(), useFullName()));
+                        mainFrame.setScriptText(sql.toString());
                         mainFrame.setTextSaveEnabled(false);
                     } else {
-                        mainFrame.insertOrReplaceText(SQLCodeGenerator.getInstance().buildCreateStatement(treeAndTableModel.getCurrentSQLTable(), useFullName()));
+                        mainFrame.insertOrReplaceText(sql.toString());
                     }
                     mainFrame.setState(Frame.NORMAL);
                     mainFrame.toFront();
@@ -786,12 +793,18 @@ public final class DataModelFrame extends JFrame {
     	@Override
 		public void actionPerformed(ActionEvent e) {
             if (mainFrame != null) {
-                if (treeAndTableModel.getCurrentSQLTable() != null) {
+    			StringBuilder sql = new StringBuilder();
+    			List<SQLTable> list = treeAndTableModel.getCurrentSelectedSQLTables();
+    			for (SQLTable table : list) {
+    				sql.append(SQLCodeGenerator.getInstance().buildDropStatement(table, useFullName()));
+    				sql.append(";\n");
+    			}
+                if (list.isEmpty() == false) {
                     if (miOverwrite.isSelected()) {
-                        mainFrame.setScriptText(SQLCodeGenerator.getInstance().buildDropStatement(treeAndTableModel.getCurrentSQLTable(), useFullName()));
+                        mainFrame.setScriptText(sql.toString());
                         mainFrame.setTextSaveEnabled(false);
                     } else {
-                        mainFrame.insertOrReplaceText(SQLCodeGenerator.getInstance().buildDropStatement(treeAndTableModel.getCurrentSQLTable(), useFullName()));
+                        mainFrame.insertOrReplaceText(sql.toString());
                     }
                     mainFrame.setState(Frame.NORMAL);
                     mainFrame.toFront();
@@ -808,12 +821,18 @@ public final class DataModelFrame extends JFrame {
     	@Override
 		public void actionPerformed(ActionEvent e) {
             if (mainFrame != null) {
-                if (treeAndTableModel.getCurrentSQLTable() != null) {
+    			StringBuilder sql = new StringBuilder();
+    			List<SQLTable> list = treeAndTableModel.getCurrentSelectedSQLTables();
+    			for (SQLTable table : list) {
+    				sql.append(SQLCodeGenerator.getInstance().buildDeleteStatement(table, useFullName()));
+    				sql.append(";\n");
+    			}
+                if (list.isEmpty() == false) {
                     if (miOverwrite.isSelected()) {
-                        mainFrame.setScriptText(SQLCodeGenerator.getInstance().buildDeleteStatement(treeAndTableModel.getCurrentSQLTable(),useFullName()));
+                        mainFrame.setScriptText(sql.toString());
                         mainFrame.setTextSaveEnabled(false);
                     } else {
-                        mainFrame.insertOrReplaceText(SQLCodeGenerator.getInstance().buildDeleteStatement(treeAndTableModel.getCurrentSQLTable(),useFullName()));
+                        mainFrame.insertOrReplaceText(sql.toString());
                     }
                     mainFrame.setState(Frame.NORMAL);
                     mainFrame.toFront();
@@ -1381,18 +1400,24 @@ public final class DataModelFrame extends JFrame {
 
     	@Override
 		public void actionPerformed(ActionEvent e) {
-        	if (treeAndTableModel.getCurrentSQLProcedure() != null) {
-        		if (mainFrame != null) {
+    		if (mainFrame != null) {
+    			StringBuilder sql = new StringBuilder();
+    			List<SQLProcedure> list = treeAndTableModel.getCurrentSelectedSQLProcedures();
+    			for (SQLProcedure proc : list) {
+    				sql.append(SQLCodeGenerator.getInstance().buildDropStatement(proc, useFullName()));
+    				sql.append(";\n");
+    			}
+    			if (list.isEmpty() == false) {
                     if (miOverwrite.isSelected()) {
-                        mainFrame.setScriptText(SQLCodeGenerator.getInstance().buildDropStatement(treeAndTableModel.getCurrentSQLProcedure(), useFullName()));
+                        mainFrame.setScriptText(sql.toString());
                         mainFrame.setTextSaveEnabled(false);
                     } else {
-                        mainFrame.insertOrReplaceText(SQLCodeGenerator.getInstance().buildDropStatement(treeAndTableModel.getCurrentSQLProcedure(), useFullName()));
+                        mainFrame.insertOrReplaceText(sql.toString());
                     }
                     mainFrame.setState(Frame.NORMAL);
                     mainFrame.toFront();
-        		}
-        	}
+    			}
+    		}
 		}
     };
 
@@ -1425,14 +1450,22 @@ public final class DataModelFrame extends JFrame {
 		public void actionPerformed(ActionEvent e) {
         	if (treeAndTableModel.getCurrentSQLSequence() != null) {
         		if (mainFrame != null) {
-                    if (miOverwrite.isSelected()) {
-                        mainFrame.setScriptText(treeAndTableModel.getCurrentSQLSequence().getCreateCode());
-                        mainFrame.setTextSaveEnabled(false);
-                    } else {
-                        mainFrame.insertOrReplaceText(treeAndTableModel.getCurrentSQLSequence().getCreateCode());
-                    }
-                    mainFrame.setState(Frame.NORMAL);
-                    mainFrame.toFront();
+        			StringBuilder sql = new StringBuilder();
+        			List<SQLSequence> list = treeAndTableModel.getCurrentSelectedSQLSequences();
+        			for (SQLSequence seq : list) {
+        				sql.append(seq.getCreateCode());
+        				sql.append(";\n");
+        			}
+        			if (list.isEmpty() == false) {
+                        if (miOverwrite.isSelected()) {
+                            mainFrame.setScriptText(sql.toString());
+                            mainFrame.setTextSaveEnabled(false);
+                        } else {
+                            mainFrame.insertOrReplaceText(sql.toString());
+                        }
+                        mainFrame.setState(Frame.NORMAL);
+                        mainFrame.toFront();
+        			}
         		}
         	}
 		}
@@ -1444,18 +1477,24 @@ public final class DataModelFrame extends JFrame {
 
     	@Override
 		public void actionPerformed(ActionEvent e) {
-        	if (treeAndTableModel.getCurrentSQLSequence() != null) {
-        		if (mainFrame != null) {
+    		if (mainFrame != null) {
+    			StringBuilder sql = new StringBuilder();
+    			List<SQLSequence> list = treeAndTableModel.getCurrentSelectedSQLSequences();
+    			for (SQLSequence seq : list) {
+    				sql.append(SQLCodeGenerator.getInstance().buildDropStatement(seq, useFullName()));
+    				sql.append(";\n");
+    			}
+    			if (list.isEmpty() == false) {
                     if (miOverwrite.isSelected()) {
-                        mainFrame.setScriptText(SQLCodeGenerator.getInstance().buildDropStatement(treeAndTableModel.getCurrentSQLSequence(), useFullName()));
+                        mainFrame.setScriptText(sql.toString());
                         mainFrame.setTextSaveEnabled(false);
                     } else {
-                        mainFrame.insertOrReplaceText(SQLCodeGenerator.getInstance().buildDropStatement(treeAndTableModel.getCurrentSQLSequence(), useFullName()));
+                        mainFrame.insertOrReplaceText(sql.toString());
                     }
                     mainFrame.setState(Frame.NORMAL);
                     mainFrame.toFront();
-        		}
-        	}
+    			}
+    		}
 		}
     };
 
@@ -1486,18 +1525,24 @@ public final class DataModelFrame extends JFrame {
 
     	@Override
 		public void actionPerformed(ActionEvent e) {
-        	if (treeAndTableModel.getCurrentSQLProcedure() != null) {
-        		if (mainFrame != null) {
+    		if (mainFrame != null) {
+    			StringBuilder sql = new StringBuilder();
+    			List<SQLProcedure> list = treeAndTableModel.getCurrentSelectedSQLProcedures();
+    			for (SQLProcedure proc : list) {
+    				sql.append(SQLCodeGenerator.getInstance().buildCreateStatement(proc, useFullName(), null));
+    				sql.append(";\n");
+    			}
+    			if (list.isEmpty() == false) {
                     if (miOverwrite.isSelected()) {
-                        mainFrame.setScriptText(SQLCodeGenerator.getInstance().buildCreateStatement(treeAndTableModel.getCurrentSQLProcedure(), useFullName(), null));
+                        mainFrame.setScriptText(sql.toString());
                         mainFrame.setTextSaveEnabled(false);
                     } else {
-                        mainFrame.insertOrReplaceText(SQLCodeGenerator.getInstance().buildCreateStatement(treeAndTableModel.getCurrentSQLProcedure(), useFullName(), null));
+                        mainFrame.insertOrReplaceText(sql.toString());
                     }
                     mainFrame.setState(Frame.NORMAL);
                     mainFrame.toFront();
-        		}
-        	}
+    			}
+    		}
 		}
     };
 

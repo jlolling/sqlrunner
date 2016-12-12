@@ -1,10 +1,14 @@
 ﻿Author: Jan Lolling, email: jan.lolling@gmail.com
 Located in Berlin, Germany
 
-http://www.jan-lolling.de/Home/SQLRunner.html
+http://jan-lolling.de/#sqlrunner
 
 release notes
 -------------
+Version 16.0
+- Datamodel: Create/delete and drop actions on tables, views, procedures and sequences works for selected objects
+- Copy and paste of selected rows for one column can by copied into the clipboard as SQL in clause
+
 Release 15.1
 - Datamodel prevents endless loops if tables are in a loop reference
 - The API works in headless mode

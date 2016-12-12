@@ -133,6 +133,7 @@ import sqlrunner.resources.images.ApplicationImages;
 import sqlrunner.swinghelper.WindowHelper;
 import sqlrunner.talend.SchemaImportFrame;
 import sqlrunner.talend.SchemaUtil;
+import sqlrunner.text.ClipboardUtil;
 import sqlrunner.xml.ExporterFrame;
 import sqlrunner.xml.ImporterFrame;
 
@@ -5228,7 +5229,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
 			if (cols != null && cols.length > 0) {
 				int col = cols[0];
 				String sql = database.createSQLList(col, rows);
-				insertOrReplaceText(sql);
+				ClipboardUtil.getInstance().copy(sql);
 			}
     	}
     };
