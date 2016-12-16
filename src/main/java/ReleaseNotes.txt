@@ -5,6 +5,9 @@ http://jan-lolling.de/#sqlrunner
 
 release notes
 -------------
+Version 16.1
+- Datamodel: Bug fixed: foreign key constraints does not show the actual used schema of the referenced table
+
 Version 16.0
 - Datamodel: Create/delete and drop actions on tables, views, procedures and sequences works for selected objects
 - Copy and paste of selected rows for one column can by copied into the clipboard as SQL in clause

@@ -947,8 +947,8 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 								break;
 							}
 							String name = rs.getString("FK_NAME");
-							String fkSchema = rs.getString("FKTABLE_SCHEM");
-							String fkTable = rs.getString("PKTABLE_NAME");
+							String referencedSchema = rs.getString("PKTABLE_SCHEM");
+							String referencedTable = rs.getString("PKTABLE_NAME");
 							SQLConstraint constraint = table.getConstraint(name);
 							if (constraint == null) {
 								constraint = new SQLConstraint(
@@ -956,10 +956,10 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 										table,
 										SQLConstraint.FOREIGN_KEY, 
 										name);
-								if (fkSchema == null || fkSchema.isEmpty()) {
-									fkSchema = table.getSchema().getName();
+								if (referencedSchema == null || referencedSchema.isEmpty()) {
+									referencedSchema = table.getSchema().getName();
 								}
-								constraint.setReferencedTableName(fkSchema + "." + fkTable);
+								constraint.setReferencedTableName(referencedSchema + "." + referencedTable);
 								table.addConstraint(constraint);
 							}
 							constraint.addForeignKeyColumnNamePair(
