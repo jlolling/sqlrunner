@@ -8,16 +8,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import dbtools.ConnectionDescription;
 import sqlrunner.datamodel.Field;
 import sqlrunner.datamodel.SQLProcedure;
-import sqlrunner.datamodel.SQLSchema;
 import sqlrunner.datamodel.SQLProcedure.Parameter;
+import sqlrunner.datamodel.SQLSchema;
 import sqlrunner.datamodel.SQLSequence;
 import sqlrunner.datamodel.SQLTable;
 import sqlrunner.datamodel.SQLTrigger;
 import sqlrunner.flatfileimport.BasicDataType;
-import dbtools.ConnectionDescription;
-import dbtools.DatabaseSession;
 
 public class GenericDatabaseExtension implements DatabaseExtension {
 
@@ -150,7 +149,7 @@ public class GenericDatabaseExtension implements DatabaseExtension {
 			sb.append("comment on table ");
 			sb.append(tableName);
 			sb.append(" is '");
-			sb.append(comment);
+			sb.append(comment.replace("'", "''"));
 			sb.append("'");
     	}
 		return sb.toString();
@@ -165,7 +164,7 @@ public class GenericDatabaseExtension implements DatabaseExtension {
             sb.append(".");
             sb.append(fieldName);
             sb.append(" is '");
-            sb.append(comment.replace('\n', ' '));
+            sb.append(comment.replace('\n', ' ').replace("'", "''"));
             sb.append("'");
     	}
     	return sb.toString();
