@@ -632,7 +632,7 @@ public final class SyntaxScanner {
 				final String s = doc.getText(startPos, endPos - startPos).toLowerCase();
 				// unterscheiden was kommt
 				// Anfang finden
-				char c0 = ' ';
+//				char c0 = ' ';
 				char c;
 				inStringConstants = false;
 				inLineComment = false;
@@ -642,7 +642,7 @@ public final class SyntaxScanner {
 					c = s.charAt(a);
 					// Test ob String-Konstante
 					if (a > 0) {
-						c0 = s.charAt(a - 1);
+//						c0 = s.charAt(a - 1);
 					}
 					if (c == stringLimiter) {
 						inStringConstants = true;
@@ -727,9 +727,9 @@ public final class SyntaxScanner {
 							// Suche nach dem Ende der String-Konstanten
 							for (e = a + 1; e < s.length(); e++) {
 								c = s.charAt(e);
-								if (e > 0) {
-									c0 = s.charAt(e - 1);
-								}
+//								if (e > 0) {
+//									c0 = s.charAt(e - 1);
+//								}
 								if ((c == stringLimiter) || (c == '\n')) {
 									break;
 								}
