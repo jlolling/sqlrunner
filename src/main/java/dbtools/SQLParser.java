@@ -143,7 +143,7 @@ public final class SQLParser {
                         c1 = ' ';
                     }
                     if (inStringConstant == false && inLineComment == false && inBlockComment == false) {
-                        if (c == '\'' && c0 != '\\') { // String-Konstante ??
+                        if (c == '\'') { // String-Konstante ??
                             inStringConstant = true; // es ist ein String-Beginn !
                             temp.append(c); // Zeichen merken
                         } else if ((c == '/') && (c1 == '*')) { // Möglicher Block-Kommentarbeginn ?
@@ -254,7 +254,7 @@ public final class SQLParser {
                                 temp.append(c);
                             }
                         } else if (inStringConstant) {
-                            if (c == '\'' && c0 != '\\') {
+                            if (c == '\'') {
                                 inStringConstant = false;
                             }
                             temp.append(c); // die Zeichen sind aber wichtig !
@@ -589,7 +589,7 @@ public final class SQLParser {
     }
 
     public SQLStatement getStatementAt(int index) {
-        return (SQLStatement) parsedStatements.get(index);
+        return parsedStatements.get(index);
     }
 
     public void printDebugData() {

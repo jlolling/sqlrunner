@@ -644,7 +644,7 @@ public final class SyntaxScanner {
 					if (a > 0) {
 						c0 = s.charAt(a - 1);
 					}
-					if (c == stringLimiter && c0 != '\\') {
+					if (c == stringLimiter) {
 						inStringConstants = true;
 						break; // for-Schleife abbrechen
 					} else {
@@ -730,7 +730,7 @@ public final class SyntaxScanner {
 								if (e > 0) {
 									c0 = s.charAt(e - 1);
 								}
-								if ((c == stringLimiter && c0 != '\\') || (c == '\n')) {
+								if ((c == stringLimiter) || (c == '\n')) {
 									break;
 								}
 							}
