@@ -22,12 +22,15 @@ import javax.swing.ListCellRenderer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.log4j.Logger;
+
+import dbtools.SQLParser;
 import sqlrunner.resources.ApplicationIcons;
 import sqlrunner.swinghelper.WindowHelper;
-import dbtools.SQLParser;
 
 public class AdminToolChooser extends JFrame implements ActionListener, ListSelectionListener {
 
+	private Logger logger = Logger.getLogger(AdminToolChooser.class);
     private static final long serialVersionUID = 1L;
     private final JPanel panelList=new JPanel();
     private final JPanel panelControl=new JPanel();
@@ -108,11 +111,17 @@ public class AdminToolChooser extends JFrame implements ActionListener, ListSele
     public void fillList() {
         AdminStatement astat;
         clearList();
-        final int dbtype=(((mainFrame.getDatabase().getDatabaseSession()).getConnectionDescription()).getDatabaseType()).getAdminOptionID();
+        final int dbtype = mainFrame.getDatabase().getDatabaseSession().getConnectionDescription().getDatabaseType().getAdminOptionID();
+    	if (logger.isDebugEnabled()) {
+    		logger.debug("fillList for dbtype: " + dbtype);
+    	}
         for (int i = 0; i < AdminStatement.adminSQLs.size(); i++) {
-            astat = (AdminStatement) AdminStatement.adminSQLs.elementAt(i);
-            if ((astat.getDbType() == dbtype) || (astat.getDbType() == 0)) {
+            astat = AdminStatement.adminSQLs.elementAt(i);
+            if (astat.getDbType() == dbtype || astat.getDbType() == 0) {
                 model.addElement(astat);
+            	if (logger.isDebugEnabled()) {
+            		logger.debug("add: " + astat);
+            	}
             }
         }
     }
@@ -122,7 +131,8 @@ public class AdminToolChooser extends JFrame implements ActionListener, ListSele
         as = null;
     }
 
-    public void actionPerformed(ActionEvent e) {
+    @Override
+	public void actionPerformed(ActionEvent e) {
         if (e.getSource() == buttonRun) {
             buttonRun_actionPerformed();
         } else if (e.getSource() == buttonEdit) {
@@ -137,13 +147,13 @@ public class AdminToolChooser extends JFrame implements ActionListener, ListSele
         if (as != null) {
             if (as.getCommand() == 'A') {
                 // kompletten Text dem Parser übergeben
-                final SQLParser parser=new SQLParser(as.getSQL(),true);
+                final SQLParser parser = new SQLParser(as.getSQL(),true);
                 mainFrame.toFront();
                 mainFrame.getDatabase().executeScript(parser, false);
             } else if (as.getCommand() == 'E') {
                 ascd = new AdminSQLConfigDialog(this, as.getComment(), as.getSQL());
                 if (ascd.getReturnCode() == AdminSQLConfigDialog.OK) {
-                    final SQLParser parser=new SQLParser(ascd.getSQL(),true);
+                    final SQLParser parser = new SQLParser(ascd.getSQL(),true);
                     mainFrame.toFront();
                     mainFrame.getDatabase().executeScript(parser, false);
                 }
@@ -151,7 +161,8 @@ public class AdminToolChooser extends JFrame implements ActionListener, ListSele
         }
     }
 
-    public void valueChanged(ListSelectionEvent e) {
+    @Override
+	public void valueChanged(ListSelectionEvent e) {
         as = list.getSelectedValue();
     }
 

@@ -7,6 +7,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -16,9 +18,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 import sqlrunner.FileOpenChooserPanel;
 import sqlrunner.swinghelper.WindowHelper;
@@ -302,6 +301,7 @@ public class TextFileConverterFrame extends JFrame {
 			buttonStart.setText(Messages.getString("TextFileConverter.start"));
 			buttonStart.addActionListener(new ActionListener() {
 				
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					startConversion();
 					buttonCancel.setEnabled(true);
@@ -320,6 +320,7 @@ public class TextFileConverterFrame extends JFrame {
 			buttonCancel.setText(Messages.getString("TextFileConverter.cancel"));
 			buttonCancel.addActionListener(new ActionListener() {
 				
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					cancelConversion();
 					buttonCancel.setEnabled(false);
@@ -363,6 +364,7 @@ public class TextFileConverterFrame extends JFrame {
 					public void run() {
 						SwingUtilities.invokeLater(new Runnable() {
 
+							@Override
 							public void run() {
 								labelStatus.setText(
 										Messages.getString("TextFileConverter.convert") + 
@@ -376,6 +378,7 @@ public class TextFileConverterFrame extends JFrame {
 				try {
 					SwingUtilities.invokeLater(new Runnable() {
 
+						@Override
 						public void run() {
 							labelStatus.setText(
 									Messages.getString("TextFileConverter.convert") + 
@@ -391,6 +394,7 @@ public class TextFileConverterFrame extends JFrame {
 							targetLineSeparator);
 					SwingUtilities.invokeLater(new Runnable() {
 
+						@Override
 						public void run() {
 							labelStatus.setText(
 									Messages.getString("TextFileConverter.convert") + 

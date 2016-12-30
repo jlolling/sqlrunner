@@ -1647,15 +1647,15 @@ public class SQLCodeGenerator {
     }
     
     protected static void sortByForeignKeys(SQLTable table, List<SQLTable> sortedList, List<SQLTable> currentList) {
-    	List<SQLTable> referencedTables = table.getReferencedTables();
-    	for (SQLTable rt : referencedTables) {
-    		if (table.equals(rt) == false) {
-    			// ignore self referencing tables
-    	    	if (currentList.contains(rt) == false) {
-    	    		currentList.add(rt);
+    	if (currentList.contains(table) == false) {
+    		currentList.add(table);
+        	List<SQLTable> referencedTables = table.getReferencedTables();
+        	for (SQLTable rt : referencedTables) {
+        		if (table.equals(rt) == false) {
+        			// ignore self referencing tables
     	    		sortByForeignKeys(rt, sortedList, currentList);
-    	    	}
-    		}
+        		}
+        	}
     	}
     	if (sortedList.contains(table) == false) {
         	sortedList.add(table);

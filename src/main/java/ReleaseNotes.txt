@@ -5,6 +5,10 @@ http://jan-lolling.de/#sqlrunner
 
 release notes
 -------------
+Version 16.2
+- Datamodel: Bug fixed: referencial loop references over multiple tables leads to a stack overflow
+- Admin-SQLs: For PostgreSQL added: show sessions and show locks
+
 Version 16.1
 - Datamodel: Bug fixed: foreign key constraints does not show the actual used schema of the referenced table
 - Datamodel: Bug fixed: SQL statement to update the comment escapes now single quotas correctly
@@ -14,7 +18,7 @@ Version 16.0
 - Copy and paste of selected rows for one column can by copied into the clipboard as SQL in clause
 
 Release 15.1
-- Datamodel prevents endless loops if tables are in a loop reference
+- Datamodel prevents endless loops if tables are in a loop reference (self reference)
 - The API works in headless mode
 
 Release 15.0

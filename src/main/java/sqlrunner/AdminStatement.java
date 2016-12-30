@@ -51,7 +51,7 @@ public class AdminStatement extends SQLStatement {
         adminSQLs.removeAllElements();
         String line = null;
         String comment_loc = null;
-        final StringBuffer sql_loc = new StringBuffer();
+        final StringBuilder sql_loc = new StringBuilder();
         int type = -1;
         char command_loc = ' ';
         int pos0;
@@ -67,7 +67,7 @@ public class AdminStatement extends SQLStatement {
                         if (inSQL) { // einen vorhergehenden Lesevorgang einer SQL beenden
                             adminStat = new AdminStatement(type, command_loc, sql_loc.toString(), comment_loc);
                             if (logger.isDebugEnabled()) {
-                                logger.debug(adminStat);
+                            	logger.debug(adminStat.getDbType() + ": " + adminStat.comment);
                             }
                             adminSQLs.addElement(adminStat);
                             inSQL = false;
@@ -91,7 +91,7 @@ public class AdminStatement extends SQLStatement {
             if (sql_loc.length() > 2) {
                 adminStat = new AdminStatement(type, command_loc, sql_loc.toString(), comment_loc);
                 if (logger.isDebugEnabled()) {
-                    logger.debug(adminStat);
+                    logger.debug(adminStat.getDbType() + ": " + adminStat.comment);
                 }
                 adminSQLs.addElement(adminStat);
             }
@@ -118,7 +118,8 @@ public class AdminStatement extends SQLStatement {
         return comment;
     }
     
-    public int hashCode() {
+    @Override
+	public int hashCode() {
     	return adminSQLs.hashCode();
     }
 
