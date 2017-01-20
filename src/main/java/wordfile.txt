@@ -36,7 +36,7 @@ long
 number numeric
 precision
 raw real record rowid
-smallint serial
+smallint serial bigserial
 text mediumtext time timestamp tinyint tinytext
 varchar varchar2 varying
 without
