@@ -5,6 +5,10 @@ http://jan-lolling.de/#sqlrunner
 
 release notes
 -------------
+Version 16.3
+- Datamodel: Bug fixed: Create statements for selected tables included referenced tables (also if not selected)
+- Datamodel: Bug fixed: Create table script for PostgreSQL: bigserial does not have length and precision anymore
+
 Version 16.2
 - Datamodel: Bug fixed: referencial loop references over multiple tables leads to a stack overflow
 - Admin-SQLs: For PostgreSQL added: show sessions and show locks

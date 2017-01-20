@@ -1636,28 +1636,28 @@ public class SQLCodeGenerator {
     public static List<SQLTable> sortByForeignKeys(List<SQLTable> unsortedTables) {
     	List<SQLTable> sortedList = new ArrayList<SQLTable>();
     	for (SQLTable t : unsortedTables) {
-    		sortByForeignKeys(t, sortedList);
+    		sortByForeignKeys(unsortedTables, t, sortedList);
     	}
     	return sortedList;
     }
 
-    protected static void sortByForeignKeys(SQLTable table, List<SQLTable> sortedList) {
+    protected static void sortByForeignKeys(List<SQLTable> unsortedTables, SQLTable table, List<SQLTable> sortedList) {
     	List<SQLTable> currentList = new ArrayList<SQLTable>();
-    	sortByForeignKeys(table, sortedList, currentList);
+    	sortByForeignKeys(unsortedTables, table, sortedList, currentList);
     }
     
-    protected static void sortByForeignKeys(SQLTable table, List<SQLTable> sortedList, List<SQLTable> currentList) {
+    protected static void sortByForeignKeys(List<SQLTable> unsortedTables, SQLTable table, List<SQLTable> sortedList, List<SQLTable> currentList) {
     	if (currentList.contains(table) == false) {
     		currentList.add(table);
         	List<SQLTable> referencedTables = table.getReferencedTables();
         	for (SQLTable rt : referencedTables) {
-        		if (table.equals(rt) == false) {
+        		if (table.equals(rt) == false && unsortedTables.contains(table)) {
         			// ignore self referencing tables
-    	    		sortByForeignKeys(rt, sortedList, currentList);
+    	    		sortByForeignKeys(unsortedTables, rt, sortedList, currentList);
         		}
         	}
     	}
-    	if (sortedList.contains(table) == false) {
+    	if (sortedList.contains(table) == false && unsortedTables.contains(table)) {
         	sortedList.add(table);
     	}
     }

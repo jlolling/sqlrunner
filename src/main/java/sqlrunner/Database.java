@@ -3814,6 +3814,7 @@ public final class Database implements TableModel {
 					sqlStat.setSuccessful(true);
 					sqlStat.setMessage("file " + fileName + " successfully loaded.");
 				} catch (IOException e) {
+					logger.error(e.getMessage(), e);
 					sqlStat.setSuccessful(false);
 					sqlStat.setMessage("Load file " + fileName + " failed:" + e.getMessage());
 				}
@@ -3856,6 +3857,7 @@ public final class Database implements TableModel {
 						cs.close();
 					}
 				} catch (final Exception sqle) {
+					logger.error(sqle.getMessage(), sqle);
 					cancelStatementEnabled = false;
 					// Fehlermeldung
 					sqlStat.setExecStopTime();
@@ -4020,6 +4022,7 @@ public final class Database implements TableModel {
 	                processResultSet(sqlStat, rs, noMetaData);
 					ps.close();
 				} catch (Exception sqle) {
+					logger.error(sqle.getMessage(), sqle);
 					// Fehlermeldung ausgeben
 			    	mainFrame.setStatusMessage("query("
 							+ String.valueOf(sqlStat.getIndex())

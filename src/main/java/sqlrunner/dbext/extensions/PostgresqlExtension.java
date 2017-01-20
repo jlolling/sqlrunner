@@ -172,6 +172,9 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
         } else if ("serial".equalsIgnoreCase(field.getTypeName())) {
         	field.setTypeSQLCode("serial");
     		field.setBasicType(BasicDataType.INTEGER.getId());
+        } else if ("bigserial".equalsIgnoreCase(field.getTypeName())) {
+        	field.setTypeSQLCode("bigserial");
+    		field.setBasicType(BasicDataType.INTEGER.getId());
         } else if ("int8".equalsIgnoreCase(field.getTypeName())) {
         	field.setTypeSQLCode("bigint");
     		field.setBasicType(BasicDataType.LONG.getId());

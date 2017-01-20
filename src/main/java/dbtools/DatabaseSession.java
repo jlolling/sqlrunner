@@ -159,7 +159,8 @@ public class DatabaseSession {
      * @param debug=true if additional output by the activities of database
      * @deprecated
      */
-    public void setDebug(boolean debug_loc) {
+    @Deprecated
+	public void setDebug(boolean debug_loc) {
         if (debug_loc) {
             currentLogger.setLevel(Level.DEBUG);
         } else {
@@ -692,7 +693,7 @@ public class DatabaseSession {
                     PreparedStatement ps;
                     for (Iterator<?> it = psMap.keySet().iterator(); it.hasNext();) {
                         psName = (String) it.next();
-                        ps = (PreparedStatement) psMap.get(psName);
+                        ps = psMap.get(psName);
                         if (ps != null) {
                             ps.close();
                         }
@@ -1049,7 +1050,7 @@ public class DatabaseSession {
     public final PreparedStatement getPreparedStatement(String name) {
         checkUsage(false);
         lastSQL = "use prepared statement "+name;
-        return (PreparedStatement) psMap.get(name);
+        return psMap.get(name);
     }
 
     /**
