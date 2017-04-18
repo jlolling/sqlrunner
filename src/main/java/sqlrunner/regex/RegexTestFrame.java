@@ -58,15 +58,18 @@ public class RegexTestFrame extends JFrame {
 		jSplitPane.setDividerLocation(this.getHeight() / 3);
 	    final DocumentListener docListener = new DocumentListener() {
 
-	        public void insertUpdate(DocumentEvent e) {
+	        @Override
+			public void insertUpdate(DocumentEvent e) {
 	            showRegexMatches();
 	        }
 
-	        public void removeUpdate(DocumentEvent e) {
+	        @Override
+			public void removeUpdate(DocumentEvent e) {
 	            showRegexMatches();
 	        }
 
-	        public void changedUpdate(DocumentEvent e) {
+	        @Override
+			public void changedUpdate(DocumentEvent e) {
 	            showRegexMatches();
 	        }
 	    };
@@ -473,6 +476,7 @@ public class RegexTestFrame extends JFrame {
 			jCheckBoxShowOnlyByGroupFound.setText(Messages.getString("RegexTestFrame.11")); //$NON-NLS-1$
 			jCheckBoxShowOnlyByGroupFound.addItemListener(new ItemListener() {
 
+				@Override
 				public void itemStateChanged(ItemEvent e) {
 					showRegexMatches();
 				}
@@ -489,6 +493,7 @@ public class RegexTestFrame extends JFrame {
 			jCheckBoxCaseSensitive.setText(Messages.getString("RegexTestFrame.caseSensitive"));
 			jCheckBoxCaseSensitive.addItemListener(new ItemListener() {
 
+				@Override
 				public void itemStateChanged(ItemEvent e) {
 					showRegexMatches();
 				}
@@ -524,7 +529,7 @@ public class RegexTestFrame extends JFrame {
 		if (javaEscapedText.startsWith("\"")) {
 			javaEscapedText = javaEscapedText.substring(0, 1);
 		}
-		if (javaEscapedText.endsWith("\"")) {
+		if (javaEscapedText.endsWith("\"") && javaEscapedText.endsWith("\\\"") == false) {
 			int lenght = javaEscapedText.length();
 			javaEscapedText = javaEscapedText.substring(lenght - 1, lenght);
 		}

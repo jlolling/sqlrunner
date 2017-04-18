@@ -5,6 +5,9 @@ http://jan-lolling.de/#sqlrunner
 
 release notes
 -------------
+Version 17.0
+- Loading and replacing Talend context properties implemented
+
 Version 16.3
 - Datamodel: Bug fixed: Create statements for selected tables included referenced tables (also if not selected)
 - Datamodel: Bug fixed: Create table script for PostgreSQL: bigserial does not have length and precision anymore

@@ -131,6 +131,8 @@ import sqlrunner.regex.RegexTestFrame;
 import sqlrunner.resources.ApplicationIcons;
 import sqlrunner.resources.images.ApplicationImages;
 import sqlrunner.swinghelper.WindowHelper;
+import sqlrunner.talend.ContextConfigFrame;
+import sqlrunner.talend.ContextVarResolver;
 import sqlrunner.talend.SchemaImportFrame;
 import sqlrunner.talend.SchemaUtil;
 import sqlrunner.text.ClipboardUtil;
@@ -173,6 +175,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
     private final JMenuItem menuToolsRegexTester = new JMenuItem();
     private final JMenuItem menuToolsTextFileConverter = new JMenuItem();
     private final JMenuItem menuToolsTalendSchemaConverter = new JMenuItem();
+    private final JMenuItem menuEditTalendContextConfig = new JMenuItem();
     private final JMenuItem menuToolsCreateGuid = new JMenuItem();
     private final JMenuItem menuToolsDateTools = new JMenuItem();
     private final JMenuItem menuEditGoto = new JMenuItem();
@@ -253,8 +256,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
     private final JToolBarButton tbButtonComments = new JToolBarButton(ApplicationIcons.COMMENTS_GIF);
     private final JToolBarToggleButton tbButtonHighlighter = new JToolBarToggleButton(ApplicationIcons.HIGHLIGHT_PNG);
     private final JToolBarToggleButton tbButtonTableOrientation = new JToolBarToggleButton(ApplicationIcons.TOGGLETABLEORIENTATIONICON_PNG);
-    public StatusBar status;                                                                                          // darf erst nach editor und resultTable initiert werden !!
-    // Dialoge ...
+    public StatusBar status;
     private GotoLineDialog dlgGo;
     private SearchReplaceDialog dlgSeRe;
     private AboutDialog dlgAbout;
@@ -323,6 +325,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
     private javax.swing.Timer runTimer;
     private long runTimerStartTime = 0;
     private static final Color productiveBackground = new Color(255, 240, 240);
+    private static ContextVarResolver contextVarResolver = new ContextVarResolver();
     
     /**
      * Konstruktur mit Parametern für die Platzierung des Fensters
@@ -666,6 +669,16 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
         menuEditPreferences.setText(Messages.getString("MainFrame.menupreferences")); 
         menuEditPreferences.setActionCommand("preferences"); 
         menuEditPreferences.addActionListener(this);
+        menuEditTalendContextConfig.setText(Messages.getString("MainFrame.talendContextConfig"));
+        menuEditTalendContextConfig.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setupContextResolver();
+				ContextConfigFrame frame = new ContextConfigFrame(MainFrame.this);
+			}
+
+        });
         menuConfig.add(menuEditDefCfg);
         menuConfig.add(menuEditDBCfg);
         menuConfig.add(menuEditAdminCfg);
@@ -683,6 +696,8 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
         menuEdit.add(menuEditCopyToJavaString);
         menuEdit.add(menuEditCopyToJavaStringBuffer);
         menuEdit.add(menuEditConvertToSql);
+        menuEdit.addSeparator();
+        menuEdit.add(menuEditTalendContextConfig);
         menuEdit.addSeparator();
         menuEdit.add(menuEditCommentParams);
         menuEdit.add(menuEditRemoveParamComments);
@@ -3130,21 +3145,26 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
 
     private Thread executerThread;
     
-    private void runScript(final String text, final boolean noMetaData, final int textOffset, boolean explain) {
+    private void runScript(String text, final boolean noMetaData, final int textOffset, boolean explain) {
     	if (logger.isDebugEnabled()) {
     		logger.debug("runScript text=" + text);
     	}
         if (text.trim().length() > 1) {
-            // kompletten Text dem Parser übergeben
+        	try {
+        		text = contextVarResolver.replaceContextVars(text);
+			} catch (Exception e) {
+				showErrorMessage(e.getMessage(), "Replace context variables");
+                setDatabaseBusy(false, "Execute script ends not successful. Replacing context variables failed.");
+				return;
+			}
+        	final String sqlScript = text;
         	executerThread = new Thread() {
         		@Override
         		public void run() {
                     final SQLParser parser = new SQLParser();
-                    
                     parser.disableParser(menuDBDisableParserCheckBox.isSelected());
-                    
                     setDatabaseBusy(true, "Parse script...");
-                    parser.parseScript(text, textOffset);
+                    parser.parseScript(sqlScript, textOffset);
                     setDatabaseBusy(true, "Configure script...");
                     if (parser.getStatements().size() == 0) {
                     	setDatabaseBusy(false, "Execute script ends not successful: No statements found");
@@ -5850,5 +5870,13 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
         }
 
     }
+
+	public static ContextVarResolver getContextVarResolver() {
+		return contextVarResolver;
+	}
+	
+	public void setupContextResolver() {
+		contextVarResolver.readContextVars(getText());
+	}
     
 }

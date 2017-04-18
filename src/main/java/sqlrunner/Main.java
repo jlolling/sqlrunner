@@ -31,12 +31,12 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import sqlrunner.datamodel.SQLField;
-import sqlrunner.log4jpanel.LogPanel;
-import sqlrunner.swinghelper.WindowHelper;
 import dbtools.ConnectionDescription;
 import dbtools.DatabaseSessionPool;
 import dbtools.DatabaseType;
+import sqlrunner.datamodel.SQLField;
+import sqlrunner.log4jpanel.LogPanel;
+import sqlrunner.swinghelper.WindowHelper;
 
 /**
  * Startklasse der Applikation
@@ -53,6 +53,7 @@ public final class Main {
     static String                       programDirectory           = null;
     static String                       cfgFileName                = null;
     static String                       userCfgFileName            = null;
+    static String						contextCfgFileName 		   = null;
     private static String               highlighterFontCfgFileName = null;
     static String                       dbCfgFileName              = null;
     static String                       adminCfgFileName           = null;
@@ -85,6 +86,7 @@ public final class Main {
     static final String                 SQL_HISTORY_FILE           = "sqlhistory.ini";
     static final String                 CONNECTION_LIST_FILE       = "connection.lst";
     static final String                 LOOK_AND_FEEL_CFG_FILE     = "lookandfeel.properties";
+    static final String                 CONTEXT_CFG_FILE           = "talend_context.properties";
     static final String                 WORKING_DIR                = ".sqlrunner";
     static final int                    MAX_FILES_ENTRIES          = 10;
     static int                          maxFilenameLength          = 0;
@@ -181,6 +183,7 @@ public final class Main {
         }
         adminCfgFileName = programDirectory + ADMIN_CFG_FILE_NAME;
         cfgFileName = programDirectory + CFG_FILE_NAME;
+        contextCfgFileName = programDirectory + CONTEXT_CFG_FILE;
         connectionListFileName = programDirectory + CONNECTION_LIST_FILE;
         dbCfgFileName = programDirectory + DB_CFG_FILE_NAME_USER;
         setSqlHistoryFileName(programDirectory + SQL_HISTORY_FILE);
@@ -305,6 +308,7 @@ public final class Main {
             // look and feels laden
             loadLookAndFeels();
             setupCustomSqlTypeMapping();
+            loadContextProperties();
             // Zeilenumbruch konfigurieren
             String osName = userprop.getProperty("CURR_LINE_SEPARATOR");
             if (osName == null) {
@@ -597,7 +601,8 @@ public final class Main {
             mainFrame.toFront();
         } else {
             SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
+                @Override
+				public void run() {
                     mainFrame.validate();
                     mainFrame.setVisible(true); // Frame sichtbar machen
                     mainFrame.toFront();
@@ -678,6 +683,7 @@ public final class Main {
                 MainFrame.sqlHistory.saveList();
                 MainFrame.sqlHistory.dispose();
             }
+            Main.saveContextProp();
             mainFrame.dispose();
             mainFrame = null;
             logger.info("program finished.");
@@ -873,6 +879,19 @@ public final class Main {
     }
 
     /**
+     * lädt die User-Properties aus ini-Datei
+     */
+    static void loadContextProperties() {
+        try {
+            final FileInputStream inifileIn = new FileInputStream(contextCfgFileName);
+            MainFrame.getContextVarResolver().getContextVars().load(inifileIn);
+            inifileIn.close();
+        } catch (IOException e) {
+        	logger.error("loadContextProperties failed: " + e.getMessage(), e);
+        }
+    }
+
+    /**
      * sichert die User-Properties in Datei
      */
     static void saveUserProp() {
@@ -886,6 +905,24 @@ public final class Main {
         } catch (Exception e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("saveUserProp: write in file failed:" + userCfgFileName);
+            }
+        }
+    }
+
+    /**
+     * sichert die User-Properties in Datei
+     */
+    static void saveContextProp() {
+        if (logger.isDebugEnabled()) {
+            logger.debug("save context properties in file " + contextCfgFileName);
+        }
+        try {
+            final FileOutputStream inifileOut = new FileOutputStream(contextCfgFileName);
+            MainFrame.getContextVarResolver().getContextVars().store(inifileOut, "SQLRunner context properties");
+            inifileOut.close();
+        } catch (Exception e) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("saveContextProp: write in file failed:" + contextCfgFileName);
             }
         }
     }
@@ -1435,7 +1472,8 @@ public final class Main {
             }
         } // for (int i = 0; i < args.length; i++)
     	SwingUtilities.invokeLater(new Runnable() {
-    		public void run() {
+    		@Override
+			public void run() {
     	        initialize();
     		}
     	});

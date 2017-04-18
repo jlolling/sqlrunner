@@ -26,7 +26,7 @@
 	<classpathentry kind="lib" path="libs/joda-time-2.9.2.jar" sourcepath="libs/joda-time-2.9.2-sources.zip"/>
 	<classpathentry kind="lib" path="libs/h2-1.4.192.jar"/>
 	<classpathentry kind="lib" path="libs/jaybird-full-2.2.11.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="lib" path="libs/sapdbc-7_6_00_30_5567.jar"/>
 	<classpathentry kind="lib" path="libs/db2jcc_license_cu.jar"/>
 	<classpathentry kind="lib" path="libs/db2jcc4.jar"/>
@@ -35,6 +35,6 @@
 	<classpathentry kind="lib" path="libs/tinylaf.jar"/>
 	<classpathentry kind="lib" path="libs/vertica_4.1.7_jdk_5.jar"/>
 	<classpathentry kind="lib" path="libs/ojdbc6.jar"/>
-	<classpathentry kind="lib" path="libs/postgresql-9.4.1212.jre6.jar"/>
+	<classpathentry kind="lib" path="libs/postgresql-42.0.0.jre7.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
