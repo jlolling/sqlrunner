@@ -21,6 +21,10 @@ public class ContextVarResolver {
 	public void addContextVar(String name, String value) {
 		contextVars.put(name, value);
 	}
+	
+	public void clear() {
+		contextVars.clear();
+	}
 
 	public void initContextVars(String contextFilePath) throws IOException {
 		File contextFile = new File(contextFilePath);

@@ -33,12 +33,25 @@ public class ContextTableModel extends AbstractTableModel {
 			return model.get(rowIndex).getValue();
 		}
 	}
+	
+	public void remove(Map.Entry<Object, Object> entry) {
+		model.remove(entry);
+	}
 
-	public void setData(Properties contextProperties) {
+	public void remove(List<Map.Entry<Object, Object>> listEntries) {
+		model.removeAll(listEntries);
+	}
+
+	public void setData(Properties contextProperties, boolean replaceAll) {
+		if (replaceAll) {
+			model.clear();
+			fireTableDataChanged();
+		}
 		for (Map.Entry<Object, Object> entry : contextProperties.entrySet()) {
-			if (model.contains(entry) == false) {
-				model.add(entry);
+			if (model.contains(entry)) {
+				model.remove(entry);
 			}
+			model.add(entry);
 		}
 		Collections.sort(model, new Comparator<Map.Entry<Object, Object>>() {
 
