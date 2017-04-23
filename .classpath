@@ -36,5 +36,6 @@
 	<classpathentry kind="lib" path="libs/vertica_4.1.7_jdk_5.jar"/>
 	<classpathentry kind="lib" path="libs/ojdbc6.jar"/>
 	<classpathentry kind="lib" path="libs/postgresql-42.0.0.jre7.jar"/>
+	<classpathentry kind="lib" path="libs/jsqlparser-1.0.jar" sourcepath="libs/jsqlparser-1.0-sources.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

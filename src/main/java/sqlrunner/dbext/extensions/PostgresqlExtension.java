@@ -213,7 +213,11 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
         	parameter.setLength(0);
         } else if ("integer".equalsIgnoreCase(parameter.getTypeName())) {
             parameter.setLength(0);
+        } else if ("bigint".equalsIgnoreCase(parameter.getTypeName())) {
+            parameter.setLength(0);
         } else if ("serial".equalsIgnoreCase(parameter.getTypeName())) {
+            parameter.setLength(0);
+        } else if ("bigserial".equalsIgnoreCase(parameter.getTypeName())) {
             parameter.setLength(0);
         } else if ("int8".equalsIgnoreCase(parameter.getTypeName())) {
         	parameter.setTypeName("bigint");

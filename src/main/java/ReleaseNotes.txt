@@ -5,7 +5,7 @@ http://jan-lolling.de/#sqlrunner
 
 release notes
 -------------
-Version 17.0
+Version 17.1
 - Loading and replacing Talend context properties implemented
 
 Version 16.3

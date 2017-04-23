@@ -266,6 +266,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
     private AdminToolChooser atc;
     private PreferencesDialog preferencesDialog;
     private DBLoginDialog dbLogin;
+    private static ContextConfigFrame ccf = null;
     public static HistoryFrame sqlHistory = null;
     public static DataModelFrame dmFrame = null;
     private File currentFile;
@@ -675,7 +676,13 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				setupContextResolver();
-				ContextConfigFrame frame = new ContextConfigFrame(MainFrame.this);
+				if (ccf == null) {
+					ccf = new ContextConfigFrame(MainFrame.this);
+				} else {
+					ccf.toFront();
+					ccf.setVisible(true);
+					WindowHelper.locateWindowAtMiddle(MainFrame.this, ccf);
+				}
 			}
 
         });
@@ -5254,6 +5261,25 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
     	}
     };
 
+    private Action actionCopyCellContent = new AbstractAction(Messages.getString("MainFrame.menucopycell")) {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			int[] rows = resultTable.getSelectedRows();
+			int[] cols = resultTable.getSelectedColumns();
+			if (cols != null && cols.length > 0 && rows != null && rows.length > 0) {
+				int col = cols[0];
+				int row = rows[0];
+				Object content = database.getValueAtLogicalIndexes(row, col);
+				if (content != null) {
+					ClipboardUtil.getInstance().copy(String.valueOf(content));
+				}
+			}
+    	}
+    };
+
     private Action actionInsertNewTableLineAsCopy = new AbstractAction(Messages.getString("MainFrame.tablecontextmenucreatenewlineascopy")) {
 
 		private static final long serialVersionUID = 1L;
@@ -5349,6 +5375,9 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
                         popup.add(mi);
                         mi = new JMenuItem(); 
                         mi.setAction(actionCopyAsSQLListTableContent);
+                        popup.add(mi);
+                        mi = new JMenuItem(); 
+                        mi.setAction(actionCopyCellContent);
                         popup.add(mi);
                     }
                     if (database.isReferencingColumn(col) && selectedRows == 1) {
