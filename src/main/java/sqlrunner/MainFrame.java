@@ -4295,7 +4295,13 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
     }
     
     private String getWordAtPos(String text, int findStartPos) {
+    	if (text.length() == 0) {
+    		return "";
+    	}
     	String word = "";
+    	if (findStartPos >= text.length()) {
+    		findStartPos = text.length() - 1; 
+    	}
         char c = text.charAt(findStartPos);
         if (Character.isLowerCase(c) || Character.isUpperCase(c) || Character.isDigit(c) || c == '_') {
             int startIndex = -1;
@@ -4821,16 +4827,17 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
 			getSyntaxChooser().setVisible(true);
 			if (database != null && database.isConnected()) {
 				SQLDataModel dataModel = database.getDataModel();
-				if (isDotAtCurrentPos()) {
-					String wordBeforeDot = getWordBeforeDot();
+				String wordBeforeDot = getWordBeforeDot();
+				SQLSchema schema = null;
+				if (wordBeforeDot != null && wordBeforeDot.length() > 0) {
 					// it could be a schema or a table
-					SQLSchema schema = dataModel.getSchema(wordBeforeDot);
+					schema = dataModel.getSchema(wordBeforeDot);
 					if (schema != null) {
 						getSyntaxChooser().addItems(schema.getTables());
 						getSyntaxChooser().addItems(schema.getProcedures());
 					}
 				} else {
-					SQLSchema schema = dataModel.getCurrentSQLSchema();
+					schema = dataModel.getCurrentSQLSchema();
 					if (schema != null) {
 						getSyntaxChooser().addItems(schema.getTables());
 						getSyntaxChooser().addItems(schema.getProcedures());
@@ -4848,26 +4855,26 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
 		}
     }
     
-    private boolean isDotAtCurrentPos() {
-    	try {
-    		if (currentTextPos > 0) {
-    			String text = editor.getDocument().getText(currentTextPos - 1, 1);
-    			if (text.endsWith(".")) {
-    				return true;
-    			}
-    		}
-		} catch (BadLocationException e) {
-			logger.error(e);
-		}
-    	return false;
-    }
-    
     private String getWordBeforeDot() {
     	String word = "";
-    	String text = null;
+    	String line = null;
 		try {
-			text = editor.getDocument().getText(0, editor.getDocument().getLength());
-	    	word = getWordAtPos(text, currentTextPos - 2);
+			line = editor.getCurrentLine();
+			line = line.substring(0, currentOffsetInCurrLine);
+			// find dot before
+			int dotPos = -1;
+			for (int n = line.length() - 1, i = n; i >= 0; i--) {
+				char c = line.charAt(i);
+				if (Character.isWhitespace(c) == false) {
+					if (c == '.') {
+						dotPos = i;
+						break;
+					}
+				}
+			}
+			if (dotPos > 0) {
+				word = getWordAtPos(line, dotPos - 1);
+			}
 	    	if (logger.isDebugEnabled()) {
 	    		logger.debug("getWordBeforeDot returns: " + word);
 	    	}
@@ -4877,6 +4884,37 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
     	return word;
     }
     
+    private String getWordAfterDot() {
+    	String word = "";
+    	String line = null;
+		try {
+			line = editor.getCurrentLine();
+			line = line.substring(0, currentOffsetInCurrLine);
+			// find dot before
+			int dotPos = -1;
+			for (int n = line.length() - 1, i = n; i >= 0; i--) {
+				char c = line.charAt(i);
+				if (Character.isWhitespace(c) == false) {
+					if (c == '.') {
+						dotPos = i;
+						break;
+					}
+				}
+			}
+			if (dotPos > 0) {
+				word = getWordAtPos(line, dotPos + 1);
+			} else {
+				word = getWordAtPos(line, currentOffsetInCurrLine);
+			}
+	    	if (logger.isDebugEnabled()) {
+	    		logger.debug("getWordBeforeDot returns: " + word);
+	    	}
+		} catch (BadLocationException e) {
+			logger.error(e);
+		}
+    	return word;
+    }
+
     private Action defaultEnterAction;
     private Action defaultCaretUpAction;
     private Action defaultCaretDownAction;

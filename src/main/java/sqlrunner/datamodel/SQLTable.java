@@ -245,6 +245,14 @@ public final class SQLTable extends SQLObject {
         return field;
     }
     
+    public List<String> getFieldNames() {
+    	List<String> names = new ArrayList<String>();
+    	for (SQLField field : listColumns) {
+    		names.add(field.getName());
+    	}
+    	return names;
+    }
+    
     public boolean isReferencingByForeignKeys() {
     	if (isTable()) {
         	if (constraintMap.isEmpty() == false) {
