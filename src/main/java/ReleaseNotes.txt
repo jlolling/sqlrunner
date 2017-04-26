@@ -7,6 +7,7 @@ release notes
 -------------
 Version 17.1
 - Loading and replacing Talend context properties implemented
+- Datamodel: Bug fixed: System views not shown 
 
 Version 16.3
 - Datamodel: Bug fixed: Create statements for selected tables included referenced tables (also if not selected)

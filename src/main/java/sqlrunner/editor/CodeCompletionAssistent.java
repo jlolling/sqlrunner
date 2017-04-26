@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -13,8 +12,6 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractListModel;
-import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -41,9 +38,6 @@ public class CodeCompletionAssistent extends JPanel {
 	private static final long serialVersionUID = 1L;
 	@SuppressWarnings("rawtypes")
 	private JList jList;
-	private JCheckBox cbKeywords;
-	private JCheckBox cbSchemas;
-	private JCheckBox cbTables;
 	private FilterModel model;
 	private MainFrame mainFrame;
 	private Object selectedItem;
@@ -107,60 +101,8 @@ public class CodeCompletionAssistent extends JPanel {
 		});
 		sp.setViewportView(jList);
 		add(sp, BorderLayout.CENTER);
-		add(createCheckBoxPanel(), BorderLayout.SOUTH);
 	}
 	
-	private JPanel createCheckBoxPanel() {
-		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		cbKeywords = new JCheckBox();
-		cbKeywords.setText(Messages.getString("SyntaxChooser.keywords"));
-		cbKeywords.setSelected(true);
-		cbKeywords.setOpaque(true);
-		cbKeywords.setFocusable(false);
-		cbKeywords.setBackground(ObjectRenderer.keywordBgColor);
-		cbKeywords.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				model.refilter(currentSearchStr);
-			}
-			
-		});
-		cbSchemas = new JCheckBox();
-		cbSchemas.setText(Messages.getString("SyntaxChooser.schemas"));
-		cbSchemas.setSelected(true);
-		cbSchemas.setOpaque(true);
-		cbSchemas.setFocusable(false);
-		cbSchemas.setBackground(ObjectRenderer.schemaBgColor);
-		cbSchemas.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				model.refilter(currentSearchStr);
-			}
-			
-		});
-		cbTables = new JCheckBox();
-		cbTables.setText(Messages.getString("SyntaxChooser.tables"));
-		cbTables.setSelected(true);
-		cbTables.setOpaque(true);
-		cbTables.setFocusable(false);
-		cbTables.setBackground(ObjectRenderer.tableBgColor);
-		cbTables.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				model.refilter(currentSearchStr);
-			}
-			
-		});
-		panel.add(cbKeywords);
-		panel.add(cbSchemas);
-		panel.add(cbTables);
-		return panel;
-	}
-
 	public void addItems(List<? extends Object> listItems) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("addItems: add " + listItems.size() + " keywords");
@@ -343,15 +285,15 @@ public class CodeCompletionAssistent extends JPanel {
 				term = term.toLowerCase();
 			}
 			for (Object item : allItems) {
-				if (cbKeywords.isSelected() && (item instanceof String)) {
+				if (item instanceof String) {
 					if (match((String) item, term)) {
 						filteredItems.add(item);
 					}
-				} else if (cbSchemas.isSelected() && (item instanceof SQLSchema)) {
+				} else if (item instanceof SQLSchema) {
 					if (match(((SQLObject) item).getName(), term)) {
 						filteredItems.add(item);
 					}
-				} else if (cbTables.isSelected() && (item instanceof SQLTable)) {
+				} else if (item instanceof SQLTable) {
 					if (match(((SQLObject) item).getName(), term)) {
 						filteredItems.add(item);
 					}

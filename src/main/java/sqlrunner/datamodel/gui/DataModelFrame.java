@@ -84,7 +84,6 @@ import sqlrunner.datamodel.gui.SQLDataTreeTableModel.TableFolder;
 import sqlrunner.datamodel.gui.SQLDataTreeTableModel.ViewFolder;
 import sqlrunner.export.QueryExportFrame;
 import sqlrunner.flatfileimport.gui.ImportConfiguratorFrame;
-import sqlrunner.generator.JavaCreatorFrame;
 import sqlrunner.generator.SQLCodeGenerator;
 import sqlrunner.swinghelper.WindowHelper;
 import sqlrunner.talend.SchemaUtil;
@@ -1342,22 +1341,6 @@ public final class DataModelFrame extends JFrame {
 		}
     };
 
-    final Action javaCodeGeneratorAction = new AbstractAction() {
-
-		private static final long serialVersionUID = 1L;
-
-    	@Override
-		public void actionPerformed(ActionEvent e) {
-            if (treeAndTableModel.getCurrentSQLSchema() != null) {
-                JFrame frame = new JavaCreatorFrame(treeAndTableModel.getCurrentSQLSchema());
-                WindowHelper.locateWindowAtMiddle(mainFrame, frame);
-                frame.setVisible(true);
-            }
-		}
-    };
-    
-    
-
     final Action dropConstraintAction = new AbstractAction() {
 
 		private static final long serialVersionUID = 1L;
@@ -1976,12 +1959,6 @@ public final class DataModelFrame extends JFrame {
 	            	final JMenuItem mi = new JMenuItem(Messages.getString("DataModelFrame.110"));
 		            mi.addActionListener(deleteAllAction);
 		            popup.add(mi);
-	            }
-	            popup.addSeparator();
-	            {
-	            	final JMenuItem mi = new JMenuItem(Messages.getString("DataModelFrame.codegenerator")); 
-	            	mi.addActionListener(javaCodeGeneratorAction);
-	            	popup.add(mi);
 	            }
 	        } else if (object instanceof SQLCatalog) {
 	            popup = new JPopupMenu();
