@@ -2052,9 +2052,9 @@ public final class DataModelFrame extends JFrame {
             if (mainFrame != null) {
             	Object o = treeAndTableModel.getValueAt(row, 0);
             	if (o instanceof SQLField) {
-                    mainFrame.insertOrReplaceText(((SQLField) o).getName());
+                    mainFrame.insertOrReplaceText(((SQLField) o).getName(), true);
             	} else if (o instanceof SQLIndex) {
-                    mainFrame.insertOrReplaceText(((SQLIndex) o).getName());
+                    mainFrame.insertOrReplaceText(((SQLIndex) o).getName(), true);
             	}
                 mainFrame.setState(Frame.NORMAL);
                 mainFrame.toFront();
@@ -2069,7 +2069,7 @@ public final class DataModelFrame extends JFrame {
             	for (int row : rows) {
                 	Object o = treeAndTableModel.getValueAt(row, 0);
                 	if (o instanceof SQLField) {
-                        mainFrame.insertOrReplaceText(SQLCodeGenerator.getInstance().buildFieldDeclaration((SQLField) o));
+                        mainFrame.insertOrReplaceText(SQLCodeGenerator.getInstance().buildFieldDeclaration((SQLField) o), true);
                         mainFrame.insertFormattedBreak();
                 	}
             	}
@@ -2086,7 +2086,7 @@ public final class DataModelFrame extends JFrame {
             	for (int row : rows) {
                 	Object o = treeAndTableModel.getValueAt(row, 0);
                 	if (o instanceof SQLField) {
-                        mainFrame.insertOrReplaceText(SQLCodeGenerator.getInstance().buildDropStatement(((SQLField) o), useFullName()));
+                        mainFrame.insertOrReplaceText(SQLCodeGenerator.getInstance().buildDropStatement(((SQLField) o), useFullName()), true);
                         mainFrame.insertFormattedBreak();
                 	}
             	}
@@ -2101,49 +2101,49 @@ public final class DataModelFrame extends JFrame {
         if (mainFrame != null) {
             if (useFullName()) {
                 if (userObject instanceof SQLTable) {
-                    mainFrame.insertOrReplaceText(((SQLTable) userObject).getAbsoluteName());
+                    mainFrame.insertOrReplaceText(((SQLTable) userObject).getAbsoluteName(), true);
                     mainFrame.setState(Frame.NORMAL);
                     mainFrame.toFront();
                 } else if (userObject instanceof SQLSchema) {
-                    mainFrame.insertOrReplaceText(((SQLSchema) userObject).getName());
+                    mainFrame.insertOrReplaceText(((SQLSchema) userObject).getName(), true);
                     mainFrame.setState(Frame.NORMAL);
                     mainFrame.toFront();
                 } else if (userObject instanceof SQLCatalog) {
-                    mainFrame.insertOrReplaceText(((SQLCatalog) userObject).getName());
+                    mainFrame.insertOrReplaceText(((SQLCatalog) userObject).getName(), true);
                     mainFrame.setState(Frame.NORMAL);
                     mainFrame.toFront();
                 } else if (userObject instanceof SQLConstraint) {
-                    mainFrame.insertOrReplaceText(((SQLConstraint) userObject).getName());
+                    mainFrame.insertOrReplaceText(((SQLConstraint) userObject).getName(), true);
                     mainFrame.setState(Frame.NORMAL);
                     mainFrame.toFront();
                 } else if (userObject instanceof SQLIndex) {
-                    mainFrame.insertOrReplaceText(((SQLIndex) userObject).getName());
+                    mainFrame.insertOrReplaceText(((SQLIndex) userObject).getName(), true);
                     mainFrame.setState(Frame.NORMAL);
                     mainFrame.toFront();
                 } else if (userObject instanceof SQLProcedure) {
-                    mainFrame.insertOrReplaceText(((SQLProcedure) userObject).getName());
+                    mainFrame.insertOrReplaceText(((SQLProcedure) userObject).getName(), true);
                     mainFrame.setState(Frame.NORMAL);
                     mainFrame.toFront();
                 }
             } else {
                 if (userObject instanceof SQLTable) {
-                    mainFrame.insertOrReplaceText(((SQLTable) userObject).getName());
+                    mainFrame.insertOrReplaceText(((SQLTable) userObject).getName(), true);
                     mainFrame.setState(Frame.NORMAL);
                     mainFrame.toFront();
                 } else if (userObject instanceof SQLSchema) {
-                    mainFrame.insertOrReplaceText(((SQLSchema) userObject).getName());
+                    mainFrame.insertOrReplaceText(((SQLSchema) userObject).getName(), true);
                     mainFrame.setState(Frame.NORMAL);
                     mainFrame.toFront();
                 } else if (userObject instanceof SQLCatalog) {
-                    mainFrame.insertOrReplaceText(((SQLCatalog) userObject).getName());
+                    mainFrame.insertOrReplaceText(((SQLCatalog) userObject).getName(), true);
                     mainFrame.setState(Frame.NORMAL);
                     mainFrame.toFront();
                 } else if (userObject instanceof SQLConstraint) {
-                    mainFrame.insertOrReplaceText(((SQLConstraint) userObject).getName());
+                    mainFrame.insertOrReplaceText(((SQLConstraint) userObject).getName(), true);
                     mainFrame.setState(Frame.NORMAL);
                     mainFrame.toFront();
                 } else if (userObject instanceof SQLProcedure) {
-                    mainFrame.insertOrReplaceText(((SQLProcedure) userObject).getProcedureCallCode());
+                    mainFrame.insertOrReplaceText(((SQLProcedure) userObject).getProcedureCallCode(), true);
                     mainFrame.setState(Frame.NORMAL);
                     mainFrame.toFront();
                 }

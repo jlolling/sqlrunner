@@ -5,6 +5,7 @@ import java.awt.event.MouseEvent;
 import java.util.StringTokenizer;
 
 import javax.swing.JEditorPane;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
@@ -206,6 +207,48 @@ public class ExtEditorPane extends JEditorPane {
         		}
 			}
 		}
+    }
+    
+    public String getLine(int pos) throws BadLocationException {
+		final Document doc = getDocument();
+		final Element root = doc.getDefaultRootElement();
+		final int lineIndex = root.getElementIndex(pos);
+		final Element line = root.getElement(lineIndex);
+		int start = line.getStartOffset();
+		int end = line.getEndOffset();
+		if (start < end) {
+			return doc.getText(start, end - start);
+		}
+		return "";
+    }
+
+    public String getCurrentLine() throws BadLocationException {
+		final Document doc = getDocument();
+		final Element root = doc.getDefaultRootElement();
+		final int lineIndex = root.getElementIndex(getCaret().getDot());
+		final Element line = root.getElement(lineIndex);
+		int start = line.getStartOffset();
+		int end = line.getEndOffset();
+		if (start < end) {
+			return doc.getText(start, end - start);
+		}
+		return "";
+    }
+
+    public int getCurrentLineStartOffset() throws BadLocationException {
+		final Document doc = getDocument();
+		final Element root = doc.getDefaultRootElement();
+		final int lineIndex = root.getElementIndex(getCaret().getDot());
+		final Element line = root.getElement(lineIndex);
+		return line.getStartOffset();
+    }
+
+    public int getCurrentLineEndOffset() throws BadLocationException {
+		final Document doc = getDocument();
+		final Element root = doc.getDefaultRootElement();
+		final int lineIndex = root.getElementIndex(getCaret().getDot());
+		final Element line = root.getElement(lineIndex);
+		return line.getEndOffset();
     }
 
 }

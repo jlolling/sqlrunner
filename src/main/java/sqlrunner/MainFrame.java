@@ -4334,7 +4334,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
             if (startIndex >= 0 && startIndex <= endIndex) {
             	word = text.substring(startIndex, endIndex + 1);
             	if (logger.isDebugEnabled()) {
-            		logger.debug("findCurrentWord word:" + currentWord + " findStartPos:" + findStartPos);
+            		logger.debug("getWordAtPos word:" + currentWord + " findStartPos:" + findStartPos);
             	}
             }
         }
@@ -4565,20 +4565,61 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
             logger.warn("exception: " + ble); 
         }
     }
+    
+    public void insertOrReplaceText(String text) {
+    	insertOrReplaceText(text, false);
+    }
 
     /**
      * wenn im Editor Text markiert ist wird dieser ersetzt und wenn nicht wird neuer Text an
      * die Cursor-position eingefügt.
      * @param text einzufügender Text
      */
-    public void insertOrReplaceText(String text) {
+    public void insertOrReplaceText(String text, boolean integrateInExisting) {
         if (text != null) {
             try {
                 text = text.replace('\r', ' '); // in Statements bereiten diese Zeichen echte Probleme
                 if (editor.getSelectedText() != null) {
                     editor.replaceSelection(text);
                 } else {
-                    editor.getDocument().insertString(editor.getCaretPosition(), text, null);
+                	int pos = editor.getCaretPosition();
+                	if (integrateInExisting) {
+                		// compare the current line if it ends with the given text
+                		String line = editor.getCurrentLine().substring(0, currentOffsetInCurrLine);
+                		int startPosInLine = currentOffsetInCurrLine;
+                		int posInText = 0;
+                		String lineFragment = null;
+                		String textFragment = null;
+                		for (int n = line.length() - 1, i = n; i >= 0; i--) {
+                			lineFragment = line.substring(i);
+                			posInText = n - i + 1;
+                			if (posInText > text.length()) {
+                				startPosInLine = currentOffsetInCurrLine;
+                				break;
+                			}
+                			textFragment = text.substring(0, posInText);
+                			if (lineFragment != null && textFragment != null) {
+                				if (lineFragment.equalsIgnoreCase(textFragment)) {
+                					startPosInLine = i;
+                					break;
+                				}
+                			}
+                		}
+                		int lineStart = editor.getCurrentLineStartOffset();
+                		int lineEnd = editor.getCurrentLineEndOffset();
+                		int startPos = startPosInLine + lineStart;
+                		if (startPosInLine < currentOffsetInCurrLine) {
+                    		int endPos = startPos + posInText;
+                    		if (endPos > lineEnd) {
+                    			endPos = lineEnd;
+                    		}
+                    		int lenToDel = endPos - startPos;
+                    		editor.getDocument().remove(startPos, lenToDel);
+                		}
+                        editor.getDocument().insertString(startPos, text, null);
+                	} else {
+                        editor.getDocument().insertString(pos, text, null);
+                	}
                 }
             } catch (BadLocationException ble) {
                 logger.warn("exception: " + ble); 
