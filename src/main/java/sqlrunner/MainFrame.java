@@ -1101,17 +1101,15 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
         	editorLayeredPane.setLayout(bl);
             editorScrollPane.setViewportView(editor);
             editorLayeredPane.setLayer(editorScrollPane, JLayeredPane.DEFAULT_LAYER);
-			editorLayeredPane.setLayer(getSyntaxChooser(), JLayeredPane.MODAL_LAYER);
+//			editorLayeredPane.setLayer(getSyntaxChooser(), JLayeredPane.MODAL_LAYER);
             editorLayeredPane.add(editorScrollPane);
-			editorLayeredPane.add(getSyntaxChooser(), 1);
-			editorLayeredPane.getLayout().removeLayoutComponent(getSyntaxChooser()); // we need null layout
+//			editorLayeredPane.add(getSyntaxChooser(), 1);
+//			editorLayeredPane.getLayout().removeLayoutComponent(getSyntaxChooser()); // we need null layout
 			editorLayeredPane.validate();
         	bl.addLayoutComponent(editorScrollPane, BorderLayout.CENTER);
     	}
     	return editorLayeredPane;
     }
-    
-    
 
     public void setProductive(boolean productive) {
     	editor.setBackground(productive ? productiveBackground : Color.WHITE);
@@ -1583,6 +1581,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
                     sqlHistory.setMainFrame(this);
                 }
                 WindowHelper.checkAndCorrectWindowBounds(this);
+                editor.requestFocusInWindow();
             }
             default:
                 super.processWindowEvent(winEvent);
@@ -4822,7 +4821,9 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
 					compHeight = 80;
 				}
 			}
-			getSyntaxChooser().setBounds(compX, compY + 20, compWidth, compHeight);
+			int x = compX + 10 + editor.getBounds().x + this.getBounds().x;
+			int y = compY + 80 + editor.getBounds().y + this.getBounds().y;
+			getSyntaxChooser().setBounds(x, y, compWidth, 200);
 			getSyntaxChooser().reset();
 			getSyntaxChooser().setVisible(true);
 			if (database != null && database.isConnected()) {
@@ -4835,19 +4836,19 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
 					if (schema != null) {
 						getSyntaxChooser().addItems(schema.getTables());
 						getSyntaxChooser().addItems(schema.getProcedures());
+						getSyntaxChooser().addItems(schema.getSequences());
 					}
 				} else {
 					schema = dataModel.getCurrentSQLSchema();
 					if (schema != null) {
 						getSyntaxChooser().addItems(schema.getTables());
 						getSyntaxChooser().addItems(schema.getProcedures());
+						getSyntaxChooser().addItems(schema.getSequences());
 					}
-					getSyntaxChooser().addItems(dataModel.getSchemas());
-					getSyntaxChooser().addItems(lexer.getLongKeywords());
 				}
-			} else {
-				getSyntaxChooser().addItems(lexer.getLongKeywords());
+				getSyntaxChooser().addItems(dataModel.getSchemas());
 			}
+			getSyntaxChooser().addItems(lexer.getLongKeywords());
 			findCurrentWord();
 			getSyntaxChooser().setSearchTerm(currentWord);
     	} catch (BadLocationException e) {

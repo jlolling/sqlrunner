@@ -1207,5 +1207,9 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 			throw new IllegalArgumentException("connection cannot be null!");
 		}
 	}
+
+	public void setCurrentSQLSchema(SQLSchema currentSQLSchema) {
+		this.currentSQLSchema = currentSQLSchema;
+	}
 	
 }

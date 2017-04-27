@@ -395,6 +395,20 @@ public final class DataModelFrame extends JFrame {
     	return panel;
     }
     
+    private Action f2Action = new AbstractAction("f2") {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (mainFrame != null) {
+				mainFrame.toFront();
+				mainFrame.requestFocus();
+			}
+		}
+    	
+    };
+
     private Action enterInTreeAction = new AbstractAction("enter-tree") {
 
 		private static final long serialVersionUID = 1L;
@@ -445,6 +459,9 @@ public final class DataModelFrame extends JFrame {
     	final KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false);
     	inputMap.put(enter, "enter");
     	actionMap.put("enter", enterInTreeAction);
+    	final KeyStroke f2 = KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0, false);
+    	inputMap.put(f2, "F2");
+    	actionMap.put("F2", f2Action);
     }
 
     private void updateKeyActionMapForTable() {
@@ -453,6 +470,9 @@ public final class DataModelFrame extends JFrame {
     	final KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false);
     	inputMap.put(enter, "enter");
     	actionMap.put("enter", enterInTableAction);
+    	final KeyStroke f2 = KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0, false);
+    	inputMap.put(f2, "F2");
+    	actionMap.put("F2", f2Action);
     }
 
     @Override
@@ -478,6 +498,15 @@ public final class DataModelFrame extends JFrame {
             		}
             	});
             	break;
+            }
+            case WindowEvent.WINDOW_ACTIVATED: {
+            	SwingUtilities.invokeLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						tree.requestFocusInWindow();
+					}
+				});
             }
         }
         super.processWindowEvent(winEvent);

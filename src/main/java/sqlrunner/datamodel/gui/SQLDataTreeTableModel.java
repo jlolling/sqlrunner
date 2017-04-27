@@ -877,6 +877,9 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
                 fireTableChanged();
             }
 	        setCurrentFilterNode(currentNode);
+	        if (currentSQLDataModel != null) {
+	        	currentSQLDataModel.setCurrentSQLSchema(currentSQLSchema);
+	        }
         }
     }
 

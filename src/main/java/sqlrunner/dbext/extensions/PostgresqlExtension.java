@@ -26,6 +26,8 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 	
 	public PostgresqlExtension() {
 		addDriverClassName(driverClassName);
+		addSQLDatatype("json");
+		addSQLKeywords("on", "conflict");
 	}
 
 	@Override

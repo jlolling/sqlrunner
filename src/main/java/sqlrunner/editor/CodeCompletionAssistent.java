@@ -14,8 +14,8 @@ import javax.swing.AbstractAction;
 import javax.swing.AbstractListModel;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JWindow;
 import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
@@ -29,10 +29,11 @@ import sqlrunner.datamodel.SQLField;
 import sqlrunner.datamodel.SQLObject;
 import sqlrunner.datamodel.SQLProcedure;
 import sqlrunner.datamodel.SQLSchema;
+import sqlrunner.datamodel.SQLSequence;
 import sqlrunner.datamodel.SQLTable;
 import sqlrunner.resources.ApplicationIcons;
 
-public class CodeCompletionAssistent extends JPanel {
+public class CodeCompletionAssistent extends JWindow {
 
 	private final Logger logger = Logger.getLogger(CodeCompletionAssistent.class);
 	private static final long serialVersionUID = 1L;
@@ -50,7 +51,7 @@ public class CodeCompletionAssistent extends JPanel {
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void init() {
-		setLayout(new BorderLayout());
+		getContentPane().setLayout(new BorderLayout());
 		JScrollPane sp = new JScrollPane();
 		model = new FilterModel();
 		jList = new JList(model);
@@ -100,7 +101,7 @@ public class CodeCompletionAssistent extends JPanel {
 			
 		});
 		sp.setViewportView(jList);
-		add(sp, BorderLayout.CENTER);
+		getContentPane().add(sp, BorderLayout.CENTER);
 	}
 	
 	public void addItems(List<? extends Object> listItems) {
@@ -230,6 +231,16 @@ public class CodeCompletionAssistent extends JPanel {
 					setForeground(textColor);
 					setBackground(fieldBgColor);
 				}
+			} else if (value instanceof SQLSequence) {
+				setText(((SQLSequence) value).getName());
+				setIcon(ApplicationIcons.SEQUENCE_PNG);
+				if (isSelected) {
+					setForeground(selectedFgColor);
+					setBackground(selectedBgColor);
+				} else {
+					setForeground(textColor);
+					setBackground(fieldBgColor);
+				}
 			}
 			return this;
 		}
@@ -289,11 +300,7 @@ public class CodeCompletionAssistent extends JPanel {
 					if (match((String) item, term)) {
 						filteredItems.add(item);
 					}
-				} else if (item instanceof SQLSchema) {
-					if (match(((SQLObject) item).getName(), term)) {
-						filteredItems.add(item);
-					}
-				} else if (item instanceof SQLTable) {
+				} else if (item instanceof SQLObject) {
 					if (match(((SQLObject) item).getName(), term)) {
 						filteredItems.add(item);
 					}
@@ -315,6 +322,14 @@ public class CodeCompletionAssistent extends JPanel {
 			} else {
 				return itemStr.toLowerCase().indexOf(searchStr) != -1;
 			}
+		}
+
+		public boolean isSearchMethodStartsWith() {
+			return searchMethodStartsWith;
+		}
+
+		public void setSearchMethodStartsWith(boolean searchMethodStartsWith) {
+			this.searchMethodStartsWith = searchMethodStartsWith;
 		}
 		
 	}

@@ -7,7 +7,9 @@ release notes
 -------------
 Version 17.1
 - Loading and replacing Talend context properties implemented
-- Datamodel: Bug fixed: System views not shown 
+- Datamodel: Bug fixed: System views not shown
+- Code completion assistent: does not limited to the editor bounds anymore
+- Key-mapping: Open with F2 the data model window and jump back to the editor also with F2
 
 Version 16.3
 - Datamodel: Bug fixed: Create statements for selected tables included referenced tables (also if not selected)
