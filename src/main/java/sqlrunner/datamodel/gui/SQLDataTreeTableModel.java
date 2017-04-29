@@ -60,7 +60,8 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
     private transient SQLConstraint currentSQLConstraint = null;
     private transient SQLIndex      currentSQLIndex = null;
     private transient SQLSequence   currentSQLSequence = null;
-    private Object                  currentUserObject;
+    private Object                  currentUserObject = null;
+    private Object                  nextSelectedUserObject = null;
     private DefaultMutableTreeNode  currentNode;
     private DefaultMutableTreeNode  currentFilterStartNode;
     private HashMap<SQLDataModel, Integer> counterMap = new HashMap<SQLDataModel, Integer>();
@@ -725,7 +726,6 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
         		return;
         	}
         	DefaultMutableTreeNode nextSelectedNode = null;
-            Object nextSelectedUserObject = null;
             if (selectedPaths.length > 1) {
             	nextSelectedNode = (DefaultMutableTreeNode) selectedPaths[1].getLastPathComponent();
             }
@@ -1304,6 +1304,10 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
 
 	public List<SQLObject> getCurrentSelectedSQLObjects() {
 		return currentSelectedSQLObjects;
+	}
+
+	public Object getNextSelectedUserObject() {
+		return nextSelectedUserObject;
 	}
 
 }

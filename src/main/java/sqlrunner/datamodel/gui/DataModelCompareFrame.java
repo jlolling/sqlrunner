@@ -37,8 +37,8 @@ public class DataModelCompareFrame extends JFrame {
 	private JTextArea jTextAreaLog;
 	private JButton jButtonStartCompare;
 	private JButton jButtonCreateSQL;
-	private SQLObject schema1;
-	private SQLObject schema2;
+	private SQLObject object1;
+	private SQLObject object2;
 	private Thread compareThread;
 	private ModelComparator comparator;
 	/**
@@ -50,14 +50,14 @@ public class DataModelCompareFrame extends JFrame {
 		setPreferredSize(new Dimension(400,600));
 	}
 
-	public void setSchema1(SQLObject schema1) {
-		this.schema1 = schema1;
-		jTextFieldReferenceSchemaName.setText(schema1.getModel().getName() + "/" + schema1.getName());
+	public void setObject1(SQLObject object1) {
+		this.object1 = object1;
+		jTextFieldReferenceSchemaName.setText(object1.getModel().getName() + "/" + object1.getName());
 	}
 
-	public void setSchema2(SQLObject schema2) {
-		this.schema2 = schema2;
-		jTextFieldTargetSchemaName.setText(schema2.getModel().getName() + "/" + schema2.getName());
+	public void setObject2(SQLObject object2) {
+		this.object2 = object2;
+		jTextFieldTargetSchemaName.setText(object2.getModel().getName() + "/" + object2.getName());
 	}
 
 	private void initGui() {
@@ -190,12 +190,12 @@ public class DataModelCompareFrame extends JFrame {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if (schema1 != null && schema2 != null) {
-						SQLObject t = schema2;
-						schema2 = schema1;
-						schema1 = t;
-						jTextFieldReferenceSchemaName.setText(schema1.getModel().getName() + "/" + schema1.getName());
-						jTextFieldTargetSchemaName.setText(schema2.getModel().getName() + "/" + schema2.getName());
+					if (object1 != null && object2 != null) {
+						SQLObject t = object2;
+						object2 = object1;
+						object1 = t;
+						jTextFieldReferenceSchemaName.setText(object1.getModel().getName() + "/" + object1.getName());
+						jTextFieldTargetSchemaName.setText(object2.getModel().getName() + "/" + object2.getName());
 					}
 				}
 
@@ -230,7 +230,7 @@ public class DataModelCompareFrame extends JFrame {
 	
 	private void startCompare() {
 		if (logger.isDebugEnabled()) {
-			logger.debug("startCompare " + schema1 + " with " + schema2);
+			logger.debug("startCompare " + object1 + " with " + object2);
 		}
 		if (compareThread != null && compareThread.isAlive()) {
 			compareThread.interrupt();
@@ -265,10 +265,10 @@ public class DataModelCompareFrame extends JFrame {
 					
 				});
 				try {
-					if (schema1 instanceof SQLSchema && schema2 instanceof SQLSchema) {
-						comparator.compare((SQLSchema) schema1, (SQLSchema) schema2);
-					} else if (schema1 instanceof SQLTable && schema2 instanceof SQLTable) {
-						comparator.compare((SQLTable) schema1, (SQLTable) schema2);
+					if (object1 instanceof SQLSchema && object2 instanceof SQLSchema) {
+						comparator.compare((SQLSchema) object1, (SQLSchema) object2);
+					} else if (object1 instanceof SQLTable && object2 instanceof SQLTable) {
+						comparator.compare((SQLTable) object1, (SQLTable) object2);
 					}
 				} finally {
 	    			SwingUtilities.invokeLater(new Runnable() {
@@ -310,6 +310,7 @@ public class DataModelCompareFrame extends JFrame {
 		}
 		jButtonCreateSQL.setEnabled(false);
 		Thread t = new Thread() {
+			@Override
 			public void run() {
 				try {
 					jTextAreaLog.setText(SQLCodeGenerator.getInstance().buildSchemaUpdateStatements(comparator));

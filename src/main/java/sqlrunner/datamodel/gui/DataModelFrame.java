@@ -165,7 +165,7 @@ public final class DataModelFrame extends JFrame {
         menuModel.setText(Messages.getString("DataModelFrame.1")); 
         menuBar.add(menuModel);
         miSchemaCompare.setText(Messages.getString("DataModelFrame.schemaCompare"));
-        miSchemaCompare.addActionListener(compareSchemaAction);
+        miSchemaCompare.addActionListener(compareSQLObjectAction);
         miClose.setText(Messages.getString("DataModelFrame.2"));
         miClose.addActionListener(closeAction);
         menuModel.add(miSchemaCompare);
@@ -1616,18 +1616,18 @@ public final class DataModelFrame extends JFrame {
 		}
     };
 
-    final Action compareSchemaAction = new AbstractAction() {
+    final Action compareSQLObjectAction = new AbstractAction() {
 
 		private static final long serialVersionUID = 1L;
 
     	@Override
 		public void actionPerformed(ActionEvent e) {
-			SQLSchema s1 = treeAndTableModel.getCurrentSQLSchema();
-			SQLSchema s2 = treeAndTableModel.getNextSelectedSQLSchema();
-			if (s1 != null && s2 != null && s1 != s2) {
+			Object s1 = treeAndTableModel.getCurrentUserObject();
+			Object s2 = treeAndTableModel.getNextSelectedUserObject();
+			if ((s1 instanceof SQLSchema && s2 instanceof SQLSchema) || (s1 instanceof SQLTable && s2 instanceof SQLTable)) {
 				DataModelCompareFrame cf = new DataModelCompareFrame();
-				cf.setSchema1(s1);
-				cf.setSchema2(s2);
+				cf.setObject1((SQLObject) s1);
+				cf.setObject2((SQLObject) s2);
 				cf.setVisible(true);
 		        WindowHelper.locateWindowAtMiddleOfDefaultScreen(cf);
 		        cf.pack();
