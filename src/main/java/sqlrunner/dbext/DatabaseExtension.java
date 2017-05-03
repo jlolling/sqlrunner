@@ -4,13 +4,13 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.util.List;
 
+import dbtools.ConnectionDescription;
 import sqlrunner.datamodel.Field;
 import sqlrunner.datamodel.SQLProcedure;
 import sqlrunner.datamodel.SQLSchema;
 import sqlrunner.datamodel.SQLSequence;
 import sqlrunner.datamodel.SQLTable;
 import sqlrunner.datamodel.SQLTrigger;
-import dbtools.ConnectionDescription;
 
 public interface DatabaseExtension {
 	
@@ -208,5 +208,12 @@ public interface DatabaseExtension {
 	 * @return SQL code
 	 */
 	public String getSequenceNextValSQL(SQLSequence sequence);
+	
+	/**
+	 * returns the select statement which best counts the rows for a table
+	 * @param table
+	 * @return
+	 */
+	public String getSelectCountRows(SQLTable table);
 	
 }

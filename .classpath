@@ -8,7 +8,6 @@
 	<classpathentry kind="lib" path="libs/ldapjdbc.jar"/>
 	<classpathentry kind="lib" path="libs/liquidlnf.jar"/>
 	<classpathentry kind="lib" path="libs/servlet.jar"/>
-	<classpathentry kind="lib" path="libs/jconn3.jar"/>
 	<classpathentry kind="lib" path="libs/derby.jar"/>
 	<classpathentry kind="lib" path="libs/sqljdbc.jar"/>
 	<classpathentry kind="lib" path="libs/ui.jar"/>

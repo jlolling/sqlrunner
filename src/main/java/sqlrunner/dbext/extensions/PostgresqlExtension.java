@@ -356,4 +356,15 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 		return sql.toString();
 	}
 
+	@Override
+	public String getSelectCountRows(SQLTable table) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT reltuples::bigint AS estimate from pg_class where oid = to_regclass('");
+		sb.append(table.getAbsoluteName());
+		sb.append("')");
+		return sb.toString();
+	}
+
+	
+	
 }

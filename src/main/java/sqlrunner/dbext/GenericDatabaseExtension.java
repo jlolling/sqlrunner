@@ -288,5 +288,12 @@ public class GenericDatabaseExtension implements DatabaseExtension {
 		return "";
 	}
 
+	@Override
+	public String getSelectCountRows(SQLTable table) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("select count(1) from "); 
+		sb.append(table.getAbsoluteName());
+		return sb.toString();
+	}
 
 }

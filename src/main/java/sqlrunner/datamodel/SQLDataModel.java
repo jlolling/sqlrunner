@@ -16,7 +16,6 @@ import dbtools.DatabaseSession;
 import dbtools.DatabaseSessionPool;
 import sqlrunner.dbext.DatabaseExtension;
 import sqlrunner.dbext.DatabaseExtensionFactory;
-import sqlrunner.generator.SQLCodeGenerator;
 
 public final class SQLDataModel extends SQLObject implements Comparable<SQLDataModel> {
 
@@ -834,7 +833,7 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 		if (session != null) {
 			fireDatamodelEvent("Count datasets for table " + table, DatamodelEvent.ACTION_MESSAGE_EVENT);
 			try {
-				ResultSet rs = session.executeQuery(SQLCodeGenerator.getInstance().buildCountAllStatement(table, true));
+				ResultSet rs = session.executeQuery(databaseExtension.getSelectCountRows(table));
 				if (rs.next()) {
 					count = rs.getLong(1);
 				}
