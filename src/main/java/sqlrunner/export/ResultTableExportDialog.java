@@ -107,6 +107,7 @@ public class ResultTableExportDialog extends JDialog {
 	                "SQL_STRING_DATE_CONVERSION",  //$NON-NLS-1$
 	                "to_date(\'<STRING>\',\'dd.MM.yy HH24:MI\')")); //$NON-NLS-1$
 			exportFormatPanel.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					if (e.getActionCommand().equals(ExportFormatPanel.FLAT_FILE_SELECTED)) {
 						getTargetPanel().enableFileTypeCSV(true);
@@ -174,6 +175,7 @@ public class ResultTableExportDialog extends JDialog {
 			jButtonStart.setText(Messages.getString("ResultTableExportDialog.1")); //$NON-NLS-1$
 			jButtonStart.addActionListener(new ActionListener() {
 
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					startExport();
 				}
@@ -187,15 +189,18 @@ public class ResultTableExportDialog extends JDialog {
         Main.setUserProperty("SQL_STRING_DATE_CONVERSION", exportFormatPanel.getDateSQLExpression()); //$NON-NLS-1$
         final LongRunningAction lra = new LongRunningAction() {
 
-            public String getName() {
+            @Override
+			public String getName() {
                 return "Export result table";
             }
 
-            public void cancel() {
+            @Override
+			public void cancel() {
                 
             }
 
-            public boolean canBeCanceled() {
+            @Override
+			public boolean canBeCanceled() {
                 return false;
             }
 
@@ -316,7 +321,7 @@ public class ResultTableExportDialog extends JDialog {
 			mainFrame.getDatabase().exportTableToSpreadSheetFile(f, withHeader);
 		} catch (Exception e) {
 			logger.error("exportToSpreadsheetFile file=" + f.getAbsolutePath() + " failed:" + e.getMessage(), e);
-			JOptionPane.showMessageDialog(this, "Export failed", e.getMessage(), JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, e.getMessage(), "Export failed", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	
@@ -330,6 +335,7 @@ public class ResultTableExportDialog extends JDialog {
 			jButtonClose = new JButton();
 			jButtonClose.setText(Messages.getString("ResultTableExportDialog.11")); //$NON-NLS-1$
 			jButtonClose.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					setVisible(false);
 				}

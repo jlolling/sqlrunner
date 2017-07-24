@@ -5,6 +5,9 @@ http://jan-lolling.de/#sqlrunner
 
 release notes
 -------------
+Version 17.2
+- Export fixed: Boolean fields causes an exception
+
 Version 17.1
 - Loading and replacing Talend context properties implemented
 - Datamodel: Bug fixed: System views not shown
