@@ -21,7 +21,8 @@ public class XLSFieldParser extends AbstractFieldTokenizer {
         nf.setGroupingUsed(false);
     }
 
-    public int countDelimitedFields() throws ParserException {
+    @Override
+	public int countDelimitedFields() throws ParserException {
         if (row != null) {
             return row.getLastCellNum();
         } else {
@@ -29,21 +30,25 @@ public class XLSFieldParser extends AbstractFieldTokenizer {
         }
     }
 
-    public boolean parseRawData(List<FieldDescription> fieldDescriptionList) throws ParserException {
+    @Override
+	public boolean parseRawData(List<FieldDescription> fieldDescriptionList) throws ParserException {
     	return parseRawData(fieldDescriptionList, false);
     }
 
-    public boolean parseRawData(List<FieldDescription> fieldDescriptionList, boolean skipConverting) throws ParserException {
+    @Override
+	public boolean parseRawData(List<FieldDescription> fieldDescriptionList, boolean skipConverting) throws ParserException {
         setFieldDescriptions(fieldDescriptionList);
     	return parseRowData(skipConverting);
     }
     
-    public boolean parseRawData(Object rowData) throws ParserException {
+    @Override
+	public boolean parseRawData(Object rowData) throws ParserException {
     	setRowData(rowData);
     	return parseRowData(false);
     }
 
-    public void setRowData(Object rowData) {
+    @Override
+	public void setRowData(Object rowData) {
         if (rowData instanceof Row) {
         	row = (Row) rowData;
         } else if (rowData != null) {
@@ -87,7 +92,8 @@ public class XLSFieldParser extends AbstractFieldTokenizer {
     	}
     }
     
-    private Object getCellValue(Cell cell, FieldDescription fd, boolean skipConverting) throws Exception {
+    @SuppressWarnings("deprecation")
+	private Object getCellValue(Cell cell, FieldDescription fd, boolean skipConverting) throws Exception {
         Object value = null;
         if (cell == null) {
             return null;

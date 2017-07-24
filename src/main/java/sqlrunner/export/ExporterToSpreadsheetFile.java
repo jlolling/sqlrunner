@@ -162,7 +162,7 @@ public class ExporterToSpreadsheetFile {
 				cell.setCellValue((Integer) value);
 				cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 			} else if (value instanceof Boolean) {
-				cell.setCellValue((Integer) value);
+				cell.setCellValue((Boolean) value);
 				cell.setCellType(Cell.CELL_TYPE_BOOLEAN);
 			} else if (value instanceof Double) {
 				cell.setCellValue((Double) value);
@@ -180,7 +180,7 @@ public class ExporterToSpreadsheetFile {
 					cell.setCellValue((java.util.Date) value);
 				}
 			} else if (value != null) {
-				cell.setCellValue((String) value.toString());
+				cell.setCellValue(value.toString());
 				cell.setCellType(Cell.CELL_TYPE_STRING);
 			}
 		}
