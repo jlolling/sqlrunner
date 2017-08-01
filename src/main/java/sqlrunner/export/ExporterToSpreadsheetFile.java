@@ -15,6 +15,7 @@ import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExporterToSpreadsheetFile {
@@ -110,8 +111,8 @@ public class ExporterToSpreadsheetFile {
 				logger.debug("Create XLS workbook");
 				workbook = new HSSFWorkbook();
 			} else if (currentOutputType == SpreadsheetTyp.XLSX) {
-				logger.debug("Create XLSX workbook");
-				workbook = new XSSFWorkbook();
+				logger.debug("Create XLSX workbook (Streaming)");
+				workbook = new SXSSFWorkbook();
 			}
 		}
 		setupDateFormatStyle();

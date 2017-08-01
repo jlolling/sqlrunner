@@ -5,6 +5,8 @@ http://jan-lolling.de/#sqlrunner
 
 release notes
 -------------
+- Export result table as xlsx now uses streaming function and can export huge amount of data 
+
 Version 17.2
 - Export fixed: Boolean fields causes an exception
 
