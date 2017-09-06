@@ -5,4 +5,4 @@
    set CLASSPATH=!CLASSPATH!;%%a
  )
  set CLASSPATH=!CLASSPATH!"
- start javaw -cp %CLASSPATH%  sqlrunner.Main
+ start javaw -Xmx8192m -cp %CLASSPATH%  sqlrunner.Main

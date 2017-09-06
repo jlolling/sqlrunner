@@ -6,4 +6,4 @@ do
   classpath="$classpath:$file"
 done
 
-java -Xmx1024m -cp $classpath sqlrunner.Main $1
+java -Xmx8192m -cp $classpath sqlrunner.Main $1

@@ -5,8 +5,13 @@ http://jan-lolling.de/#sqlrunner
 
 release notes
 -------------
+Version 17.4
 - Export result table as xlsx now uses streaming function and can export huge amount of data 
-
+- Import: 
+	* Messages contains the line number corresponding to the mapping dialog and the parser checks the max number of chars
+	* Boolean parser now accepts a lot of different number and String content as boolean
+	* Length of fields checked if length is given - before this value will be send to the database
+	
 Version 17.2
 - Export fixed: Boolean fields causes an exception
 

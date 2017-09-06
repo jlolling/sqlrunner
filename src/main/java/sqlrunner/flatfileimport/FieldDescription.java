@@ -98,8 +98,12 @@ public class FieldDescription implements Comparable<FieldDescription> {
         } else {
             computePositionType();
         }
-        if ((basicType == BasicDataType.DATE.getId()) && ((format == null) || (format.trim().length() < 2))) {
-            this.format = DATE_FORMAT_TEMPLATE;
+        if (format == null || format.trim().length() < 2) {
+            if (BasicDataType.isDateType(basicType)) {
+                this.format = DATE_FORMAT_TEMPLATE;
+            } else if (BasicDataType.isNumberType(basicType)) {
+            	this.format = "en_US";
+            }
         }
         if (isPrimaryKey && (enabled == false)) {
             this.enabled = true;
@@ -113,10 +117,12 @@ public class FieldDescription implements Comparable<FieldDescription> {
     public FieldDescription(SQLField field) {
     	this.name = field.getName();
     	this.basicType = field.getBasicType();
-        if ((basicType == BasicDataType.DATE.getId())) {
+        if (BasicDataType.isDateType(basicType)) {
             this.format = DATE_FORMAT_TEMPLATE;
+        } else if (BasicDataType.isNumberType(basicType)) {
+            this.format = "en_US";
         } else {
-        	this.format = "";
+        	this.format = null;
         }
     	this.index = field.getOrdinalPosition();
     	this.delimPos = field.getOrdinalPosition() - 1;
@@ -136,8 +142,12 @@ public class FieldDescription implements Comparable<FieldDescription> {
         if (positionType == -1) {
             computePositionType();
         }
-        if ((basicType == BasicDataType.DATE.getId()) && ((format == null) || (format.trim().length() < 2))) {
-            this.format = DATE_FORMAT_TEMPLATE;
+        if (format == null || format.trim().length() < 2) {
+            if (BasicDataType.isDateType(basicType)) {
+                this.format = DATE_FORMAT_TEMPLATE;
+            } else if (BasicDataType.isNumberType(basicType)) {
+            	this.format = "en_US";
+            }
         }
         if (isPrimaryKey && (enabled == false)) {
             this.enabled = true;
@@ -407,7 +417,8 @@ public class FieldDescription implements Comparable<FieldDescription> {
         return errorMessage;
     }
 
-    public int compareTo(FieldDescription object) {
+    @Override
+	public int compareTo(FieldDescription object) {
     	if (object != null) {
             return index - object.getIndex();
     	} else {

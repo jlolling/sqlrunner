@@ -39,6 +39,7 @@ public abstract class AbstractFieldTokenizer implements FieldTokenizer {
 	/* (non-Javadoc)
 	 * @see sqlrunner.flatfileimport.FieldTokenizer#getData(int)
 	 */
+	@Override
 	public Object getData(int fieldDescriptionIndex) {
 		if ((fieldDataList != null) && (fieldDescriptionIndex < fieldDataList.size())) {
 			return fieldDataList.get(fieldDescriptionIndex);
@@ -47,11 +48,13 @@ public abstract class AbstractFieldTokenizer implements FieldTokenizer {
 		}
 	}
 
-    public void setTestMode(boolean testMode) {
+    @Override
+	public void setTestMode(boolean testMode) {
         this.testMode = testMode;
     }
 
-    public boolean isTestMode() {
+    @Override
+	public boolean isTestMode() {
         return testMode;
     }
     
@@ -71,7 +74,8 @@ public abstract class AbstractFieldTokenizer implements FieldTokenizer {
         return descriptions.get(index);
     }
 
-   	public void setFieldDescriptions(List<FieldDescription> listOfDescriptions) {
+   	@Override
+	public void setFieldDescriptions(List<FieldDescription> listOfDescriptions) {
 		if (listOfDescriptions == null || listOfDescriptions.isEmpty()) {
 			throw new IllegalArgumentException("listOfDescriptions cannot be empty or null");
 		}
@@ -110,6 +114,12 @@ public abstract class AbstractFieldTokenizer implements FieldTokenizer {
                 try {
                     NumberFormat nf = fd.getNumberFormat();
                     Number n = nf.parse(strValue);
+                    if (fd.getLength() > 0) {
+                    	Double max = Math.pow(10, fd.getLength()) - 1d;
+                    	if (n.doubleValue() > max) {
+                    		throw new Exception("Number: " + n + " is larger than " + max.longValue());
+                    	}
+                    }
                     value = n;
                 } catch (Exception e) {
                     String message = "value=" + strValue + " parse as number failed: " + e.getMessage();
@@ -142,9 +152,31 @@ public abstract class AbstractFieldTokenizer implements FieldTokenizer {
                     }
                 }
             } else if (fd.getBasicTypeId() == BasicDataType.BOOLEAN.getId()) {
-            	value = Boolean.parseBoolean(strValue);
+            	try {
+                	value = TypeUtil.convertToBoolean(strValue);
+            	} catch (Exception e) {
+                    String message = "value=" + strValue + " parse as boolean failed: " + e.getMessage();
+                    if (isTestMode()) {
+                        value = "ERROR:" + message;
+                    } else {
+                        throw new ParserException(message);
+                    }
+            	}
             } else {
-                value = strValue;
+            	if (fd.getLength() > 0 && (fd.getPositionType() == FieldDescription.DELIMITER_POSITION)) {
+            		if (strValue.length() > fd.getLength()) {
+                        String message = "value " + strValue + " for field " + fd + " is too long: " + strValue.length();
+                        if (isTestMode()) {
+                            value = "ERROR:" + message;
+                        } else {
+                            throw new ParserException(message);
+                        }
+            		} else {
+                        value = strValue;
+            		}
+            	} else {
+                    value = strValue;
+            	}
             }
         } else {
             if (fd.isNullEnabled() == false) {

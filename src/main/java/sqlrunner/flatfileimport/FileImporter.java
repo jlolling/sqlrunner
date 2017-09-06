@@ -22,12 +22,12 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
-import sqlrunner.text.StringReplacer;
-import sqlrunner.generator.SQLCodeGenerator;
 import dbtools.ConnectionDescription;
 import dbtools.DatabaseSession;
 import dbtools.SQLParser;
 import dbtools.SQLStatement;
+import sqlrunner.generator.SQLCodeGenerator;
+import sqlrunner.text.StringReplacer;
 
 /**
  * 
@@ -55,6 +55,7 @@ public class FileImporter implements Importer {
     private long startTime;
     private long stopTime;
     private long countLines = 0;
+    private long currentLineIndex = 0;
     private long countInsert = 0;
     private long countInsertProcessed = 0;
     private long countUpdate = 0;
@@ -178,7 +179,8 @@ public class FileImporter implements Importer {
     	return batchCounter;
     }
 
-    public String getCurrentAction() {
+    @Override
+	public String getCurrentAction() {
         return currentAction;
     }
 
@@ -205,6 +207,7 @@ public class FileImporter implements Importer {
         stopTime = 0; // kennzeichnet dass noch nicht beendet !
         countMaxLines = 0;
         countLines = 0;
+        currentLineIndex = 0;
         countInsert = 0;
         countUpdate = 0;
         countInsertProcessed = 0;
@@ -959,7 +962,12 @@ public class FileImporter implements Importer {
             }
         } catch (SQLException sqle) {
             count = -1;
-            error("insertRow: in line:" + String.valueOf(lineNumber) + " failed:" + sqle.getMessage(), WARNINGS);
+            SQLException embedded = sqle.getNextException();
+            if (embedded != null) {
+                error("insertRow: in line:" + String.valueOf(lineNumber) + " failed:" + sqle.getMessage() + ": " + embedded.getMessage(), WARNINGS);
+            } else {
+                error("insertRow: in line:" + String.valueOf(lineNumber) + " failed:" + sqle.getMessage(), WARNINGS);
+            }
         } catch (ParserException pe) {
             count = -1;
             error("insertRow: in line:" + String.valueOf(lineNumber) + " failed:" + pe.getMessage(), WARNINGS);
@@ -1108,6 +1116,7 @@ public class FileImporter implements Importer {
                     }
                     status("count lines to import=" + countMaxLines);
                     while (true) {
+                    	currentLineIndex++;
                     	dataset = datasetProvider.getNextDataset();
                         if (interrupted || Thread.currentThread().isInterrupted()) {
                         	status("Import interrupted");
@@ -1132,26 +1141,24 @@ public class FileImporter implements Importer {
                             if (parser.parseRawData(dataset)) {
                                 if (currentAttributs.isUpdateEnabled() == false || psTest == null) {
                                     if (currentAttributs.isInsertEnabled()) {
-                                    	int count = insertRow(parser, psInsert, countLines);
+                                    	int count = insertRow(parser, psInsert, currentLineIndex);
                                         if (count >= 0) {
                                         	countInsertProcessed = countInsertProcessed + count;
                                             countInsert++;
                                         }
-                                    } else {
-                                    	
                                     }
                                 } else {
                                 	currentAttributs.setBatchSize(0); // to be sure, that we only batch same kind of statements
-                                    if (existsDataset(parser, psTest, countLines)) {
+                                    if (existsDataset(parser, psTest, currentLineIndex)) {
                                         if (currentAttributs.isUpdateEnabled()) {
-                                        	int count = updateRow(parser, psUpdate, countLines);
+                                        	int count = updateRow(parser, psUpdate, currentLineIndex);
                                             if (count >= 0) {
                                                 countUpdate++;
                                             }
                                         }
                                     } else {
                                         if (currentAttributs.isInsertEnabled()) {
-                                        	int count = insertRow(parser, psInsert, countLines);
+                                        	int count = insertRow(parser, psInsert, currentLineIndex);
                                             if (count >= 0) {
                                             	countInsertProcessed = countInsertProcessed + count;
                                                 countInsert++;
@@ -1161,7 +1168,7 @@ public class FileImporter implements Importer {
                                 } // if (psTest == null)
                             }
                         } catch (ParserException ex) {
-                            error("parse value in linenumber=" + countLines + " failed: " + ex.getMessage(), WARNINGS);
+                            error("parse value in linenumber=" + currentLineIndex + " failed: " + ex.getMessage(), WARNINGS);
                         }
                         countLines++;
                         if (currentAttributs.getBatchSize() == 0 && countDifference == countRowsBetweenCommit) {
@@ -1188,6 +1195,9 @@ public class FileImporter implements Importer {
                     status("  - inserted: " + String.valueOf(countInsert) + " / insert processed: " + String.valueOf(countInsertProcessed) + " updated: " + String.valueOf(countUpdate) + " ignored: " + String.valueOf((countLines - countInsert) - countUpdate));
                 } catch (FileNotFoundException fne) {
                     error("writeData: open file " + currentDataFile + "\n" + fne.getMessage(), FATALS);
+                } catch (SQLException e) {
+                	session.rollback();
+                    error("writeData: read file " + currentDataFile + "\n" + e.getMessage(), FATALS);
                 } catch (Exception e) {
                     error("writeData: read file " + currentDataFile + "\n" + e.getMessage(), FATALS);
                 } finally {
@@ -1328,7 +1338,8 @@ public class FileImporter implements Importer {
         setErrorCode(errorcode);
     }
 
-    public String getLogFileName() {
+    @Override
+	public String getLogFileName() {
         if (errorCode > NORMAL) {
             return errorLogFileName;
         } else {
@@ -1356,47 +1367,58 @@ public class FileImporter implements Importer {
         }
     }
 
-    public long getCountMaxInput() {
+    @Override
+	public long getCountMaxInput() {
         return countMaxLines;
     }
 
-    public long getCountUpdates() {
+    @Override
+	public long getCountUpdates() {
         return countUpdate;
     }
 
-    public void abort() {
+    @Override
+	public void abort() {
         interrupt();
     }
 
-    public long getCountCurrInput() {
+    @Override
+	public long getCountCurrInput() {
         return countLines;
     }
 
-    public long getCountIgnored() {
+    @Override
+	public long getCountIgnored() {
         return countLines - countInsert - countUpdate;
     }
 
-    public long getCountInserts() {
+    @Override
+	public long getCountInserts() {
         return countInsert;
     }
 
-    public long getStartTime() {
+    @Override
+	public long getStartTime() {
         return startTime;
     }
 
-    public int getStatusCode() {
+    @Override
+	public int getStatusCode() {
         return errorCode;
     }
 
-    public long getStopTime() {
+    @Override
+	public long getStopTime() {
         return stopTime;
     }
 
-    public boolean isRunning() {
+    @Override
+	public boolean isRunning() {
         return startTime > 0 && stopTime == 0;
     }
 
-    public boolean isStopped() {
+    @Override
+	public boolean isStopped() {
         return stopTime > 0;
     }
 
@@ -1469,6 +1491,7 @@ public class FileImporter implements Importer {
     	}
     }
 
+	@Override
 	public Object getLastValue(String columnName) {
 		Object lastValue = lastValues.get(columnName.toLowerCase());
 		if (lastValue != null) {

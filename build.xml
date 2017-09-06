@@ -185,7 +185,7 @@
 			createmenuentry="true"
 			subMenuName="Java User Group Berlin"
 			javaversion="1.7+"
-			javamaxheapsize="1024m"
+			javamaxheapsize="4096m"
             mainJarFile="${jws-jar-filename}"
 			associatewithfileextensions="sql"
 			associatewithmimetype="text/x-sql"
@@ -247,7 +247,7 @@
 		            version="${version}"
 		            mainclass="${mainclass}"
 		            jvmversion="1.7+"
-		            vmoptions="-Xmx1024m -Dcom.sun.management.jmxremote=true -Dapple.awt.graphics.UseQuartz=true">
+		            vmoptions="-Xmx8192m -Dcom.sun.management.jmxremote=true -Dapple.awt.graphics.UseQuartz=true">
 			<jarfileset dir="${lib}">
 				<include name="*.jar" />
                 <exclude name="ui.jar" />

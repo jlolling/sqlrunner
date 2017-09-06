@@ -356,6 +356,7 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 		return sql.toString();
 	}
 
+/*
 	@Override
 	public String getSelectCountRows(SQLTable table) {
 		StringBuilder sb = new StringBuilder();
@@ -364,7 +365,7 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 		sb.append("')");
 		return sb.toString();
 	}
-
+*/
 	
 	
 }
