@@ -1265,6 +1265,15 @@ public class SQLCodeGenerator {
 		} else {
 			sb.append(p.getName());
 		}
+		sb.append("(");
+		for (int i = 0; i < p.getParameterCount(); i++) {
+			if (i > 0) {
+				sb.append(",");
+			}
+			Parameter pa = p.getParameterAt(i);
+			sb.append(pa.getTypeName());
+		}
+		sb.append(")");
 		return sb.toString();
 	}
 
