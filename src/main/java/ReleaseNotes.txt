@@ -5,6 +5,9 @@ http://jan-lolling.de/#sqlrunner
 
 release notes
 -------------
+Version 18.0
+- Materialized views: Source code available for compare, create and drop.
+
 Version 17.4
 - Export result table as xlsx now uses streaming function and can export huge amount of data 
 - Import: 
