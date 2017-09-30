@@ -1950,6 +1950,13 @@ public final class DataModelFrame extends JFrame {
 	                mi = new JMenuItem(Messages.getString("DataModelFrame.100")); 
 	                mi.addActionListener(deleteTableAction);
 	                popup.add(mi);
+	            } else if (((SQLTable) object).getType().equals(SQLTable.TYPE_MAT_VIEW)) {
+	                mi = new JMenuItem(Messages.getString("DataModelFrame.createView")); 
+	                mi.addActionListener(createTableAction);
+	                popup.add(mi);
+	                mi = new JMenuItem(Messages.getString("DataModelFrame.102")); 
+	                mi.addActionListener(dropTableAction);
+	                popup.add(mi);
 	            } else if (((SQLTable) object).getType().equals(SQLTable.TYPE_VIEW)) {
 	                mi = new JMenuItem(Messages.getString("DataModelFrame.createView")); 
 	                mi.addActionListener(createTableAction);

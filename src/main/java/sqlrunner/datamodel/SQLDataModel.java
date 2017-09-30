@@ -779,10 +779,13 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 						rs.close();
 					}
 					fireDatamodelEvent("Loading columns finished", DatamodelEvent.ACTION_MESSAGE_EVENT);
-					if (onlyTables == false && table.getType().equals(SQLTable.TYPE_VIEW) == false) {
+					if (onlyTables == false && table.isView() == false) {
 						loadConstraints(table);
 						loadIndexes(table);
 					} else {
+						if (table.isMaterializedView()) {
+							loadIndexes(table);
+						}
 						if (session != null) {
 							databaseExtension.setupViewSQLCode(conn, table);
 						}

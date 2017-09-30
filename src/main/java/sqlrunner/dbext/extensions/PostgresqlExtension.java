@@ -56,8 +56,13 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 				if (rs.next()) {
 					source = rs.getString(1);
 					if (source != null && source.isEmpty() == false) {
-						source = "create view " + table.getName() + " as\n" + source;
-						table.setSourceCode(source);
+						if (table.isMaterializedView()) {
+							source = "create materialized view " + table.getName() + " as\n" + source;
+							table.setSourceCode(source);
+						} else {
+							source = "create view " + table.getName() + " as\n" + source;
+							table.setSourceCode(source);
+						}
 					}
 				}
 				rs.close();

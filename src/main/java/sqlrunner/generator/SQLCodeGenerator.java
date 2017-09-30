@@ -904,6 +904,16 @@ public class SQLCodeGenerator {
             } else {
                 return "drop table " + getEncapsulatedName(table.getName());
             }
+        } else if (table.isMaterializedView()) {
+            if (withSchemaName) {
+            	if (alternativeSchemaName != null) {
+                    return "drop materialized view " + getEncapsulatedName(alternativeSchemaName + "." + table.getName());
+            	} else {
+                    return "drop materialized view " + getEncapsulatedName(table.getAbsoluteName());
+            	}
+            } else {
+                return "drop materialized view " + getEncapsulatedName(table.getName());
+            }
         } else if (table.isView()) {
             if (withSchemaName) {
             	if (alternativeSchemaName != null) {

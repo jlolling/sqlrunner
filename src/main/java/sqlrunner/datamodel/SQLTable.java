@@ -389,7 +389,11 @@ public final class SQLTable extends SQLObject {
     	return TYPE_VIEW.equals(type) || TYPE_MAT_VIEW.equals(type) || TYPE_SYSTEM_VIEW.equals(type);
     }
 
-	public String getSourceCode() {
+    public boolean isMaterializedView() {
+    	return TYPE_MAT_VIEW.equals(type);
+    }
+
+    public String getSourceCode() {
 		return sourceCode;
 	}
 
