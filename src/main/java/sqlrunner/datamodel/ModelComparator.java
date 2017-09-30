@@ -71,7 +71,9 @@ public final class ModelComparator {
                 compare(table1, table2);
             } else {
             	tablesToAdd.add(table1);
-            	if (table1.isView()) {
+            	if (table1.isMaterializedView()) {
+                	fireEvent("+ Materialized View " + table1 + " must be added");
+            	} else if (table1.isView()) {
                 	fireEvent("+ View " + table1 + " must be added");
             	} else {
                 	fireEvent("+ Table " + table1 + " must be added");
@@ -90,7 +92,9 @@ public final class ModelComparator {
         	SQLTable table1 = schemaOne.getTable(table2.getName());
             if (table1 == null) {
             	tablesToRemove.add(table2);
-            	if (table2.isView()) {
+            	if (table2.isMaterializedView()) {
+                	fireEvent("- Materialized View " + table2 + " must be removed");
+            	} else if (table2.isView()) {
                 	fireEvent("- View " + table2 + " must be removed");
             	} else {
                 	fireEvent("- Table " + table2 + " must be removed");
@@ -315,7 +319,11 @@ public final class ModelComparator {
                     	if (tablesToAdd.contains(tableOne) == false) {
                         	tablesToAdd.add(tableOne);
                         	tablesToRemove.add(tableTwo);
-                        	fireEvent("* View " + tableOne + " must changed");
+                        	if (tableOne.isMaterializedView()) {
+                            	fireEvent("* Materialized View " + tableOne + " must changed");
+                        	} else {
+                            	fireEvent("* View " + tableOne + " must changed");
+                        	}
                     	}
                     	break;
                     }
@@ -323,7 +331,11 @@ public final class ModelComparator {
                 	if (tablesToAdd.contains(tableOne) == false) {
                     	tablesToAdd.add(tableOne);
                     	tablesToRemove.add(tableTwo);
-                    	fireEvent("* View " + tableOne + " must changed");
+                    	if (tableOne.isMaterializedView()) {
+                        	fireEvent("* Materialized View " + tableOne + " must changed");
+                    	} else {
+                        	fireEvent("* View " + tableOne + " must changed");
+                    	}
                 	}
                 	break;
                 }
@@ -341,7 +353,11 @@ public final class ModelComparator {
                 	if (tablesToAdd.contains(tableOne) == false) {
                     	tablesToAdd.add(tableOne);
                     	tablesToRemove.add(tableTwo);
-                    	fireEvent("* View " + tableOne + " must changed");
+                    	if (tableOne.isMaterializedView()) {
+                        	fireEvent("* Materialized View " + tableOne + " must changed");
+                    	} else {
+                        	fireEvent("* View " + tableOne + " must changed");
+                    	}
                 	}
                 	break;
                 }
