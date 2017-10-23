@@ -7,6 +7,8 @@ import java.util.Locale;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+
+import sqlrunner.text.GenericDateUtil;
 /**
  *
  * @author jan
@@ -128,7 +130,10 @@ public class XLSFieldParser extends AbstractFieldTokenizer {
         } else if (fd.getBasicTypeId() == BasicDataType.DATE.getId()) {
             if (skipConverting) {
                 value = cell.getRichStringCellValue().getString();
-            } else {
+            } else if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
+                value = cell.getRichStringCellValue().getString();
+                value = GenericDateUtil.parseDate((String) value, fd.getFieldFormat()); 
+            } else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
                 value = cell.getDateCellValue();
             }
         } else if (fd.getBasicTypeId() == BasicDataType.BOOLEAN.getId()) {

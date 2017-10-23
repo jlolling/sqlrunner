@@ -20,7 +20,7 @@ public class TextViewer extends JDialog {
     private final JPanel jPanel1=new JPanel();
     private final JScrollPane jScrollPane1=new JScrollPane();
     private final BorderLayout borderLayout1=new BorderLayout();
-    private final JTextArea jTextArea1=new JTextArea();
+    private final JTextArea jTextArea1 = new JTextArea();
 
     public TextViewer(JFrame frame, String title, String text) {
         super(frame, title, true);

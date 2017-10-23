@@ -5123,7 +5123,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
 			}
         	
         });
-        // show syntax chooser
+        // show syntax chooser ba CTRL space
         final KeyStroke ctrlSpace = KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, InputEvent.CTRL_MASK, false);
         map.addActionForKeyStroke(ctrlSpace, new AbstractAction("syntaxChooser") {
 

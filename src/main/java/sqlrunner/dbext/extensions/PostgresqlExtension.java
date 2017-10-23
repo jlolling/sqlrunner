@@ -127,7 +127,7 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 					} else {
 						code.append("procedure ");
 					}
-					code.append(proc.getName());
+					code.append(proc.getAbsoluteName());
 					code.append("(\n");
 					for (int i = 0; i < proc.getParameterCount(); i++) {
 						Parameter p = proc.getParameterAt(i);

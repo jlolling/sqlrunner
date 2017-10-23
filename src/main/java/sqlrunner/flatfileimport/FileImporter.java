@@ -1303,8 +1303,8 @@ public class FileImporter implements Importer {
         }
     }
     
-    protected void error(String message, int errorcode) {
-    	error(message, errorCode, null);
+    protected void error(String message, int newErrorCode) {
+    	error(message, newErrorCode, null);
     }
 
     protected void error(String message, int errorcode, Throwable t) {

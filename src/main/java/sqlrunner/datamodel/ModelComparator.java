@@ -185,7 +185,7 @@ public final class ModelComparator {
         	SQLSequence s2 = schemaTwo.getSequenceAt(i);
         	if (listSeq1.isEmpty()) {
         		sequencesToRemove.add(s2);
-        		fireEvent("+ Sequence " + s2.getName() + " must be removed");
+        		fireEvent("- Sequence " + s2.getName() + " must be removed");
         	} else {
         		boolean exists = false;
         		for (SQLSequence s1 : listSeq1) {
@@ -196,7 +196,7 @@ public final class ModelComparator {
         		}
         		if (exists == false) {
         			sequencesToRemove.add(s2);
-            		fireEvent("+ Sequence " + s2.getName() + " must be removed");
+            		fireEvent("- Sequence " + s2.getName() + " must be removed");
         		}
         	}
         }
@@ -204,7 +204,7 @@ public final class ModelComparator {
     
     public void compareProcedures(SQLProcedure procOne, SQLProcedure procTwo) {
     	if (procOne.getCode() != null && procTwo.getCode() != null) {
-    		if (procOne.getCode().equalsIgnoreCase(procTwo.getCode()) == false) {
+    		if (procOne.getCode().equals(procTwo.getCode()) == false) {
     			proceduresToChange.add(procOne);
         		fireEvent("* Procedure " + procOne.getName() + " must be changed");
     		}

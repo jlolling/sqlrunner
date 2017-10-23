@@ -597,6 +597,9 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 							name = catalogName + "." + name;
 						}
 						// create an new one
+						if (logger.isDebugEnabled()) {
+							logger.debug("   Add procedure schema=" + schema + " name=" + name);
+						}
 						SQLProcedure procedure = new SQLProcedure(this, schema,	name);
 						// decide if it is a function
 						procedure.setComment(rs.getString("REMARKS"));
@@ -718,7 +721,7 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 		return loadColumns(table, false);
 	}
 
-	boolean loadColumns(SQLTable table, boolean onlyTables) {
+	boolean loadColumns(SQLTable table, boolean onlyColumns) {
 		if (table.isLoadingColumns()) {
 			return false;
 		}
@@ -779,15 +782,19 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 						rs.close();
 					}
 					fireDatamodelEvent("Loading columns finished", DatamodelEvent.ACTION_MESSAGE_EVENT);
-					if (onlyTables == false && table.isView() == false) {
-						loadConstraints(table);
-						loadIndexes(table);
-					} else {
+					if (table.isView()) {
 						if (table.isMaterializedView()) {
-							loadIndexes(table);
+							if (onlyColumns == false) {
+								loadIndexes(table);
+							}
 						}
-						if (session != null) {
+						if (session != null && onlyColumns == false) {
 							databaseExtension.setupViewSQLCode(conn, table);
+						}
+					} else {
+						if (onlyColumns == false) {
+							loadConstraints(table);
+							loadIndexes(table);
 						}
 					}
 				} catch (SQLException sqle) {
