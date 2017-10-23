@@ -5,6 +5,10 @@ http://jan-lolling.de/#sqlrunner
 
 release notes
 -------------
+Version 18.2
+- Import of excel files now more tolerant for unmatching cell types
+- Import error handling fixed
+
 Version 18.0
 - Materialized views: Source code available for compare, create and drop.
 
