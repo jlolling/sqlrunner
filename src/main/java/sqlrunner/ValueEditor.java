@@ -171,15 +171,18 @@ public final class ValueEditor extends JFrame {
 	        });
             textArea.getDocument().addDocumentListener(new DocumentListener() {
 
-                public void insertUpdate(DocumentEvent de) {
+                @Override
+				public void insertUpdate(DocumentEvent de) {
                     labelCounter.setText(String.valueOf((textArea.getText()).length()));
                 }
 
-                public void changedUpdate(DocumentEvent de) {
+                @Override
+				public void changedUpdate(DocumentEvent de) {
                     labelCounter.setText(String.valueOf((textArea.getText()).length()));
                 }
 
-                public void removeUpdate(DocumentEvent de) {
+                @Override
+				public void removeUpdate(DocumentEvent de) {
                     labelCounter.setText(String.valueOf((textArea.getText()).length()));
                 }
 
@@ -299,7 +302,8 @@ public final class ValueEditor extends JFrame {
             checkBoxLineWrap = new JCheckBox();
             checkBoxLineWrap.setText(Messages.getString("ValueEditor.linewrap"));
             checkBoxLineWrap.addActionListener(new java.awt.event.ActionListener() { 
-            	public void actionPerformed(java.awt.event.ActionEvent e) {    
+            	@Override
+				public void actionPerformed(java.awt.event.ActionEvent e) {    
                     textArea.setLineWrap(((JCheckBox) e.getSource()).isSelected());
                     textArea.setWrapStyleWord(true);
                     Main.setUserProperty("CELL_EDITOR_LINEWRAP", String.valueOf(checkBoxLineWrap.isSelected()));
@@ -320,7 +324,8 @@ public final class ValueEditor extends JFrame {
             checkBoxViewAsDate = new JCheckBox();
             checkBoxViewAsDate.setText(Messages.getString("ValueEditor.interpretasdate"));
             checkBoxViewAsDate.addActionListener(new java.awt.event.ActionListener() { 
-            	public void actionPerformed(java.awt.event.ActionEvent e) {    
+            	@Override
+				public void actionPerformed(java.awt.event.ActionEvent e) {    
                     if (checkBoxViewAsDate.isSelected() == false) {
                         // dann das textuelle Datumsformat in die long-Form wandeln
                         try {
@@ -359,7 +364,8 @@ public final class ValueEditor extends JFrame {
             checkBoxTrim.setText(Messages.getString("ValueEditor.trimonsave"));
             checkBoxTrim.setToolTipText(Messages.getString("ValueEditor.removesallspaces")); 
             checkBoxTrim.addActionListener(new java.awt.event.ActionListener() { 
-            	public void actionPerformed(java.awt.event.ActionEvent e) {    
+            	@Override
+				public void actionPerformed(java.awt.event.ActionEvent e) {    
                     Main.setUserProperty("CELL_EDITOR_TRIM", String.valueOf(checkBoxTrim.isSelected())); 
             	}
             });
@@ -379,7 +385,8 @@ public final class ValueEditor extends JFrame {
             buttonSaveInDB.setMnemonic(java.awt.event.KeyEvent.VK_S);
             buttonSaveInDB.addActionListener(new java.awt.event.ActionListener() { 
             	
-                public void actionPerformed(java.awt.event.ActionEvent e) {    
+                @Override
+				public void actionPerformed(java.awt.event.ActionEvent e) {    
                     buttonSaveInDBActionPerformed();
                 }
                 
@@ -406,7 +413,8 @@ public final class ValueEditor extends JFrame {
                 	buttonSaveInDB.setEnabled(false);
                 	final Object finalValue = value;
                     Thread t = new Thread() {
-                    	public void run() {
+                    	@Override
+						public void run() {
                             mainFrame.getDatabase().updateValue(finalValue, row, col, ValueEditor.this, cbDateFormat.getSelectedItem());
                         	buttonSaveInDB.setEnabled(true);
                     	}
@@ -422,7 +430,8 @@ public final class ValueEditor extends JFrame {
                     } else {
                     	buttonSaveInDB.setEnabled(false);
                         Thread t = new Thread() {
-                        	public void run() {
+                        	@Override
+							public void run() {
                             	mainFrame.getDatabase().updateValue(f.getAbsolutePath(), row, col, ValueEditor.this, null);
                             	buttonSaveInDB.setEnabled(true);
                         	}
@@ -447,7 +456,8 @@ public final class ValueEditor extends JFrame {
             } else {
             	buttonSaveInDB.setEnabled(false);
                 Thread t = new Thread() {
-                	public void run() {
+                	@Override
+					public void run() {
                         mainFrame.getDatabase().updateValue(text, row, col, ValueEditor.this, cbDateFormat.getSelectedItem());
                     	buttonSaveInDB.setEnabled(true);
                 	}
@@ -463,7 +473,8 @@ public final class ValueEditor extends JFrame {
             } else {
             	buttonSaveInDB.setEnabled(false);
                 Thread t = new Thread() {
-                	public void run() {
+                	@Override
+					public void run() {
                         mainFrame.getDatabase().updateValue(text, row, col, ValueEditor.this, cbDateFormat.getSelectedItem());
                     	buttonSaveInDB.setEnabled(true);
                 	}
@@ -483,7 +494,8 @@ public final class ValueEditor extends JFrame {
             buttonLoadFile = new JButton();
             buttonLoadFile.setIcon(ApplicationIcons.OPEN_GIF); 
             buttonLoadFile.addActionListener(new java.awt.event.ActionListener() { 
-            	public void actionPerformed(java.awt.event.ActionEvent e) {    
+            	@Override
+				public void actionPerformed(java.awt.event.ActionEvent e) {    
                     buttonLoadInFileActionPerformed();
             	}
             });
@@ -541,7 +553,8 @@ public final class ValueEditor extends JFrame {
                 buttonSaveInFile.setEnabled(false);
             }
             buttonSaveInFile.addActionListener(new java.awt.event.ActionListener() { 
-            	public void actionPerformed(java.awt.event.ActionEvent e) {    
+            	@Override
+				public void actionPerformed(java.awt.event.ActionEvent e) {    
                     buttonSaveInFileActionPerformed();
             	}
             });
@@ -613,7 +626,8 @@ public final class ValueEditor extends JFrame {
             buttonSearchReplace = new JButton();
             buttonSearchReplace.setIcon(ApplicationIcons.SEARCH_GIF); 
             buttonSearchReplace.addActionListener(new java.awt.event.ActionListener() { 
-            	public void actionPerformed(java.awt.event.ActionEvent e) {   
+            	@Override
+				public void actionPerformed(java.awt.event.ActionEvent e) {   
                     buttonSearchReplaceActionPerformed();
             	}
             });
@@ -696,8 +710,10 @@ public final class ValueEditor extends JFrame {
                 	}
                 	sb.append("'");
                 	textArea.setText(sb.toString());
+                } else if (value instanceof String) {
+                    textArea.setText((String) value);
                 } else {
-                    textArea.setText("");
+                	 textArea.setText("");
                 }
             } else if (BasicDataType.isStringType(contentType) || BasicDataType.isNumberType(contentType)) {
                 checkBoxViewAsDate.setEnabled(true);

@@ -363,6 +363,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
                 });
             }
             useMonospacedFont = Boolean.valueOf(Main.getUserProperty("MONOSPACED_TABLECELL_FONT", "false"));
+            showByteArrayAsString = Boolean.valueOf(Main.getUserProperty("SHOW_BYTE_ARRAY_AS_STRING", "false"));
         } catch (Exception e) {
             logger.error("exception: " + e, e); 
             Main.panic("Error in Constructor of MainFrame"); 

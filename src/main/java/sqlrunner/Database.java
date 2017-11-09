@@ -4185,7 +4185,15 @@ public final class Database implements TableModel {
 											resultRow[i] = null;
 										}
 									} else if (v instanceof byte[]) {
-										resultRow[i] = v;
+										if (MainFrame.isShowByteArrayAsString()) {
+											try {
+												resultRow[i] = new String((byte[]) v, "UTF-8");
+											} catch (Exception exa) {
+												resultRow[i] = v;
+											}
+										} else {
+											resultRow[i] = v;
+										}
 									} else if (v != null) {
 										try {
 											resultRow[i] = rs.getObject(i + 1);
