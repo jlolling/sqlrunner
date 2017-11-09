@@ -50,7 +50,7 @@ public class SQLProcedure extends SQLObject implements Comparable<SQLProcedure> 
         parameter.setTypeName(typeName);
         parameter.setPrecision(precision);
         parameter.setIoType(ioType);
-        if (ioType == DatabaseMetaData.procedureColumnReturn) {
+        if (parameter.isReturnValue()) {
             setFunction(true);
             returnParam = parameter;
         } else {
@@ -142,6 +142,10 @@ public class SQLProcedure extends SQLObject implements Comparable<SQLProcedure> 
             return ioType;
         }
 
+        public boolean isReturnValue() {
+        	return ioType == DatabaseMetaData.procedureColumnResult || ioType == DatabaseMetaData.procedureColumnReturn;
+        }
+        
         public void setIoType(int ioType) {
             this.ioType = ioType;
         }
@@ -213,6 +217,7 @@ public class SQLProcedure extends SQLObject implements Comparable<SQLProcedure> 
         
     }
 
+	@Override
 	public int compareTo(SQLProcedure o) {
 		if (o.getName().equals(getName())) {
 			if (getParameterCount() > o.getParameterCount()) {
@@ -240,12 +245,14 @@ public class SQLProcedure extends SQLObject implements Comparable<SQLProcedure> 
     	boolean firstLoop = true;
 		sb.append("(");
     	for (Parameter p : listParameters) {
-    		if (firstLoop) {
-    			firstLoop = false;
-    		} else {
-    			sb.append(",");
+    		if (p.isReturnValue() == false) {
+        		if (firstLoop) {
+        			firstLoop = false;
+        		} else {
+        			sb.append(",");
+        		}
+        		sb.append(p.typeName);
     		}
-    		sb.append(p.typeName);
     	}
 		sb.append(")");
     	return sb.toString();

@@ -361,6 +361,13 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 		return sql.toString();
 	}
 
+	@Override
+	public boolean loadProcedures(SQLSchema schema) {
+		
+		
+		return false;
+	}
+
 /*
 	@Override
 	public String getSelectCountRows(SQLTable table) {

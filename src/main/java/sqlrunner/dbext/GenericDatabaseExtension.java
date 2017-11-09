@@ -296,4 +296,9 @@ public class GenericDatabaseExtension implements DatabaseExtension {
 		return sb.toString();
 	}
 
+	@Override
+	public boolean loadProcedures(SQLSchema schema) {
+		return false;
+	}
+
 }

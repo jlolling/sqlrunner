@@ -5,9 +5,14 @@ http://jan-lolling.de/#sqlrunner
 
 release notes
 -------------
+Version 18.3
+- Export query fixed: retrieving the target table works now better
+- Option added to show byte arrays as decoded as text
+
 Version 18.2
-- Import of excel files now more tolerant for unmatching cell types
-- Import error handling fixed
+- Import: of excel files now more tolerant for un-matching cell types
+- Import: error handling fixed
+- Data model: procedures with table results will be displayed only with its parameters
 
 Version 18.0
 - Materialized views: Source code available for compare, create and drop.
@@ -24,16 +29,16 @@ Version 17.2
 
 Version 17.1
 - Loading and replacing Talend context properties implemented
-- Datamodel: Bug fixed: System views not shown
+- Data model: Bug fixed: System views not shown
 - Code completion assistent: does not limited to the editor bounds anymore
 - Key-mapping: Open with F2 the data model window and jump back to the editor also with F2
 
 Version 16.3
-- Datamodel: Bug fixed: Create statements for selected tables included referenced tables (also if not selected)
-- Datamodel: Bug fixed: Create table script for PostgreSQL: bigserial does not have length and precision anymore
+- Data model: Bug fixed: Create statements for selected tables included referenced tables (also if not selected)
+- Data model: Bug fixed: Create table script for PostgreSQL: bigserial does not have length and precision anymore
 
 Version 16.2
-- Datamodel: Bug fixed: referencial loop references over multiple tables leads to a stack overflow
+- Data model: Bug fixed: referencial loop references over multiple tables leads to a stack overflow
 - Admin-SQLs: For PostgreSQL added: show sessions and show locks
 
 Version 16.1

@@ -327,6 +327,7 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
     private long runTimerStartTime = 0;
     private static final Color productiveBackground = new Color(255, 240, 240);
     private static ContextVarResolver contextVarResolver = new ContextVarResolver();
+    private static boolean showByteArrayAsString = false;
     
     /**
      * Konstruktur mit Parametern für die Platzierung des Fensters
@@ -381,6 +382,11 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
     	Main.setUserProperty("MONOSPACED_TABLECELL_FONT", String.valueOf(useit));
     }
     
+    public static void setShowByteArrayAsString(boolean showAsString) {
+        showByteArrayAsString = showAsString;
+    	Main.setUserProperty("SHOW_BYTE_ARRAY_AS_STRING", String.valueOf(showAsString));
+    }
+
     public Database getDatabase() {
     	return database;
     }
@@ -3937,17 +3943,17 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
                 // die reopen-Items werden in SQLEditor zentral für alle Instanzen von MainFrame erstellt.
                 }
             } catch (IOException e) {
-                logger.warn("FileLoader: Datei " 
-                    + currentFile.getPath() + " nicht vorhanden, wird beim Speichern neu angelegt"); 
+                logger.warn("FileLoader: File " 
+                    + currentFile.getPath() + " not found."); 
                 status.message.setText(Messages.getString("MainFrame.statusfile_") 
-                    + currentFile.getPath() + Messages.getString("MainFrame.statusfilenotfound") 
-                    + Messages.getString("MainFrame.statusfilewillbenewcreated")); 
+                    + currentFile.getPath() + " " + Messages.getString("MainFrame.statusfilenotfound") 
+                    + " " + Messages.getString("MainFrame.statusfilewillbenewcreated")); 
             // nun einen ggf vorhandenen Eintrag aus den ReOpen-Menue entfernen.
             } catch (BadLocationException e) {
-                logger.warn("FileLoader: Fehler beim Laden des Dokuments"); 
+                logger.warn("FileLoader: Erro while loading"); 
                 status.message.setText(
                     Messages.getString("MainFrame.statusfile_") 
-                    + currentFile.getPath() + Messages.getString("MainFrame.statusfilenotcorrectloaded")); 
+                    + currentFile.getPath() + " " + Messages.getString("MainFrame.statusfilenotcorrectloaded")); 
             } catch (java.security.AccessControlException ae) {
                 logger.warn("FileLoader: " + ae.getMessage()); 
                 status.message.setText(Messages.getString("MainFrame.statusnoaccestofilesystem")); 
@@ -5813,11 +5819,23 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
                 content = sdf.format((java.util.Date) value);
             } else if (value instanceof byte[]) {
             	byte[] byteArray = (byte[]) value;
-            	StringBuilder sb = new StringBuilder(byteArray.length * 2);
-            	for (byte b : byteArray) {
-            		sb.append(String.format("%02X ", b));
+            	if (showByteArrayAsString) {
+            		try {
+            			content = new String(byteArray, "UTF-8");
+            		} catch (Exception e) {
+                    	StringBuilder sb = new StringBuilder(byteArray.length * 2);
+                    	for (byte b : byteArray) {
+                    		sb.append(String.format("%02X ", b));
+                    	}
+                    	content = sb.toString();
+            		}
+            	} else {
+                	StringBuilder sb = new StringBuilder(byteArray.length * 2);
+                	for (byte b : byteArray) {
+                		sb.append(String.format("%02X ", b));
+                	}
+                	content = sb.toString();
             	}
-            	content = sb.toString();
             } else {
                 if (value != null) {
                     content = String.valueOf(value);
@@ -5986,6 +6004,10 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
 	
 	public void setupContextResolver() {
 		contextVarResolver.readContextVars(getText());
+	}
+
+	public static boolean isShowByteArrayAsString() {
+		return showByteArrayAsString;
 	}
     
 }

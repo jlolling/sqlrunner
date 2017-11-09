@@ -553,6 +553,9 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 	 * @return true if everything went well
 	 */
 	public boolean loadProcedures(SQLSchema schema) {
+		if (databaseExtension.loadProcedures(schema)) {
+			return true;
+		}
 		if (schema.isLoadingProcedures()) {
 			return false;
 		}
@@ -721,7 +724,7 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 		return loadColumns(table, false);
 	}
 
-	boolean loadColumns(SQLTable table, boolean onlyColumns) {
+	boolean loadColumns(SQLTable table, boolean ignoreIndices) {
 		if (table.isLoadingColumns()) {
 			return false;
 		}
@@ -784,16 +787,16 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 					fireDatamodelEvent("Loading columns finished", DatamodelEvent.ACTION_MESSAGE_EVENT);
 					if (table.isView()) {
 						if (table.isMaterializedView()) {
-							if (onlyColumns == false) {
+							if (ignoreIndices == false) {
 								loadIndexes(table);
 							}
 						}
-						if (session != null && onlyColumns == false) {
+						if (session != null && ignoreIndices == false) {
 							databaseExtension.setupViewSQLCode(conn, table);
 						}
 					} else {
-						if (onlyColumns == false) {
-							loadConstraints(table);
+						loadConstraints(table);
+						if (ignoreIndices == false) {
 							loadIndexes(table);
 						}
 					}
@@ -1202,7 +1205,7 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 		return loginSchemaName;
 	}
 
-	/** this method is only allowed if the datamodel already had a connection and use a new one
+	/** this method is only allowed if the data model already had a connection and use a new one
 	 * to continue working!
 	 * @param connection
 	 */

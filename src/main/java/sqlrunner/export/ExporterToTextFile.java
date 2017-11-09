@@ -13,12 +13,12 @@ import java.text.SimpleDateFormat;
 
 import org.apache.log4j.Logger;
 
-import sqlrunner.BinaryDataFile;
-import sqlrunner.datamodel.SQLField;
-import sqlrunner.flatfileimport.BasicDataType;
 import dbtools.ConnectionDescription;
 import dbtools.DatabaseSession;
 import dbtools.SQLParser;
+import sqlrunner.BinaryDataFile;
+import sqlrunner.datamodel.SQLField;
+import sqlrunner.flatfileimport.BasicDataType;
 
 /**
  *
@@ -116,7 +116,8 @@ public class ExporterToTextFile implements Exporter {
     	this.lineSeparator = sep;
     }
     
-    public void setDateFormat(String pattern) {
+    @Override
+	public void setDateFormat(String pattern) {
         if (pattern == null || pattern.trim().length() == 0) {
             throw new IllegalArgumentException("pattern cannot be null or empty");
         }
@@ -368,36 +369,12 @@ public class ExporterToTextFile implements Exporter {
      */
     private String createInsertStatementText(String sql) {
         // Tabellen/View-Namen ermitteln
-        sql = sql.toLowerCase();
-        int p0 = sql.indexOf("from"); //$NON-NLS-1$
-        p0 = p0 + 4; // Zeiger nach dem from
-        sql = sql.substring(p0, sql.length()).trim();
-        // testen ob es sich um eine View handelt oder um eine table
-        if (sql.charAt(0) == '(') {
-            // View gefunden, dann Ende der View finden
-            p0 = sql.indexOf(')') + 1;
-        } else {
-            // Tabelle gefunden, dann das Ende finden
-            p0 = sql.indexOf(' '); // wird durch Leerzeichen abgeschlossen
-            if (p0 == -1) {
-                // keine Leerzeichen , dann nach Semikolon testen
-                p0 = sql.indexOf(';');
-                if (p0 == -1) {
-                    // auch kein semikolon, dann Ende des Textes nutzen
-                    p0 = sql.length();
-                }
-            }
-        } // if (sql.charAt(0) == '(')
-        if (p0 != -1) {
-            sql = sql.substring(0, p0);
-        } else {
-            sql = null;
-        }
-        // insert-Statement zusammensetzen
-        if (sql != null) {
+    	String table = SQLParser.getTableForQuery(sql);
+    	// insert-Statement zusammensetzen
+        if (table != null) {
             final StringBuffer sb = new StringBuffer();
             sb.append("insert into "); //$NON-NLS-1$
-            sb.append(sql);
+            sb.append(table);
             sb.append(" ("); //$NON-NLS-1$
             for (int i = 0; i < columnNames.length; i++) {
                 sb.append(columnNames[i]);

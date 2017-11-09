@@ -598,13 +598,15 @@ public final class SQLParser {
         }
     }
 
+    public static String getTableForQuery(SQLStatement stat) {
+        return getTableForQuery(stat.getSQL());
+    }
     /**
      * returns the name of the table or view for querys
      * @param statement
      * @return name from table or view
      */
-    public static String getTableForQuery(SQLStatement stat) {
-        String sql = stat.getSQL();
+    public static String getTableForQuery(String sql) {
         sql = sql.replace('\n', ' ');
         sql = sql.replace('\r', ' ');
         sql = sql.replace('\t', ' ');

@@ -216,4 +216,11 @@ public interface DatabaseExtension {
 	 */
 	public String getSelectCountRows(SQLTable table);
 	
+	/**
+	 * loads the procedures
+	 * @param schema
+	 * @return true if successfully loaded, otherwise false if a generic method should be used
+	 */
+	public boolean loadProcedures(SQLSchema schema);
+	
 }

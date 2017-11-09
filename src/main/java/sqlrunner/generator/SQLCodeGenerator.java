@@ -1241,21 +1241,26 @@ public class SQLCodeGenerator {
 		} else {
 			sb.append(p.getName());
 		}
+		boolean firstLoop = true;
 		sb.append("(");
 		for (int i = 0; i < p.getParameterCount(); i++) {
 			Parameter param = p.getParameterAt(i);
-			if (i > 0) {
-				sb.append(",");
+			if (param.isReturnValue() == false) {
+				if (firstLoop) {
+					firstLoop = false;
+				} else {
+					sb.append(",");
+				}
+				sb.append(param.getName());
+				sb.append("/*");
+				sb.append(param.getTypeName());
+				if (param.getIoType() == DatabaseMetaData.functionColumnInOut) {
+					sb.append("[io]");
+				} else if (param.getIoType() == DatabaseMetaData.functionColumnOut) {
+					sb.append("[o]");
+				}
+				sb.append("*/");
 			}
-			sb.append(param.getName());
-			sb.append("/*");
-			sb.append(param.getTypeName());
-			if (param.getIoType() == DatabaseMetaData.functionColumnInOut) {
-				sb.append("[io]");
-			} else if (param.getIoType() == DatabaseMetaData.functionColumnOut) {
-				sb.append("[o]");
-			}
-			sb.append("*/");
 		}
 		sb.append(")");
 		return sb.toString();

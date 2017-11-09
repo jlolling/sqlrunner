@@ -28,10 +28,12 @@ public class PanelConfigTableCell extends JPanel implements	ConfigurationPanel {
 	private final JLabel labelHeightValue = new JLabel();
 	private final JSlider sliderHeight = new JSlider();
 	private final JCheckBox jCheckBoxUseMonoSpacedFontInCells = new JCheckBox();
+	private final JCheckBox jCheckBoxShowByteArraysAsString = new JCheckBox();
 	private boolean isHeightChanged = false;
 	private boolean isWidthChanged = false;
 	private boolean fontChanged = false;
 	private boolean hasMonospaceFont = false;
+	private boolean showArrayAsString = false;
 	private int oldWidth = 0;
 	private int oldHeight = 0;
 	private MainFrame mainFrame = null;
@@ -59,6 +61,7 @@ public class PanelConfigTableCell extends JPanel implements	ConfigurationPanel {
 		}
 		oldWidth = sliderWidth.getValue();
 		sliderWidth.addChangeListener(new javax.swing.event.ChangeListener() {
+			@Override
 			public void stateChanged(ChangeEvent e) {
 				sliderWidth_stateChanged(e);
 			}
@@ -70,6 +73,7 @@ public class PanelConfigTableCell extends JPanel implements	ConfigurationPanel {
 		}
 		oldHeight = sliderHeight.getValue();
 		sliderHeight.addChangeListener(new javax.swing.event.ChangeListener() {
+			@Override
 			public void stateChanged(ChangeEvent e) {
 				sliderHeight_stateChanged(e);
 			}
@@ -182,6 +186,7 @@ public class PanelConfigTableCell extends JPanel implements	ConfigurationPanel {
 			hasMonospaceFont = jCheckBoxUseMonoSpacedFontInCells.isSelected();
 			jCheckBoxUseMonoSpacedFontInCells.addActionListener(new ActionListener() {
 				
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					fontChanged = (hasMonospaceFont != jCheckBoxUseMonoSpacedFontInCells.isSelected());
 				}
@@ -189,21 +194,50 @@ public class PanelConfigTableCell extends JPanel implements	ConfigurationPanel {
 			});
 			add(jCheckBoxUseMonoSpacedFontInCells , gbc);
 		}
+		{
+			GridBagConstraints gbc = new GridBagConstraints();
+			gbc.gridx = 0;
+			gbc.gridy = 5;
+			gbc.weightx = 1;
+			gbc.weighty = 0;
+			gbc.gridwidth = 2;
+			gbc.gridheight = 1;
+			gbc.insets = new Insets(2, 2, 2, 2);
+			gbc.anchor = GridBagConstraints.CENTER;
+			gbc.fill = GridBagConstraints.NONE;
+			jCheckBoxShowByteArraysAsString.setText(Messages.getString("PanelConfigTableCell.showByteArrayAsString"));
+			jCheckBoxShowByteArraysAsString.setSelected(MainFrame.isShowByteArrayAsString());
+			showArrayAsString = jCheckBoxShowByteArraysAsString.isSelected();
+			jCheckBoxShowByteArraysAsString.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					fontChanged = (showArrayAsString != jCheckBoxShowByteArraysAsString.isSelected());
+				}
+				
+			});
+			add(jCheckBoxShowByteArraysAsString , gbc);
+		}
 		
 	}
 
+	@Override
 	public boolean isChanged() {
 		return isHeightChanged || isWidthChanged || fontChanged;
 	}
 
+	@Override
 	public boolean performChanges() {
 		oldWidth = sliderWidth.getValue();
 		oldHeight = sliderHeight.getValue();
 		hasMonospaceFont = jCheckBoxUseMonoSpacedFontInCells.isSelected();
+		showArrayAsString = jCheckBoxShowByteArraysAsString.isSelected();
 		MainFrame.setUseMonospacedTableCellFont(jCheckBoxUseMonoSpacedFontInCells.isSelected());
+		MainFrame.setShowByteArrayAsString(jCheckBoxShowByteArraysAsString.isSelected());
 		return true;
 	}
 
+	@Override
 	public void cancel() {
 		if (mainFrame.getDatabase() != null) {
 			if (isWidthChanged) {
