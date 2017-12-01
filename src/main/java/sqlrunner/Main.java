@@ -119,6 +119,7 @@ public final class Main {
     private static String osType = null;
     private static String customSqlTypeKeyMap = "customSqlTypeMap";
     private static String customSqlTypeMappingEnabled = "customSqlTypeEnabled";
+    public static boolean useNativeFileDialog = true;
     
     private static void setupCustomSqlTypeMapping() {
     	 boolean enabled = Boolean.parseBoolean(getUserProperty(customSqlTypeMappingEnabled, "false"));
@@ -867,6 +868,7 @@ public final class Main {
             userprop.load(inifileIn);
             inifileIn.close();
             boolean debug = Boolean.valueOf(userprop.getProperty("DEBUG", "false")).booleanValue();
+            useNativeFileDialog = Boolean.valueOf(userprop.getProperty("USE_NATIVE_FILE_DIALOG", "true")).booleanValue();
             setDebug(debug);
         } catch (IOException e) {
             if (logger.isDebugEnabled()) {

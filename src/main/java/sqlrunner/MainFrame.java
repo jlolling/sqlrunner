@@ -7,6 +7,7 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Graphics;
@@ -32,6 +33,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -2365,30 +2367,58 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
     private boolean saveAsScriptFile() {
         boolean ok = false;
         try {
-            final JFileChooser chooser = new JFileChooser();
-            if (currentFile != null) {
-                if (currentFile.getParentFile() != null) {
-                    chooser.setCurrentDirectory(currentFile.getParentFile());
-                    chooser.setSelectedFile(currentFile);
+        	if (Main.useNativeFileDialog) {
+            	FileDialog fd = new FileDialog(this, Messages.getString("MainFrame.155"), FileDialog.SAVE);
+                if (currentFile != null) {
+                    if (currentFile.getParentFile() != null) {
+                        fd.setDirectory(currentFile.getParent());
+                        fd.setFile(currentFile.getName());
+                    }
+                } else {
+                    final String directory = Main.getUserProperty("SCRIPT_DIR", System.getProperty("user.home"));  
+                    fd.setDirectory(directory);
                 }
-            } else {
-                final String directory = Main.getUserProperty("SCRIPT_DIR", System.getProperty("user.home"));  
-                chooser.setCurrentDirectory(new File(directory));
-            }
-            chooser.setDialogType(JFileChooser.SAVE_DIALOG);
-            chooser.setMultiSelectionEnabled(false);
-            chooser.setDialogTitle(Messages.getString("MainFrame.122")); 
-            chooser.addChoosableFileFilter(sqlFileFilter);
-            final int returnVal = chooser.showSaveDialog(this);
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                File f = chooser.getSelectedFile();
-                if ((chooser.getFileFilter() == sqlFileFilter) && (f.getName().toLowerCase().endsWith(".sql") == false)) { 
-                    f = new File(f.getAbsolutePath() + ".sql"); 
+                fd.setVisible(true);
+                fd.setFilenameFilter(new FilenameFilter() {
+    				
+    				@Override
+    				public boolean accept(File dir, String name) {
+    					return name.toLowerCase().endsWith(".sql");
+    				}
+    				
+    			});
+                String fn = fd.getFile();
+                if (fn != null) {
+                	currentFile = new File(fd.getDirectory(), fd.getFile());
+                    Main.setUserProperty("SCRIPT_DIR", currentFile.getParentFile().toString()); 
+                    ok = saveScriptFile();
                 }
-                Main.setUserProperty("SCRIPT_DIR", f.getParentFile().toString()); 
-                currentFile = f;
-                ok = saveScriptFile();
-            }
+        	} else {
+                final JFileChooser chooser = new JFileChooser();
+                if (currentFile != null) {
+                    if (currentFile.getParentFile() != null) {
+                        chooser.setCurrentDirectory(currentFile.getParentFile());
+                        chooser.setSelectedFile(currentFile);
+                    }
+                } else {
+                    final String directory = Main.getUserProperty("SCRIPT_DIR", System.getProperty("user.home"));  
+                    chooser.setCurrentDirectory(new File(directory));
+                }
+                chooser.setDialogType(JFileChooser.SAVE_DIALOG);
+                chooser.setMultiSelectionEnabled(false);
+                chooser.setDialogTitle(Messages.getString("MainFrame.122")); 
+                chooser.addChoosableFileFilter(sqlFileFilter);
+                final int returnVal = chooser.showSaveDialog(this);
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    File f = chooser.getSelectedFile();
+                    if ((chooser.getFileFilter() == sqlFileFilter) && (f.getName().toLowerCase().endsWith(".sql") == false)) { 
+                        f = new File(f.getAbsolutePath() + ".sql"); 
+                    }
+                    currentFile = f;
+                    Main.setUserProperty("SCRIPT_DIR", f.getParentFile().toString()); 
+                    ok = saveScriptFile();
+                }
+        	}
         } catch (java.security.AccessControlException ae) {
             status.message.setText(Messages.getString("MainFrame.123")); 
             currentFile = null;
@@ -2624,26 +2654,53 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
     }
 
     public void openFileDialog(String directoryName, String selectFileName) {
-        final JFileChooser chooser = new JFileChooser();
-        if (directoryName != null) {
-            chooser.setCurrentDirectory(new File(directoryName));
-        } else {
-            final String directory = Main.getUserProperty("SCRIPT_DIR", System.getProperty("user.home"));  
-            chooser.setCurrentDirectory(new File(directory));
-        }
-        if (selectFileName != null) {
-            chooser.setSelectedFile(new File(selectFileName));
-        }
-        chooser.setDialogType(JFileChooser.OPEN_DIALOG);
-        chooser.setMultiSelectionEnabled(false);
-        chooser.setDialogTitle(Messages.getString("MainFrame.155")); 
-        chooser.addChoosableFileFilter(sqlFileFilter);
-        final int returnVal = chooser.showOpenDialog(this);
-        // hier weiter wenn der modale FileDialog geschlossen wurde
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            final File f = chooser.getSelectedFile();
-            loadFileInDocument(false, f.getAbsolutePath());
-        }
+    	if (Main.useNativeFileDialog) {
+        	FileDialog fd = new FileDialog(this, Messages.getString("MainFrame.155"), FileDialog.LOAD);
+            if (directoryName != null) {
+                fd.setDirectory(directoryName);
+            } else {
+                final String directory = Main.getUserProperty("SCRIPT_DIR", System.getProperty("user.home"));  
+                fd.setDirectory(directory);
+            }
+            if (selectFileName != null) {
+            	fd.setFile(selectFileName);
+            }
+            fd.setVisible(true);
+            fd.setFilenameFilter(new FilenameFilter() {
+				
+				@Override
+				public boolean accept(File dir, String name) {
+					return name.toLowerCase().endsWith(".sql");
+				}
+				
+			});
+            String fn = fd.getFile();
+            if (fn != null) {
+                File f = new File(fd.getDirectory(), fd.getFile());
+                loadFileInDocument(false, f.getAbsolutePath());
+            }
+    	} else {
+        	final JFileChooser chooser = new JFileChooser();
+            if (directoryName != null) {
+                chooser.setCurrentDirectory(new File(directoryName));
+            } else {
+                final String directory = Main.getUserProperty("SCRIPT_DIR", System.getProperty("user.home"));  
+                chooser.setCurrentDirectory(new File(directory));
+            }
+            if (selectFileName != null) {
+                chooser.setSelectedFile(new File(selectFileName));
+            }
+            chooser.setDialogType(JFileChooser.OPEN_DIALOG);
+            chooser.setMultiSelectionEnabled(false);
+            chooser.setDialogTitle(Messages.getString("MainFrame.155")); 
+            chooser.addChoosableFileFilter(sqlFileFilter);
+            final int returnVal = chooser.showOpenDialog(this);
+            // hier weiter wenn der modale FileDialog geschlossen wurde
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                final File f = chooser.getSelectedFile();
+                loadFileInDocument(false, f.getAbsolutePath());
+            }
+    	}
     }
 
     private void menuScriptSave_actionPerformed() {

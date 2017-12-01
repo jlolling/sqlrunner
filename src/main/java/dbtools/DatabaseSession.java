@@ -551,7 +551,7 @@ public class DatabaseSession {
     /**
      * cancel the current running statement, some times it is not possible to do this and
      * in these cases the session will be marked as damaged and returns false.
-     * Cancelation can consume a lot of time depending what resources until now are used by this statement.
+     * Cancellation can consume a lot of time depending what resources until now are used by this statement.
      * @return true if successfully canceled
      */
     public boolean cancelStatement() {
