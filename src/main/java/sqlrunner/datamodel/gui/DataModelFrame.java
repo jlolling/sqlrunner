@@ -785,7 +785,7 @@ public final class DataModelFrame extends JFrame {
             			final List<SQLTable> list = SQLCodeGenerator.sortByForeignKeys(treeAndTableModel.getCurrentSelectedSQLTables());
             			for (SQLTable table : list) {
             				sql.append(SQLCodeGenerator.getInstance().buildCreateStatement(table, useFullName()));
-            				sql.append("\n");
+            				sql.append("\n\n");
             			}
                     	SwingUtilities.invokeLater(new Runnable() {
 

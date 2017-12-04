@@ -346,10 +346,10 @@ public class SQLCodeGenerator {
             } else {
             	tableName = getEncapsulatedName(table.getName());
             }
+            if (table.isFieldsLoaded() == false) {
+                table.loadColumns();
+            }
         	if (table.isTable() || viewAsTable) {
-                if (table.isFieldsLoaded() == false) {
-                    table.loadColumns();
-                }
                 final StringBuilder sb = new StringBuilder();
                 if (table.getFieldCount() > 0) {
                 	if (table.getComment() != null && table.getComment().trim().isEmpty() == false) {
@@ -452,7 +452,7 @@ public class SQLCodeGenerator {
             	if (source != null) {
                 	sb.append("-- drop view ");
                 	sb.append(tableName);
-                	sb.append(";\n");
+                	sb.append(";\n"); 
             		if (fullName) {
             			StringReplacer sr = new StringReplacer(table.getSourceCode());
             			if (alternativeSchemaName != null) {
@@ -469,6 +469,7 @@ public class SQLCodeGenerator {
             		} else {
                     	sb.append(table.getSourceCode());
             		}
+                	sb.append(";\n"); 
             	} else {
             		sb.append("-- create view ");
                     if (fullName) {

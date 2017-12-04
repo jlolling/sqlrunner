@@ -5,6 +5,9 @@ http://jan-lolling.de/#sqlrunner
 
 release notes
 -------------
+Version 19.1
+- Data model: create views statement for multiple selected views works now
+
 Version 19.0
 - Use native file dialog (can be switched of in the use properties with the key USE_NATIVE_FILE_DIALOG=false
 

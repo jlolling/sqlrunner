@@ -794,6 +794,29 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
                     	});
                     }
     			}
+    			if (table.isView() && table.isSourceCodeLoaded() == false) {
+    				
+                	new Thread() {
+                		@Override
+                		public void run() {
+                			if (table != null) {
+                            	SwingUtilities.invokeLater(new Runnable() {
+                            		@Override
+                            		public void run() {
+                            			tree.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                            		}
+                            	});
+                            	
+                            	SwingUtilities.invokeLater(new Runnable() {
+                            		@Override
+                            		public void run() {
+                    	    			tree.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                            		}
+                            	});
+                			}
+                		}
+                	}.start();
+    			}
             } else if (currentUserObject instanceof SQLConstraint) {
                 currentSQLConstraint = (SQLConstraint) currentUserObject;
                 currentSQLTable = currentSQLConstraint.getTable();

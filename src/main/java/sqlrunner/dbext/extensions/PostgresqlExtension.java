@@ -60,7 +60,7 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 							source = "create materialized view " + table.getName() + " as\n" + source;
 							table.setSourceCode(source);
 						} else {
-							source = "create view " + table.getName() + " as\n" + source;
+							source = "create or replace view " + table.getName() + " as\n" + source;
 							table.setSourceCode(source);
 						}
 					}

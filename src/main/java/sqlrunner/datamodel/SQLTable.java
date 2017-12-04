@@ -128,6 +128,10 @@ public final class SQLTable extends SQLObject {
         return constraintsLoaded;
     }
     
+    public boolean isSourceCodeLoaded() {
+    	return sourceCode != null;
+    }
+    
     void setConstraintsLoaded() {
         constraintsLoaded = true;
     }
