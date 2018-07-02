@@ -223,4 +223,16 @@ public interface DatabaseExtension {
 	 */
 	public boolean loadProcedures(SQLSchema schema);
 	
+	/**
+	 * securely close a connection with terminating backends
+	 * @param conn
+	 */
+	public void closeConnection(Connection conn);
+	
+	/**
+	 * Cancel the last statement on this connection
+	 * @param conn
+	 */
+	public void cancelLastStatement(Connection conn);
+	
 }

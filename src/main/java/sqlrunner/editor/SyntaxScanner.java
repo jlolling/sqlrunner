@@ -312,6 +312,9 @@ public final class SyntaxScanner {
 				defsForAdds = new Hashtable<String, DisplayAttribute>();
 			}
 			for (String word : keywords) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("addAdditionalKeywords: " + word);
+				}
 				defsForAdds.put(word, da);
 			}
 		}
@@ -325,6 +328,9 @@ public final class SyntaxScanner {
 				defsForAdds = new Hashtable<String, DisplayAttribute>();
 			}
 			for (String word : dataTypes) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("addAdditionalSQLDataTypes: " + word);
+				}
 				defsForAdds.put(word, da);
 			}
 		}
@@ -338,6 +344,9 @@ public final class SyntaxScanner {
 				defsForAdds = new Hashtable<String, DisplayAttribute>();
 			}
 			for (String word : dataTypes) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("addAdditionalPLSQLKeywords: " + word);
+				}
 				defsForAdds.put(word, da);
 			}
 		}

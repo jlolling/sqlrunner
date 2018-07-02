@@ -123,6 +123,14 @@ public class GenericDatabaseExtension implements DatabaseExtension {
 		listdatatypes.add(word);
 	}
 	
+	protected void addSQLDatatypes(String ... words) {
+		if (words != null && words.length > 0) {
+			for (int i = 0; i < words.length; i++) {
+				listdatatypes.add(words[i]);
+			}
+		}
+	}
+
 	protected void addProcedureKeyword(String word) {
 		listprockeywords.add(word);
 	}
@@ -301,4 +309,19 @@ public class GenericDatabaseExtension implements DatabaseExtension {
 		return false;
 	}
 
+	@Override
+	public void closeConnection(Connection conn) {
+		if (conn != null) {
+			try {
+				conn.close();
+			} catch (Exception e) {}
+		}
+	}
+
+	@Override
+	public void cancelLastStatement(Connection conn) {
+		// no action here
+	}
+
+	
 }

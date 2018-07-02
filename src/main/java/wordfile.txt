@@ -1,6 +1,6 @@
 /L1"SQL" Line Comment = -- Block Comment On = /* Block Comment Off = */ String Chars = ' File Extensions = SQL
 /C1"Keywords"
-add alter all and any as asc ascending avg authorization at
+add alter all analyze and any as asc ascending avg authorization at array
 by between
 cache call cascade case cast chr column commit connect constraint create coalesce cross comment cycle conflict
 decode delete desc descending distinct drop
@@ -31,13 +31,13 @@ char character clob
 date decimal default double datetime
 float
 enum
-int integer interval
+int integer interval json jsonb
 long
 number numeric
 precision
 raw real record rowid
 smallint serial bigserial
-text mediumtext time timestamp tinyint tinytext
+text mediumtext time timestamp timestamptz tinyint tinytext
 varchar varchar2 varying
 without
 zone
@@ -48,12 +48,12 @@ declare
 else elsif end exception execute exit extend
 fetch for forall function
 if immediate in is
-loop
+loop language
 notfound
 on open others out 
 raise rownum rtrim
 savepoint sqlcode sqlerrm
 rowtype
 termout return then to type
-package procedure prompt
+package procedure prompt returns
 when while

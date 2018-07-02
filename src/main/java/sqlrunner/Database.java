@@ -324,6 +324,9 @@ public final class Database implements TableModel {
 				}
 				mainFrame.getSyntaxScanner().addAdditionalKeywords(sb.toString());
 				if (databaseExtension != null) {
+					if (logger.isDebugEnabled()) {
+						logger.debug("add additional keywords and data types from: " + databaseExtension.getName());
+					}
 					mainFrame.getSyntaxScanner().addAdditionalKeywords(databaseExtension.getAdditionalSQLKeywords());
 					mainFrame.getSyntaxScanner().addAdditionalSQLDataTypes(databaseExtension.getAdditionalSQLDatatypes());
 					mainFrame.getSyntaxScanner().addAdditionalPLSQLKeywords(databaseExtension.getAdditionalProcedureKeywords());

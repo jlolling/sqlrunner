@@ -26,8 +26,8 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 	
 	public PostgresqlExtension() {
 		addDriverClassName(driverClassName);
-		addSQLDatatype("json");
-		addSQLKeywords("on", "conflict");
+		addSQLDatatypes("json", "jsonb", "int4", "int8", "float", "float8","_int4", "_int8", "_float", "_float8", "_byte");
+		addSQLKeywords("on", "conflict", "unnest", "vacuum", "vacuum full", "substring", "array_agg");
 	}
 
 	@Override
@@ -196,12 +196,21 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
         		field.setTypeSQLCode("text");
         		field.setBasicType(BasicDataType.CLOB.getId());
         	}
+        } else if ("json".equalsIgnoreCase(field.getTypeName())) {
+        	field.setTypeSQLCode("json");
+    		field.setBasicType(BasicDataType.CHARACTER.getId());
+        } else if ("jsonb".equalsIgnoreCase(field.getTypeName())) {
+        	field.setTypeSQLCode("jsonb");
+    		field.setBasicType(BasicDataType.CHARACTER.getId());
         } else if ("bool".equalsIgnoreCase(field.getTypeName())) {
         	field.setTypeSQLCode("boolean");
     		field.setBasicType(BasicDataType.BOOLEAN.getId());
         } else if ("text".equalsIgnoreCase(field.getTypeName())) {
         	field.setTypeSQLCode("text");
     		field.setBasicType(BasicDataType.CLOB.getId());
+        } else if (field.getTypeName().startsWith("_")) {
+        	// array types
+        	field.setTypeSQLCode(field.getTypeName());
         }
 	}
 
@@ -362,12 +371,35 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 	}
 
 	@Override
-	public boolean loadProcedures(SQLSchema schema) {
-		
-		
-		return false;
+	public void closeConnection(Connection conn) {
+		if (conn != null) {
+			try {
+				Statement s = conn.createStatement();
+				s.execute("select pg_terminate_backend(pg_backend_pid())");
+			} catch (Exception e) {
+				// ignore
+			}
+			try {
+				conn.close();
+			} catch (Exception e) {
+				// ignore
+			}
+		} 
 	}
 
+	@Override
+	public void cancelLastStatement(Connection conn) {
+		if (conn != null) {
+			try {
+				Statement s = conn.createStatement();
+				s.execute("select pg_cancel_backend(pg_backend_pid())");
+			} catch (Exception e) {
+				// ignore
+			}
+		} 
+	}
+	
+	
 /*
 	@Override
 	public String getSelectCountRows(SQLTable table) {

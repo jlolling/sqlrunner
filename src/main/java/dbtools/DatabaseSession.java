@@ -558,7 +558,7 @@ public class DatabaseSession {
         checkUsage(false);
         try {
         	if (currentOpenStatement != null) {
-                Statement toCancelStatement = currentOpenStatement;
+                final Statement toCancelStatement = currentOpenStatement;
                 currentOpenStatement = null;
                 toCancelStatement.cancel();
                 toCancelStatement.close();

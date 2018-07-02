@@ -5,6 +5,12 @@ http://jan-lolling.de/#sqlrunner
 
 release notes
 -------------
+Version 19.3
+- JSON and JSONB as data type added to PostgreSQL
+
+Version 19.2
+- Admin SQLs extended: PostgreSQL: database size statement added
+
 Version 19.1
 - Data model: create views statement for multiple selected views works now
 

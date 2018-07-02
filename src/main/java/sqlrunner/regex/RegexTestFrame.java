@@ -506,6 +506,7 @@ public class RegexTestFrame extends JFrame {
 
 	private static String regexToJava(String aRegexFragment) {
 		final StringBuilder result = new StringBuilder();
+		result.append("\"");
 		final StringCharacterIterator iterator = new StringCharacterIterator(aRegexFragment);
 		char character = iterator.current();
 		while (character != CharacterIterator.DONE) {
@@ -522,6 +523,7 @@ public class RegexTestFrame extends JFrame {
 			}
 			character = iterator.next();
 		}
+		result.append("\"");
 		return result.toString();
 	}
 

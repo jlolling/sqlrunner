@@ -1438,6 +1438,45 @@ public class SQLCodeGenerator {
         return sb.toString();
     }
 
+    public static String convertSQLToDynamicSQLString(String sql) {
+        final StringReplacer sr = new StringReplacer(sql);
+        sql = sr.getResultText().trim();
+        final StringBuilder sb = new StringBuilder(sql.length());
+        sb.append("'");
+        char c = ' ';
+        char c1 = ' ';
+        boolean inString = false;
+        for (int i = 0; i < sql.length(); i++) {
+            c = sql.charAt(i);
+            if (i < sql.length() - 1) {
+                c1 = sql.charAt(i + 1);
+            }
+            if (inString == false) {
+                if (c == '\'') {
+                    sb.append("''");
+                    inString = true;
+                } else if (c == '\n') {
+                    if (i < sql.length() - 1) {
+                        sb.append("'\n ||' ");
+                    }
+                } else {
+                    sb.append(c);
+                }
+            } else {
+                if (c == '\'') {
+                    sb.append("''");
+                    if (c1 != '\'') {
+                    	inString = false;
+                    }
+                } else {
+                    sb.append(c);
+                }
+            }
+        }
+        sb.append("'");
+        return sb.toString();
+    }
+
     public static String convertSqlToJavaStringBuffer(String sql, String stringBufferVarName) {
         // alle bereits enthaltenen doppelten Hochkomma als Escape-Sequenz umsetzen
         final StringReplacer sr = new StringReplacer(sql);

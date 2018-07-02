@@ -46,6 +46,7 @@ public final class SQLTable extends SQLObject {
     private boolean loadingIndexes = false;
     private Long countDatasets;
     private Date countDate;
+    private boolean inheritated = false;
 
     public SQLTable(SQLDataModel model, SQLSchema schema, String name) {
     	super(model, name);
