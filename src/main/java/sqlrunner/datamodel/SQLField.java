@@ -113,30 +113,36 @@ public final class SQLField extends SQLObject implements Comparable<SQLField>, F
 		return type;
 	}
 
+	@Override
 	public void setTypeName(String name_loc) {
 		this.dbTypeName = name_loc;
 	}
 
+	@Override
 	public String getTypeName() {
 		return dbTypeName;
 	}
 
+	@Override
 	public void setLength(Integer length_loc) {
 		if (length_loc != null) {
 			this.length = length_loc;
 		}
 	}
 
+	@Override
 	public int getLength() {
 		return length;
 	}
 
+	@Override
 	public void setDecimalDigits(Integer digits) {
 		if (digits != null) {
 			this.decimalDigits = digits;
 		}
 	}
 
+	@Override
 	public int getDecimalDigits() {
 		return this.decimalDigits;
 	}
@@ -165,6 +171,7 @@ public final class SQLField extends SQLObject implements Comparable<SQLField>, F
 		return ownSQLTable.getName() + "." + getName();
 	}
 
+	@Override
 	public int compareTo(SQLField field) {
 		int compvalue = 0;
 		if (field != null) {
@@ -201,6 +208,7 @@ public final class SQLField extends SQLObject implements Comparable<SQLField>, F
 		return basicType;
 	}
 	
+	@Override
 	public void setBasicType(int basicType) {
 		this.basicType = basicType;
 	}
@@ -259,10 +267,12 @@ public final class SQLField extends SQLObject implements Comparable<SQLField>, F
 		}
 	}
 
+	@Override
 	public String getTypeSQLCode() {
 		return typeSQLCode;
 	}
 
+	@Override
 	public void setTypeSQLCode(String typeSQLCode) {
 		this.typeSQLCode = typeSQLCode;
 	}
@@ -274,9 +284,7 @@ public final class SQLField extends SQLObject implements Comparable<SQLField>, F
 	public String getDefaultValueSQL() {
 		String sql = "";
 		if (defaultValue != null) {
-			if (basicType == BasicDataType.CHARACTER.getId()) {
-				sql = " default '" + defaultValue + "'";
-			}
+			sql = " default " + defaultValue;
 		}
 		return sql;
 	}
@@ -289,8 +297,10 @@ public final class SQLField extends SQLObject implements Comparable<SQLField>, F
 		return isSerial;
 	}
 
-	public void setSerial(boolean isSerial) {
-		this.isSerial = isSerial;
+	public void setSerial(Boolean isSerial) {
+		if (isSerial != null) {
+			this.isSerial = isSerial;
+		}
 	}
 
 	@Override

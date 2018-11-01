@@ -349,12 +349,6 @@ public final class Main {
                     h = r.height;
                 }
             }
-            if (x < 0) {
-                x = 0;
-            }
-            if (y < 0) {
-                y = 0;
-            }
             // Helios-Statusleiste berücksichtigen
             try {
                 heliosStatusHeight = Integer.parseInt(Main.defaultProp.getProperty("HELIOS_STATUS_HEIGHT", "30"));
@@ -1389,6 +1383,7 @@ public final class Main {
     public static void main(final String[] args) {
     	commandLineArguments = args;
         System.setProperty("apple.laf.useScreenMenuBar", "true");
+        System.setProperty("com.apple.mrj.application.apple.menu.about.name", "SQLRunner");
         String osname = System.getProperty("os.name");
         if (osname != null) {
         	if (osname.toLowerCase().indexOf("mac") != -1) {
