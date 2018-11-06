@@ -144,57 +144,8 @@
 	</target>
 
 	<target name="all"
-	        depends="clean, localapp, deb, dmg, dmg_linux, webstart"
+	        depends="clean, localapp, deb, dmg, dmg_linux"
 	        description="create complete distribution" />
-
-	<target name="webstart" depends="jar" description="sign all jars">
-		<delete failonerror="false"
-		        includeemptydirs="true"
-		        dir="${javawebstart}" />
-		<mkdir dir="${javawebstart}" />
-		<copy todir="${javawebstart}">
-			<fileset dir="${lib}">
-				<include name="*.jar" />
-				<exclude name="jnlp.jar" />
-                <exclude name="ui.jar" />
-				<exclude name="servlet.jar" />
-			</fileset>
-		</copy>
-		<copy file="${distrib}/${jarfilename}" tofile="${javawebstart}/${jws-jar-filename}" />
-		<copy todir="${javawebstart}">
-			<fileset dir="${distrib}">
-				<include name="sqlrunner.png" />
-			</fileset>
-		</copy>
-		<signjar keystore="jan.keystore"
-		         alias="jan"
-		         storepass="lolli2" >
-			<path>
-				<fileset dir="${javawebstart}" includes="*.jar" />
-			</path>
-		</signjar>
-		<taskdef name="jnlp" classname="org.jugbb.ant.jws.JNLPTask" classpathref="build.class.path" />
-		<jnlp 
-			title="SQLRunner" 
-			vendor="Java User Group Berlin-Brandenburg / Jan Lolling"
-			description="Database client to manipulate database directly with SQL with input and export capabilities"
-			folderwithsignedjars="${javawebstart}"
-			iconhref="sqlrunner.png"
-			codebase="http://jan-lolling.de/sqlrunner/jws/"
-			createdesktopshortcut="true"
-			createmenuentry="true"
-			subMenuName="Java User Group Berlin"
-			javaversion="1.7+"
-			javamaxheapsize="4096m"
-            mainJarFile="${jws-jar-filename}"
-			associatewithfileextensions="sql"
-			associatewithmimetype="text/x-sql"
-			jnlpfilename="sqlrunner.jnlp"
-			mainclass="${mainclass}"
-			offlineallowed="true"
-			jnlpversion="7.0+"
-		/>
-	</target>
 
 	<target name="localapp" depends="jar" description="sign all jars">
 		<delete failonerror="false">

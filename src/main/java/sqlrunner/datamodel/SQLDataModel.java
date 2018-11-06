@@ -779,7 +779,11 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 								field.setNullValueAllowed(rs.getInt("NULLABLE") == DatabaseMetaData.columnNullable);
 								field.setComment(rs.getString("REMARKS"));
 								field.setDefaultValue(rs.getString("COLUMN_DEF"));
-								field.setSerial("YES".equalsIgnoreCase(rs.getString("IS_AUTOINCREMENT")) || "true".equalsIgnoreCase(rs.getString("IS_AUTOINCREMENT")));
+								try {
+									field.setSerial("YES".equalsIgnoreCase(rs.getString("IS_AUTOINCREMENT")) || "true".equalsIgnoreCase(rs.getString("IS_AUTOINCREMENT")));
+								} catch (Exception ex) {
+									// ignore
+								}
 								databaseExtension.setupDataType(field);
 								table.addField(field);
 							}
