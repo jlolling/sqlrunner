@@ -305,8 +305,8 @@ public final class SyntaxScanner {
 	 *            Liste der Wörter
 	 */
 	public void addAdditionalKeywords(List<String> keywords) {
-		da = parseAttributeLine(sections.getProperty(languageName
-				+ "_ADDED_KEYWORDS"));
+		String section = languageName + "_ADDED_KEYWORDS";
+		da = parseAttributeLine(sections.getProperty(section));
 		if (da != null) {
 			if (defsForAdds == null) {
 				defsForAdds = new Hashtable<String, DisplayAttribute>();
@@ -317,12 +317,16 @@ public final class SyntaxScanner {
 				}
 				defsForAdds.put(word, da);
 			}
+		} else {
+			if (logger.isDebugEnabled()) {
+				logger.debug("addAdditionalKeywords failed. No display attributes defined for section: " + section);
+			}
 		}
 	}
 
 	public void addAdditionalSQLDataTypes(List<String> dataTypes) {
-		da = parseAttributeLine(sections.getProperty(languageName
-				+ "_C2"));
+		String section = languageName + "_C2";
+		da = parseAttributeLine(sections.getProperty(section));
 		if (da != null) {
 			if (defsForAdds == null) {
 				defsForAdds = new Hashtable<String, DisplayAttribute>();
@@ -333,12 +337,16 @@ public final class SyntaxScanner {
 				}
 				defsForAdds.put(word, da);
 			}
+		} else {
+			if (logger.isDebugEnabled()) {
+				logger.debug("addAdditionalSQLDataTypes failed. No display attributes defined for section: " + section);
+			}
 		}
 	}
 
 	public void addAdditionalPLSQLKeywords(List<String> dataTypes) {
-		da = parseAttributeLine(sections.getProperty(languageName
-				+ "_C3"));
+		String section = languageName + "_C3";
+		da = parseAttributeLine(sections.getProperty(section));
 		if (da != null) {
 			if (defsForAdds == null) {
 				defsForAdds = new Hashtable<String, DisplayAttribute>();
@@ -348,6 +356,10 @@ public final class SyntaxScanner {
 					logger.debug("addAdditionalPLSQLKeywords: " + word);
 				}
 				defsForAdds.put(word, da);
+			}
+		} else {
+			if (logger.isDebugEnabled()) {
+				logger.debug("addAdditionalPLSQLKeywords failed. No display attributes defined for section: " + section);
 			}
 		}
 	}

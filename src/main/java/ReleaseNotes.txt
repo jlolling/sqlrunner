@@ -5,6 +5,10 @@ http://jan-lolling.de/#sqlrunner
 
 release notes
 -------------
+Version 20.0
+- Model comparison improved
+- Source code of function in PostgreSQL now reliable available
+
 Version 19.3
 - JSON and JSONB as data type added to PostgreSQL
 

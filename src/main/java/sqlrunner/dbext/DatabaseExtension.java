@@ -1,6 +1,7 @@
 package sqlrunner.dbext;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
@@ -28,13 +29,6 @@ public interface DatabaseExtension {
 
 	/**
 	 * check if extension fits to the database type
-	 * @param cd description of connection
-	 * @return true if it matches
-	 */
-	public boolean isApplicable(ConnectionDescription cd);
-	
-	/**
-	 * check if extension fits to the database type
 	 * @param driverClass description of connection
 	 * @return true if it matches
 	 */
@@ -52,6 +46,14 @@ public interface DatabaseExtension {
 	 * @return sql code to explain the current statement
 	 */
 	public String getExplainSQL(String currentStatement);
+	
+	/**
+	 * load tables and add them to the schema
+	 * @param connection
+	 * @param schema
+	 * @return true if successfully loaded
+	 */
+	public boolean loadTables(Connection conn, SQLSchema schema) throws SQLException;
 	
 	/**
 	 * sets the code into the view
@@ -130,13 +132,6 @@ public interface DatabaseExtension {
 	 * @return SQL code
 	 */
 	public String getUpdateCommentStatement(String tableName, String fieldName, String comment);
-
-	/**
-	 * returns the schema name which is associated with the login
-	 * @param cd
-	 * @return name of login schema
-	 */
-	public String getLoginSchema(ConnectionDescription cd);
 		
 	/**
 	 * returns the schema name which is associated with the login
@@ -144,6 +139,13 @@ public interface DatabaseExtension {
 	 * @return name of login schema
 	 */
 	public String getLoginSchema(Connection conn);
+
+	/**
+	 * returns the schema name which is associated with the login
+	 * @param cd
+	 * @return name of login schema
+	 */
+	public String getLoginSchema(ConnectionDescription cd);
 
 	/**
 	 * returns true if SQL dialect contains limit keyword
@@ -221,7 +223,7 @@ public interface DatabaseExtension {
 	 * @param schema
 	 * @return true if successfully loaded, otherwise false if a generic method should be used
 	 */
-	public boolean loadProcedures(SQLSchema schema);
+	public boolean loadProcedures(Connection conn, SQLSchema schema) throws SQLException;
 	
 	/**
 	 * securely close a connection with terminating backends

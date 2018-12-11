@@ -50,6 +50,8 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
+import dbtools.ConnectionDescription;
+import dbtools.DatabaseSession;
 import sqlrunner.DBMessageDialog;
 import sqlrunner.LongRunningAction;
 import sqlrunner.Main;
@@ -61,8 +63,6 @@ import sqlrunner.dbext.DatabaseExtensionFactory;
 import sqlrunner.flatfileimport.BasicDataType;
 import sqlrunner.resources.ApplicationIcons;
 import sqlrunner.swinghelper.WindowHelper;
-import dbtools.ConnectionDescription;
-import dbtools.DatabaseSession;
 
 /**
  * Pro Tabelle wird eine XML-Datei erstellt.
@@ -128,7 +128,6 @@ public final class ExporterFrame extends JFrame implements ActionListener {
             WindowHelper.locateWindowAtMiddle(parent, this);
             setVisible(true);
             DatabaseExtension ext = DatabaseExtensionFactory.getDatabaseExtension(cd);
-            jTextFieldSchema.setText(ext.getLoginSchema(cd));
             SimpleMetaReader reader = new SimpleMetaReader(cd, jTextFieldSchema.getText());
             reader.start();
         } catch (Exception e) {
@@ -456,6 +455,7 @@ public final class ExporterFrame extends JFrame implements ActionListener {
     	return list;
     }
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
         if (e.getSource() == buttonOpenFile) {
             // neue Datei öffnen
@@ -529,7 +529,7 @@ public final class ExporterFrame extends JFrame implements ActionListener {
                 }
             }
         } else if (e.getSource() == buttonEditSQL) {
-            final ExportDescription selectedExpDesc = ((ExportDescription) list.getSelectedValue());
+            final ExportDescription selectedExpDesc = (list.getSelectedValue());
             if (selectedExpDesc != null) {
                 queryEditor = new ExportQueryEditor(this);
                 queryEditor.setText(selectedExpDesc.getSql());
@@ -612,7 +612,8 @@ public final class ExporterFrame extends JFrame implements ActionListener {
         // und setzt als Tooltip den Inhalt des Textes
         private class MeldungPropertyChangeListener implements PropertyChangeListener {
 
-            public void propertyChange(PropertyChangeEvent evt) {
+            @Override
+			public void propertyChange(PropertyChangeEvent evt) {
                 messageLabel.setToolTipText(messageLabel.getText());
             }
         }
@@ -863,15 +864,18 @@ public final class ExporterFrame extends JFrame implements ActionListener {
                 disableEvents(AWTEvent.WINDOW_EVENT_MASK);
                 final LongRunningAction lra = new LongRunningAction() {
 
-                    public String getName() {
+                    @Override
+					public String getName() {
                         return "XML Export";
                     }
 
-                    public void cancel() {
+                    @Override
+					public void cancel() {
 
                     }
 
-                    public boolean canBeCanceled() {
+                    @Override
+					public boolean canBeCanceled() {
                         return false;
                     }
 
@@ -891,7 +895,8 @@ public final class ExporterFrame extends JFrame implements ActionListener {
                     final int refreshTime = 2000;
                     final javax.swing.Timer timer = new javax.swing.Timer(refreshTime, new java.awt.event.ActionListener() {
 
-                        public void actionPerformed(ActionEvent e) {
+                        @Override
+						public void actionPerformed(ActionEvent e) {
                             setRefreshNow();
                         }
 
@@ -1175,7 +1180,8 @@ public final class ExporterFrame extends JFrame implements ActionListener {
          * @return  the number of components in this list
          * @see #size()
          */
-        public int getSize() {
+        @Override
+		public int getSize() {
             return delegate.size();
         }
 
@@ -1193,7 +1199,8 @@ public final class ExporterFrame extends JFrame implements ActionListener {
          *             list
          * @see #get(int)
          */
-        public ExportDescription getElementAt(int index) {
+        @Override
+		public ExportDescription getElementAt(int index) {
             return delegate.get(index);
         }
 

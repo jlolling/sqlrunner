@@ -991,6 +991,37 @@ public class SQLCodeGenerator {
     	}
     }
     
+    public String buildAlterStatement(SQLField field, boolean withSchemaName, String alternativeSchemaName) {
+    	setupEnclosureChar(field);
+    	SQLTable table = field.getSQLTable();
+    	if (table.isTable()) {
+    		StringBuilder sb = new StringBuilder(64);
+    		sb.append("alter table ");
+    		if (withSchemaName) {
+    			if (alternativeSchemaName != null) {
+    				sb.append(getEncapsulatedName(alternativeSchemaName));
+    				sb.append(".");
+        			sb.append(getEncapsulatedName(table.getName()));
+    			} else {
+        			sb.append(getEncapsulatedName(table.getAbsoluteName()));
+    			}
+    		} else {
+    			sb.append(getEncapsulatedName(table.getName()));
+    		}
+    		sb.append(" alter column ");
+        	setupEnclosureChar(field);
+            sb.append(getEncapsulatedName(field.getName()));
+            sb.append(" type ");
+            sb.append(getFieldType(field));
+            if (!field.isNullValueAllowed()) {
+                sb.append(" not null");
+            }
+    		return sb.toString();
+    	} else {
+    		return "";
+    	}
+    }
+
     public String buildAddToTableStatement(SQLConstraint constraint, boolean withSchemaName) {
     	return buildAddToTableStatement(constraint, withSchemaName, null);
     }
@@ -1574,9 +1605,7 @@ public class SQLCodeGenerator {
     	if (listFieldsToChange.size() > 0) {
     		sb.append("\n\n-- ############ Columns to change ############\n");
         	for (SQLField field : listFieldsToChange) {
-        		sb.append(buildDropStatement(field, true, alternativeSchemaName));
-        		sb.append(";\n");
-        		sb.append(buildCreateStatement(field, true, alternativeSchemaName));
+        		sb.append(buildAlterStatement(field, true, alternativeSchemaName));
         		sb.append(";\n");
         	}
     	}

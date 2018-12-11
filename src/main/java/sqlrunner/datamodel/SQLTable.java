@@ -47,6 +47,7 @@ public final class SQLTable extends SQLObject {
     private Long countDatasets;
     private Date countDate;
     private boolean inheritated = false;
+    private int countPartitions = 0;
 
     public SQLTable(SQLDataModel model, SQLSchema schema, String name) {
     	super(model, name);
@@ -447,6 +448,22 @@ public final class SQLTable extends SQLObject {
 	
 	public Date getCountDate() {
 		return countDate;
+	}
+
+	public boolean isInheritated() {
+		return inheritated;
+	}
+
+	public void setInheritated(boolean inheritated) {
+		this.inheritated = inheritated;
+	}
+
+	public int getCountPartitions() {
+		return countPartitions;
+	}
+
+	public void setCountPartitions(int countPartitions) {
+		this.countPartitions = countPartitions;
 	}
 	
 }

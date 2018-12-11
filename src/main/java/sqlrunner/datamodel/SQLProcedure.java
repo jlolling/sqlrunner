@@ -146,6 +146,10 @@ public class SQLProcedure extends SQLObject implements Comparable<SQLProcedure> 
         	return ioType == DatabaseMetaData.procedureColumnResult || ioType == DatabaseMetaData.procedureColumnReturn;
         }
         
+        public boolean isOutputParameter() {
+        	return ioType == DatabaseMetaData.procedureColumnOut || ioType == DatabaseMetaData.procedureColumnInOut;
+        }
+        
         public void setIoType(int ioType) {
             this.ioType = ioType;
         }

@@ -101,7 +101,7 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 			DatabaseSessionPool.setCheckPoolCyclusTime(5);
 			DatabaseSessionPool.startCheckPoolThread();
 		}
-		databaseExtension = DatabaseExtensionFactory.getDatabaseExtension(cd);
+		databaseExtension = DatabaseExtensionFactory.getDatabaseExtension(cd.getDriverClassName());
 		loginSchemaName = databaseExtension.getLoginSchema(cd);
 		if (logger.isDebugEnabled()) {
 			logger.debug("loginSchemaName=" + loginSchemaName);
@@ -433,7 +433,7 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 		}
 		return null;
 	}
-
+	
 	public boolean loadTables(SQLSchema schema) {
 		if (schema.isLoadingTables()) {
 			return false;
@@ -461,33 +461,8 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 		}
 		try {
 			fireDatamodelEvent("Loading tables and views...", DatamodelEvent.ACTION_MESSAGE_EVENT);
-			DatabaseMetaData dbmd = conn.getMetaData();
-			if (dbmd != null) {
-				SQLTable table;
-				schema.clearTables();
-				final ResultSet rs = dbmd.getTables(
-						schema.getCatalog().getKey(), 
-						schema.getKey(), 
-						null,
-						null);
-				if (rs != null) {
-					while (rs.next()) {
-						if (Thread.currentThread().isInterrupted()) {
-							break;
-						}
-						String tableName = rs.getString("TABLE_NAME");
-						table = new SQLTable(schema.getModel(), schema, tableName);
-						table.setType(rs.getString("TABLE_TYPE"));
-						table.setComment(rs.getString("REMARKS"));
-						if (table.isTable() || table.isView()) {
-							schema.addTable(table);
-						}
-					}
-					rs.close();
-				}
-				schema.setTablesLoaded();
-				ok = true;
-			}	
+			ok = databaseExtension.loadTables(conn, schema);
+			schema.setTablesLoaded();
 		} catch (SQLException sqle) {
 			try {
 				if (conn.getAutoCommit() == false) {
@@ -553,9 +528,6 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 	 * @return true if everything went well
 	 */
 	public boolean loadProcedures(SQLSchema schema) {
-		if (databaseExtension.loadProcedures(schema)) {
-			return true;
-		}
 		if (schema.isLoadingProcedures()) {
 			return false;
 		}
@@ -580,118 +552,16 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 		}
 		try {
 			fireDatamodelEvent("Load procedures for " + schema, DatamodelEvent.ACTION_MESSAGE_EVENT);
-			DatabaseMetaData dbmd = conn.getMetaData();
-			if (dbmd != null) {
-				schema.clearProcedures(); // remove any previously loaded procedures
-				ResultSet rs = dbmd.getProcedures(
-						schema.getCatalog().getKey(),
-						schema.getKey(), 
-						null);
-				if (rs != null) {
-					// loading all procedures and functions
-					while (rs.next()) {
-						if (Thread.currentThread().isInterrupted()) {
-							break;
-						}
-						// PROCEDURE_CAT contains the package name
-						String catalogName = rs.getString("PROCEDURE_CAT");
-						String name = rs.getString("PROCEDURE_NAME");
-						if (catalogName != null && catalogName.length() > 0) {
-							name = catalogName + "." + name;
-						}
-						// create an new one
-						if (logger.isDebugEnabled()) {
-							logger.debug("   Add procedure schema=" + schema + " name=" + name);
-						}
-						SQLProcedure procedure = new SQLProcedure(this, schema,	name);
-						// decide if it is a function
-						procedure.setComment(rs.getString("REMARKS"));
-						schema.addProcedure(procedure);
-					}
-					rs.close();
-				} else {
-					logger.error("No result returned by query database metadata for procedures.");
+			databaseExtension.loadProcedures(conn, schema);
+			fireDatamodelEvent("Loading procedure source code", DatamodelEvent.ACTION_MESSAGE_EVENT);
+			for (int i = 0; i < schema.getProcedureCount(); i++) {
+				SQLProcedure p = schema.getProcedureAt(i);
+				if (session != null) {
+					databaseExtension.setupProcedureSQLCode(conn, p);
 				}
-				// loading procedure/function parameters
-				if (schema.getProcedureCount() > 0) {
-					rs = dbmd.getProcedureColumns(
-							schema.getCatalog().getKey(), 
-							schema.getKey(), 
-							null, 
-							null);
-					if (rs != null) {
-						// an index for overloaded procedures
-						int procedureIndex = 0;
-						String prevProcedureName = "noprocedurehere_xx";
-						while (rs.next()) {
-							if (Thread.currentThread().isInterrupted()) {
-								break;
-							}
-							// PROCEDURE_CAT contains the package name
-							String catalogName = rs.getString("PROCEDURE_CAT");
-							String name = rs.getString("PROCEDURE_NAME");
-							if (catalogName != null && catalogName.length() > 0) {
-								// add the catalog name as package name
-								name = catalogName + "." + name;
-							}
-							int pos = 0;
-							try {
-								// position of this parameter in the procedure parameter
-								// list
-								pos = rs.getInt("ORDINAL_POSITION");
-							} catch (Exception e) {
-								// perhaps this column is not defined in every database
-								// type
-								pos = -1;
-							}
-							if (prevProcedureName.equals(name)) {
-								if (pos == 0) {
-									// if we get the same procedure name and a parameter
-									// with position zero increase the procedure index
-									// that means point to the next procedure with the
-									// same name
-									procedureIndex++;
-								}
-							} else {
-								procedureIndex = 0;
-							}
-							String columnName = rs.getString("COLUMN_NAME");
-							List<SQLProcedure> list = schema.getProcedures(name);
-							SQLProcedure procedure = list.get(procedureIndex);
-							if (procedure != null) {
-								int dataType = rs.getShort("DATA_TYPE");
-								String dataTypeName = rs.getString("TYPE_NAME");
-								int length = rs.getInt("LENGTH");
-								int precision = rs.getInt("PRECISION");
-								short ioType = rs.getShort("COLUMN_TYPE");
-								SQLProcedure.Parameter p = procedure.addParameter(
-										columnName,
-										dataType,
-										dataTypeName,
-										length,
-										precision, 
-										ioType);
-								databaseExtension.setupDataType(p);
-							}
-							// keep the name of the last procedure to detect overloaded
-							// procedures
-							prevProcedureName = name;
-						}
-						rs.close();
-					}
-				}
-				schema.setProcedureLoaded();
-				schema.sortProcedureList();
-				fireDatamodelEvent("Loading procedure source code", DatamodelEvent.ACTION_MESSAGE_EVENT);
-				for (int i = 0; i < schema.getProcedureCount(); i++) {
-					SQLProcedure p = schema.getProcedureAt(i);
-					if (session != null) {
-						databaseExtension.setupProcedureSQLCode(conn, p);
-					}
-				}
-				ok = true;
-				fireDatamodelEvent("Load procedures for " + schema + " finished: " + schema.getProcedureCount() + " procedures.", DatamodelEvent.ACTION_MESSAGE_EVENT);
 			}
+			ok = true;
+			fireDatamodelEvent("Load procedures for " + schema + " finished: " + schema.getProcedureCount() + " procedures.", DatamodelEvent.ACTION_MESSAGE_EVENT);
 		} catch (SQLException sqle) {
 			try {
 				if (conn.getAutoCommit() == false) {

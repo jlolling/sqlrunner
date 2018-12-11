@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -26,8 +25,35 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 	
 	public PostgresqlExtension() {
 		addDriverClassName(driverClassName);
-		addSQLDatatypes("json", "jsonb", "int4", "int8", "float", "float8","_int4", "_int8", "_float", "_float8", "_byte");
-		addSQLKeywords("on", "conflict", "unnest", "vacuum", "vacuum full", "substring", "array_agg");
+		addSQLDatatypes("json", "jsonb", "int4", "int8", "float", "float8","_int4", "_int8", "_float", "_float8", "_byte", "uuid", "interval");
+		addSQLKeywords(
+				"on", 
+				"conflict", 
+				"unnest", 
+				"vacuum", 
+				"vacuum full", 
+				"substring", 
+				"array_agg", 
+				"date_trunc", 
+				"date_trunc",
+				"substring",
+				"regexp_replace",
+				"regexp_matches",
+				"regexp_split_to_array",
+				"position",
+				"overlay",
+				"overlay",
+				"bit_length",
+				"char_length",
+				"character_length",
+				"btrim",
+				"format",
+				"do",
+				"instead",
+				"conflict",
+				"excluded",
+				"substring");
+		addProcedureKeyword("returns");
 	}
 
 	@Override
@@ -92,30 +118,35 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 			query.append(" pg_catalog.pg_proc p, ");
 			query.append(" pg_catalog.pg_language l,");
 			query.append(" pg_catalog.pg_namespace n");
-			query.append(" where p.proname = '");
+			query.append("\nwhere p.proname = '");
 			query.append(proc.getName());
 			query.append("'");
-			query.append(" and p.prolang = l.oid");
-			query.append(" and p.pronamespace = n.oid");
-			query.append(" and n.nspname = '");
+			query.append("\nand p.prolang = l.oid");
+			query.append("\nand p.pronamespace = n.oid");
+			query.append("\nand n.nspname = '");
 			query.append(proc.getSchema().getName());
 			query.append("'");
 			if (proc.getParameterCount() > 0) {
-				query.append(" and p.proargnames = ");
-				query.append("'{");
 				for (int i = 0; i < proc.getParameterCount(); i++) {
 					Parameter p = proc.getParameterAt(i);
-					if (i > 0) {
-						query.append(",");
+					query.append("\nand (p.proargmodes is null or (p.proargmodes)[" + (i + 1) + "] = ");
+					if (p.isOutputParameter() || p.isReturnValue()) {
+						query.append("'o'");
+					} else {
+						query.append("'i'");
 					}
-					query.append("\"");
+					query.append(")");
+					query.append("\nand (p.proargnames)[" + (i + 1) + "] = ");
+					query.append("'");
 					query.append(p.getName());
-					query.append("\"");
+					query.append("'");
 				}
-				query.append("}'");
 			}
 			StringBuilder code = new StringBuilder();
 			Statement stat = conn.createStatement();
+			if (logger.isDebugEnabled()) {
+				logger.debug("Load procedure code with query: " + query.toString());
+			}
 			ResultSet rs = stat.executeQuery(query.toString());
 			if (rs.next()) {
 				String source = rs.getString(1);
@@ -208,6 +239,9 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
         } else if ("text".equalsIgnoreCase(field.getTypeName())) {
         	field.setTypeSQLCode("text");
     		field.setBasicType(BasicDataType.CLOB.getId());
+        } else if ("uuid".equalsIgnoreCase(field.getTypeName())) {
+        	field.setTypeSQLCode("uuid");
+    		field.setBasicType(BasicDataType.CHARACTER.getId());
         } else if (field.getTypeName().startsWith("_")) {
         	// array types
         	field.setTypeSQLCode(field.getTypeName());
@@ -258,43 +292,6 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 	}
 
 	@Override
-	public List<String> getAdditionalSQLKeywords() {
-		List<String> list = new ArrayList<String>();
-		list.add("date_trunc");
-		list.add("substring");
-		list.add("regexp_replace");
-		list.add("regexp_matches");
-		list.add("regexp_split_to_array");
-		list.add("position");
-		list.add("overlay");
-		list.add("overlay");
-		list.add("bit_length");
-		list.add("char_length");
-		list.add("character_length");
-		list.add("btrim");
-		list.add("format");
-		list.add("do");
-		list.add("instead");
-		list.add("conflict");
-		list.add("excluded");
-		return list;
-	}
-
-	@Override
-	public List<String> getAdditionalSQLDatatypes() {
-		List<String> list = new ArrayList<String>();
-		list.add("interval");
-		return list;
-	}
-
-	@Override
-	public List<String> getAdditionalProcedureKeywords() {
-		List<String> list = new ArrayList<String>();
-		list.add("returns");
-		return list;
-	}
-
-	@Override
 	public boolean hasSQLLimitFeature() {
 		return true;
 	}
@@ -320,6 +317,9 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 
 	@Override
 	public List<SQLSequence> listSequences(Connection conn, SQLSchema schema) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("listSequences schema=" + schema.getName());
+		}
 		schema.setLoadingSequences(true);
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT sequence_name,start_value,maximum_value,increment FROM information_schema.sequences\n");
@@ -328,6 +328,9 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 		sb.append("'");
 		try {
 			Statement stat = conn.createStatement();
+			if (logger.isDebugEnabled()) {
+				logger.debug("listSequences SQL=" + sb.toString());
+			}
 			ResultSet rs = stat.executeQuery(sb.toString());
 			while (rs.next()) {
 				SQLSequence seq = new SQLSequence(schema, rs.getString(1));
@@ -398,7 +401,52 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 			}
 		} 
 	}
-	
+
+	@Override
+	public boolean loadTables(Connection conn, SQLSchema schema) throws SQLException {
+		if (logger.isDebugEnabled()) {
+			logger.debug("loadTables schema=" + schema.getName());
+		}
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT \n");
+		sql.append("    max(pn.nspname) AS schema_name, \n");
+		sql.append("    max(p.relname) AS table_name,\n");
+		sql.append("    (case when max(p.relkind) = 'v' then 'VIEW'\n");
+		sql.append("          when max(p.relkind) = 'm' then 'MATERIALIZED VIEW'\n");
+		sql.append("          when max(p.relkind) = 'r' then 'TABLE'\n");
+		sql.append("          else null end) as table_type,\n");
+		sql.append("    (case when max(ihc.inhparent) is not null then true else false end) as is_inherated,\n");
+		sql.append("    count(ihp.inhrelid) as count_partitions\n");
+		sql.append("FROM pg_class as p\n");
+		sql.append("JOIN pg_namespace pn ON pn.oid = p.relnamespace\n");
+		sql.append("left JOIN pg_inherits as ihp ON (ihp.inhparent=p.oid)\n");
+		sql.append("left JOIN pg_inherits as ihc ON (ihc.inhrelid=p.oid)\n");
+		sql.append("WHERE pn.nspname = '");
+		sql.append(schema.getKey());
+		sql.append("'\n");
+		sql.append("and p.relkind in ('v','r','m')\n");
+		sql.append("group by p.oid\n");
+		sql.append("order by table_name");
+		Statement stat = conn.createStatement();
+		if (logger.isDebugEnabled()) {
+			logger.debug("loadTables SQL=" + sql.toString());
+		}
+		ResultSet rs = stat.executeQuery(sql.toString());
+		while (rs.next()) {
+			String name = rs.getString("table_name");
+			String type = rs.getString("table_type");
+			boolean isInherated = rs.getBoolean("is_inherated");
+			int countPartitions = rs.getInt("count_partitions");
+			SQLTable table = new SQLTable(schema.getModel(), schema, name);
+			table.setType(type);
+			table.setInheritated(isInherated);
+			table.setCountPartitions(countPartitions);
+			schema.addTable(table);
+		}
+		rs.close();
+		stat.close();
+		return true;
+	}
 	
 /*
 	@Override

@@ -7,10 +7,10 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import dbtools.ConnectionDescription;
 import sqlrunner.datamodel.Field;
 import sqlrunner.dbext.GenericDatabaseExtension;
 import sqlrunner.flatfileimport.BasicDataType;
-import dbtools.ConnectionDescription;
 
 public class MSSqlExtension extends GenericDatabaseExtension {
 	
@@ -45,11 +45,6 @@ public class MSSqlExtension extends GenericDatabaseExtension {
 		} else {
 			return "dbo";
 		}
-	}
-
-	@Override
-	public boolean isApplicable(ConnectionDescription cd) {
-		return isApplicable(cd.getDriverClassName());
 	}
 
 	@Override

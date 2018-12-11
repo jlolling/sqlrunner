@@ -1,12 +1,16 @@
 package sqlrunner.dbext;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import org.apache.log4j.Logger;
 
 import dbtools.ConnectionDescription;
 import sqlrunner.datamodel.Field;
@@ -20,6 +24,7 @@ import sqlrunner.flatfileimport.BasicDataType;
 
 public class GenericDatabaseExtension implements DatabaseExtension {
 
+	private static final Logger logger = Logger.getLogger(GenericDatabaseExtension.class);
 	private List<String> listkeywords = new ArrayList<String>();
 	private List<String> listdatatypes = new ArrayList<String>();
 	private List<String> listprockeywords = new ArrayList<String>();
@@ -37,11 +42,6 @@ public class GenericDatabaseExtension implements DatabaseExtension {
 		listDriverClasses.add(driverClass);
 	}
 	
-	@Override
-	public boolean isApplicable(ConnectionDescription cd) {
-		return isApplicable(cd.getDriverClassName());
-	}
-
 	@Override
 	public boolean isApplicable(String driverClass) {
 		for (String dc : listDriverClasses) {
@@ -305,11 +305,6 @@ public class GenericDatabaseExtension implements DatabaseExtension {
 	}
 
 	@Override
-	public boolean loadProcedures(SQLSchema schema) {
-		return false;
-	}
-
-	@Override
 	public void closeConnection(Connection conn) {
 		if (conn != null) {
 			try {
@@ -323,5 +318,142 @@ public class GenericDatabaseExtension implements DatabaseExtension {
 		// no action here
 	}
 
+	@Override
+	public boolean loadTables(Connection conn, SQLSchema schema) throws SQLException {
+		DatabaseMetaData dbmd = conn.getMetaData();
+		if (dbmd != null) {
+			SQLTable table;
+			schema.clearTables();
+			final ResultSet rs = dbmd.getTables(
+					schema.getCatalog().getKey(), 
+					schema.getKey(), 
+					null,
+					null);
+			if (rs != null) {
+				while (rs.next()) {
+					if (Thread.currentThread().isInterrupted()) {
+						break;
+					}
+					String tableName = rs.getString("TABLE_NAME");
+					table = new SQLTable(schema.getModel(), schema, tableName);
+					table.setType(rs.getString("TABLE_TYPE"));
+					table.setComment(rs.getString("REMARKS"));
+					if (table.isTable() || table.isView()) {
+						schema.addTable(table);
+					}
+				}
+				rs.close();
+			}
+			schema.setTablesLoaded();
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean loadProcedures(Connection conn, SQLSchema schema) throws SQLException {
+		DatabaseMetaData dbmd = conn.getMetaData();
+		if (dbmd != null) {
+			schema.clearProcedures(); // remove any previously loaded procedures
+			ResultSet rs = dbmd.getProcedures(
+					schema.getCatalog().getKey(),
+					schema.getKey(), 
+					null);
+			// loading all procedures and functions
+			while (rs.next()) {
+				if (Thread.currentThread().isInterrupted()) {
+					break;
+				}
+				// PROCEDURE_CAT contains the package name
+				String catalogName = rs.getString("PROCEDURE_CAT");
+				String name = rs.getString("PROCEDURE_NAME");
+				if (catalogName != null && catalogName.length() > 0) {
+					name = catalogName + "." + name;
+				}
+				// create an new one
+				if (logger.isDebugEnabled()) {
+					logger.debug("   Add procedure schema=" + schema + " name=" + name);
+				}
+				SQLProcedure procedure = new SQLProcedure(schema.getModel(), schema,	name);
+				// decide if it is a function
+				procedure.setComment(rs.getString("REMARKS"));
+				schema.addProcedure(procedure);
+			}
+			rs.close();
+			// loading procedure/function parameters
+			if (schema.getProcedureCount() > 0) {
+				rs = dbmd.getProcedureColumns(
+						schema.getCatalog().getKey(), 
+						schema.getKey(), 
+						null, 
+						null);
+				if (rs != null) {	
+					// an index for overloaded procedures
+					int procedureIndex = 0;
+					String prevProcedureName = "noprocedurehere_xx";
+					while (rs.next()) {
+						if (Thread.currentThread().isInterrupted()) {
+							break;
+						}
+						// PROCEDURE_CAT contains the package name
+						String catalogName = rs.getString("PROCEDURE_CAT");
+						String name = rs.getString("PROCEDURE_NAME");
+						if (catalogName != null && catalogName.length() > 0) {
+							// add the catalog name as package name
+							name = catalogName + "." + name;
+						}
+						List<SQLProcedure> list = schema.getProcedures(name);
+						String columnName = rs.getString("COLUMN_NAME");
+						int dataType = rs.getShort("DATA_TYPE");
+						String dataTypeName = rs.getString("TYPE_NAME");
+						int length = rs.getInt("LENGTH");
+						int precision = rs.getInt("PRECISION");
+						short ioType = rs.getShort("COLUMN_TYPE");
+						int pos = 0;
+						try {
+							// position of this parameter in the procedure parameter
+							// list
+							pos = rs.getInt("ORDINAL_POSITION");
+						} catch (Exception e) {
+							// perhaps this column is not defined in every database
+							// type
+							pos = -1;
+						}
+						if (prevProcedureName.equals(name)) {
+							if (pos == 0 && ioType != DatabaseMetaData.procedureColumnResult) {
+								// if we get the same procedure name and a parameter
+								// with position zero increase the procedure index
+								// that means point to the next procedure with the
+								// same name
+								procedureIndex++;
+							}
+						} else {
+							procedureIndex = 0;
+						}
+						SQLProcedure procedure = list.get(procedureIndex);
+						SQLProcedure.Parameter p = procedure.addParameter(
+								columnName,
+								dataType,
+								dataTypeName,
+								length,
+								precision, 
+								ioType);
+						setupDataType(p);
+						// keep the name of the last procedure to detect overloaded
+						// procedures
+						prevProcedureName = name;
+					}
+					rs.close();
+				}
+			}
+			schema.setProcedureLoaded();
+			schema.sortProcedureList();
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	
 }

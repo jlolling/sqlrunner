@@ -63,6 +63,9 @@ public final class ModelComparator {
         		return;
         	}
         	SQLTable table1 = schemaOne.getTableAt(i);
+        	if (table1.isInheritated()) {
+        		continue;
+        	}
         	if (logger.isDebugEnabled()) {
         		logger.debug("check table to add/change " + table1.getAbsoluteName());
         	}
@@ -82,10 +85,13 @@ public final class ModelComparator {
         }
         // find obsolete tables in target
         for (int i = 0; i < schemaTwo.getTableCount(); i++) {
-        	if (Thread.currentThread().isInterrupted()) {
+        	if (Thread.currentThread().isInterrupted()) { 
         		return;
         	}
         	SQLTable table2 = schemaTwo.getTableAt(i);
+        	if (table2.isInheritated()) {
+        		continue;
+        	}
         	if (logger.isDebugEnabled()) {
         		logger.debug("check table to remove " + table2.getAbsoluteName());
         	}
@@ -132,7 +138,7 @@ public final class ModelComparator {
         	if (Thread.currentThread().isInterrupted()) {
         		return;
         	}
-        	SQLProcedure proc2 = schemaOne.getProcedureAt(i);
+        	SQLProcedure proc2 = schemaTwo.getProcedureAt(i);
         	List<SQLProcedure> listProc2 = schemaOne.getProcedures(proc2.getName());
         	if (listProc2.isEmpty()) {
         		proceduresToRemove.add(proc2);

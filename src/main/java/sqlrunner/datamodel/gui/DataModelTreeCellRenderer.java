@@ -35,7 +35,6 @@ public final class DataModelTreeCellRenderer extends DefaultTreeCellRenderer {
             int row,
             boolean hasFocus_loc) {
     	super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus_loc);
-        //setText(value.toString());
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
         if (node.getUserObject() instanceof SQLDataModel) {
             setDisabledIcon(ApplicationIcons.DB_GIF);
@@ -61,39 +60,48 @@ public final class DataModelTreeCellRenderer extends DefaultTreeCellRenderer {
             setDisabledIcon(ApplicationIcons.SEQUENCE_PNG);
             setIcon(ApplicationIcons.SEQUENCE_PNG);
         } else if (node.getUserObject() instanceof SQLTable) {
-            if (((SQLTable) node.getUserObject()).getType().equals(SQLTable.TYPE_TABLE)) {
-                setDisabledIcon(ApplicationIcons.TABLE_PNG);
-                setIcon(ApplicationIcons.TABLE_PNG);
-            } else if (((SQLTable) node.getUserObject()).isView()) {
-                if (((SQLTable) node.getUserObject()).getType().equals(SQLTable.TYPE_MAT_VIEW)) {
+        	SQLTable table = (SQLTable) node.getUserObject();
+            if (table.getType().equals(SQLTable.TYPE_TABLE)) {
+            	if (table.isInheritated()) {
+                    setDisabledIcon(ApplicationIcons.TABLE_PARTITION_PNG);
+                    setIcon(ApplicationIcons.TABLE_PARTITION_PNG);
+            	} else {
+            		if (table.getCountPartitions() > 0) {
+                        setText(table + " (" + table.getCountPartitions() + ")");
+            		}
+                    setDisabledIcon(ApplicationIcons.TABLE_PNG);
+                    setIcon(ApplicationIcons.TABLE_PNG);
+            	}
+            } else if (table.isView()) {
+                if (table.getType().equals(SQLTable.TYPE_MAT_VIEW)) {
                     setDisabledIcon(ApplicationIcons.TABLE_PNG);
                     setIcon(ApplicationIcons.TABLE_PNG);
                 } else {
                 	setDisabledIcon(ApplicationIcons.VIEW_PNG);
                     setIcon(ApplicationIcons.VIEW_PNG);
                 }
-            } else if (((SQLTable) node.getUserObject()).getType().equals(SQLTable.TYPE_ALIAS)) {
+            } else if (table.getType().equals(SQLTable.TYPE_ALIAS)) {
                 setDisabledIcon(ApplicationIcons.TABLE_PNG);
                 setIcon(ApplicationIcons.TABLE_PNG);
-            } else if (((SQLTable) node.getUserObject()).getType().equals(SQLTable.TYPE_SYNONYM)) {
+            } else if (table.getType().equals(SQLTable.TYPE_SYNONYM)) {
                 setDisabledIcon(ApplicationIcons.TABLE_PNG);
                 setIcon(ApplicationIcons.TABLE_PNG);
-            } else if (((SQLTable) node.getUserObject()).getType().equals(SQLTable.TYPE_GLOBAL_TEMPORARY)) {
+            } else if (table.getType().equals(SQLTable.TYPE_GLOBAL_TEMPORARY)) {
                 setDisabledIcon(ApplicationIcons.TABLE_PNG);
                 setIcon(ApplicationIcons.TABLE_PNG);
-            } else if (((SQLTable) node.getUserObject()).getType().equals(SQLTable.TYPE_LOCAL_TEMPORARY)) {
+            } else if (table.getType().equals(SQLTable.TYPE_LOCAL_TEMPORARY)) {
                 setDisabledIcon(ApplicationIcons.TABLE_PNG);
                 setIcon(ApplicationIcons.TABLE_PNG);
-            } else if (((SQLTable) node.getUserObject()).getType().equals(SQLTable.TYPE_SYSTEM_TABLE)) {
+            } else if (table.getType().equals(SQLTable.TYPE_SYSTEM_TABLE)) {
                 setDisabledIcon(ApplicationIcons.TABLE_PNG);
                 setIcon(ApplicationIcons.TABLE_PNG);
-            } else if (((SQLTable) node.getUserObject()).getType().equals(SQLTable.TYPE_SYSTEM)) {
+            } else if (table.getType().equals(SQLTable.TYPE_SYSTEM)) {
                 setDisabledIcon(ApplicationIcons.TABLE_PNG);
                 setIcon(ApplicationIcons.TABLE_PNG);
             } else {
                 setDisabledIcon(ApplicationIcons.TABLE_PNG);
                 setIcon(ApplicationIcons.TABLE_PNG);
-                setText(getText()+" ["+((SQLTable) node.getUserObject()).getType()+"]");
+                setText(getText()+" ["+table.getType()+"]");
             }
         } else {
             setDisabledIcon(null);

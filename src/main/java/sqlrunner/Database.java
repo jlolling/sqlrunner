@@ -3393,7 +3393,6 @@ public final class Database implements TableModel {
             schemaName = lastTable.substring(0, pos);
             tableName = lastTable.substring(pos + 1);
         } else {
-            schemaName = databaseExtension.getLoginSchema(session.getConnectionDescription());
             tableName = lastTable;
         }
         if (dataModel != null) {
@@ -3433,7 +3432,6 @@ public final class Database implements TableModel {
 						schemaName = lastTable.substring(0, pos);
 						tableName = lastTable.substring(pos + 1);
 					} else {
-			            schemaName = databaseExtension.getLoginSchema(session.getConnectionDescription());
 						tableName = lastTable;
 					}
 					if (localDbmd.getDatabaseProductName()
@@ -3549,7 +3547,6 @@ public final class Database implements TableModel {
 						schemaName = lastTable.substring(0, pos);
 						tableName = lastTable.substring(pos + 1);
 					} else {
-			            schemaName = databaseExtension.getLoginSchema(session.getConnectionDescription());
 						tableName = lastTable;
 					}
 					final ResultSet rsc = localDbmd.getImportedKeys(
@@ -4596,7 +4593,6 @@ public final class Database implements TableModel {
                 schemaName = lastTable.substring(0, pos);
                 tableName = lastTable.substring(pos + 1);
             } else {
-                schemaName = databaseExtension.getLoginSchema(session.getConnectionDescription());
                 tableName = lastTable;
             }
             if (dataModel.isCatalogsLoaded() == false) {

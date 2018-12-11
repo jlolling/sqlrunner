@@ -125,7 +125,6 @@ public final class ImporterFrame extends JFrame implements ActionListener {
             status.infoActionLabel.setToolTipText(cd.toString());
         }
         DatabaseExtension ext = DatabaseExtensionFactory.getDatabaseExtension(cd);
-        this.jTextFieldSchema.setText(ext.getLoginSchema(cd));
         sqlDataModel = new SQLDataModel(cd);
         setTitle(Messages.getString("ImporterFrame.title") + " " + cd.toString()); //$NON-NLS-1$ //$NON-NLS-2$
         WindowHelper.locateWindowAtMiddle(mainFrame, this);

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import dbtools.ConnectionDescription;
 import sqlrunner.datamodel.SQLObject;
 import sqlrunner.dbext.extensions.DB2Extension;
 import sqlrunner.dbext.extensions.DerbyExtension;
@@ -14,7 +15,6 @@ import sqlrunner.dbext.extensions.MySQLExtension;
 import sqlrunner.dbext.extensions.OracleExtension;
 import sqlrunner.dbext.extensions.PostgresqlExtension;
 import sqlrunner.dbext.extensions.TeradataExtension;
-import dbtools.ConnectionDescription;
 
 public class DatabaseExtensionFactory {
 	
@@ -39,7 +39,7 @@ public class DatabaseExtensionFactory {
 		}
 		init();
 		for (DatabaseExtension ext : listExtensions) {
-			if (ext.isApplicable(cd)) {
+			if (ext.isApplicable(cd.getDriverClassName())) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Use DatabaseExtension: " + ext.getClass().getCanonicalName() + " for conn desc: " + cd.toString());
 				}

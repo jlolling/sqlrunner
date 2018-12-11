@@ -14,7 +14,6 @@ import sqlrunner.datamodel.SQLTable;
 import sqlrunner.dbext.GenericDatabaseExtension;
 import sqlrunner.flatfileimport.BasicDataType;
 import sqlrunner.text.StringReplacer;
-import dbtools.ConnectionDescription;
 
 public class MySQLExtension extends GenericDatabaseExtension {
 
@@ -78,17 +77,6 @@ public class MySQLExtension extends GenericDatabaseExtension {
         }
 	}
 
-	@Override
-	public String getLoginSchema(ConnectionDescription cd) {
-		String url = cd.getUrl();
-		String database = StringReplacer.extractByRegexGroups(url, "jdbc.mysql://[a-z_0-9.-]*:[0-9]{0,6}/([a-zA-Z0-9_]*)");
-		if (database == null || database.isEmpty()) {
-			return super.getLoginSchema(cd);
-		} else {
-			return database;
-		}
-	}
-	
 	@Override
 	public String getLoginSchema(Connection conn) {
 		String url;
