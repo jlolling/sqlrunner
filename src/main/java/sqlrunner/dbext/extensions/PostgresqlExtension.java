@@ -432,6 +432,7 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 			logger.debug("loadTables SQL=" + sql.toString());
 		}
 		ResultSet rs = stat.executeQuery(sql.toString());
+		schema.clearTables();
 		while (rs.next()) {
 			String name = rs.getString("table_name");
 			String type = rs.getString("table_type");

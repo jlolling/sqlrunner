@@ -52,4 +52,21 @@ public class SQLObjectTreeNode extends DefaultMutableTreeNode {
 		}
 	}
 	
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof SQLObjectTreeNode) {
+			if (((SQLObjectTreeNode) o).getUserObject() != null) {
+				if (getUserObject() != null) {
+					return getUserObject().equals(((SQLObjectTreeNode) o).getUserObject());
+				} else {
+					return super.equals(o);
+				}
+			} else {
+				return super.equals(o);
+			}
+		} else {
+			return false;
+		}
+	}
+	
 }

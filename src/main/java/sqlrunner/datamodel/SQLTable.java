@@ -341,7 +341,7 @@ public final class SQLTable extends SQLObject {
     public boolean equals(Object o) {
         boolean isEqual = false;
         if (o instanceof SQLTable) {
-            isEqual = ((SQLTable) o).getName().equalsIgnoreCase(getName()) && ((SQLTable) o).getSchema().equals(schema);
+            isEqual = ((SQLTable) o).getAbsoluteName().equalsIgnoreCase(getAbsoluteName());
         }
         return isEqual;
     }
