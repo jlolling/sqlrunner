@@ -113,7 +113,7 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 				logger.debug("setupProcedureSQLCode proc=" + proc.getAbsoluteName());
 			}
 			StringBuilder query = new StringBuilder();
-			query.append("select p.prosrc, l.lanname");
+			query.append("select pg_get_functiondef(p.oid), l.lanname");
 			query.append(" from");
 			query.append(" pg_catalog.pg_proc p, ");
 			query.append(" pg_catalog.pg_language l,");
@@ -130,7 +130,7 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 				for (int i = 0; i < proc.getParameterCount(); i++) {
 					Parameter p = proc.getParameterAt(i);
 					query.append("\nand (p.proargmodes is null or (p.proargmodes)[" + (i + 1) + "] = ");
-					if (p.isOutputParameter() || p.isReturnValue()) {
+					if (p.isOutputParameter()) {
 						query.append("'o'");
 					} else {
 						query.append("'i'");
@@ -142,49 +142,17 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 					query.append("'");
 				}
 			}
-			StringBuilder code = new StringBuilder();
 			Statement stat = conn.createStatement();
 			if (logger.isDebugEnabled()) {
 				logger.debug("Load procedure code with query: " + query.toString());
 			}
 			ResultSet rs = stat.executeQuery(query.toString());
 			if (rs.next()) {
-				String source = rs.getString(1);
-				String language = rs.getString(2);
-				if (source != null && source.isEmpty() == false) {
-					code.append("create or replace ");
-					if (proc.isFunction()) {
-						code.append("function ");
-					} else {
-						code.append("procedure ");
-					}
-					code.append(proc.getAbsoluteName());
-					code.append("(\n");
-					for (int i = 0; i < proc.getParameterCount(); i++) {
-						Parameter p = proc.getParameterAt(i);
-						if (i > 0) {
-							code.append(",\n");
-						}
-						code.append("    ");
-						code.append(p.getName());
-						code.append(" ");
-						code.append(p.getTypeName());
-					}
-					code.append(")\n\n");
-					if (proc.isFunction()) {
-						code.append("returns ");
-						code.append(proc.getReturnParameter().getTypeName());
-						code.append(" as $$");
-					}
-					code.append(source);
-					code.append("$$ LANGUAGE ");
-					code.append(language);
-					proc.setCode(code.toString());
-				}
+				proc.setCode(rs.getString(1));
 			}
 			rs.close();
 			stat.close();
-			return code.toString();
+			return proc.getCode();
 		} catch (SQLException sqle) {
 			try {
 				conn.rollback();

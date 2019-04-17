@@ -421,7 +421,7 @@ public class GenericDatabaseExtension implements DatabaseExtension {
 							pos = -1;
 						}
 						if (prevProcedureName.equals(name)) {
-							if (pos == 0 && ioType != DatabaseMetaData.procedureColumnResult) {
+							if (pos == 0 && (ioType != DatabaseMetaData.procedureColumnResult)) {
 								// if we get the same procedure name and a parameter
 								// with position zero increase the procedure index
 								// that means point to the next procedure with the

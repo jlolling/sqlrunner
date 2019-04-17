@@ -5,6 +5,9 @@ http://jan-lolling.de/#sqlrunner
 
 release notes
 -------------
+Version 20.1
+- Model: PostgreSQL: procedure code is now reliable
+
 Version 20.0
 - Model comparison improved
 - Source code of function in PostgreSQL now reliable available

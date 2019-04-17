@@ -7,6 +7,7 @@ package sqlrunner.datamodel;
 
 import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -18,6 +19,7 @@ public class SQLProcedure extends SQLObject implements Comparable<SQLProcedure> 
     private String comment = null;
     private boolean function = false;
     private Parameter returnParam;
+    private List<Parameter> returnTable = null; 
     private String code;
     private ArrayList<Parameter> listParameters = new ArrayList<Parameter>();
     
@@ -50,9 +52,15 @@ public class SQLProcedure extends SQLObject implements Comparable<SQLProcedure> 
         parameter.setTypeName(typeName);
         parameter.setPrecision(precision);
         parameter.setIoType(ioType);
-        if (parameter.isReturnValue()) {
+        if (parameter.isSingleReturnValue()) {
             setFunction(true);
             returnParam = parameter;
+        } else if (parameter.isResultsetReturnValue()) {
+            setFunction(true);
+            if (returnTable == null) {
+            	returnTable = new ArrayList<>();
+            }
+        	returnTable.add(parameter);
         } else {
             listParameters.add(parameter);
         }
@@ -63,6 +71,10 @@ public class SQLProcedure extends SQLObject implements Comparable<SQLProcedure> 
     	return returnParam;
     }
     
+    public List<Parameter> getResultsetParameters() {
+    	return returnTable;
+    }
+
     public int getParameterCount() {
         return listParameters.size();
     }
@@ -142,10 +154,14 @@ public class SQLProcedure extends SQLObject implements Comparable<SQLProcedure> 
             return ioType;
         }
 
-        public boolean isReturnValue() {
-        	return ioType == DatabaseMetaData.procedureColumnResult || ioType == DatabaseMetaData.procedureColumnReturn;
+        public boolean isSingleReturnValue() {
+        	return ioType == DatabaseMetaData.procedureColumnReturn;
         }
         
+        public boolean isResultsetReturnValue() {
+        	return ioType == DatabaseMetaData.procedureColumnResult;
+        }
+
         public boolean isOutputParameter() {
         	return ioType == DatabaseMetaData.procedureColumnOut || ioType == DatabaseMetaData.procedureColumnInOut;
         }
@@ -249,7 +265,7 @@ public class SQLProcedure extends SQLObject implements Comparable<SQLProcedure> 
     	boolean firstLoop = true;
 		sb.append("(");
     	for (Parameter p : listParameters) {
-    		if (p.isReturnValue() == false) {
+    		if (p.isSingleReturnValue() == false) {
         		if (firstLoop) {
         			firstLoop = false;
         		} else {

@@ -1277,7 +1277,7 @@ public class SQLCodeGenerator {
 		sb.append("(");
 		for (int i = 0; i < p.getParameterCount(); i++) {
 			Parameter param = p.getParameterAt(i);
-			if (param.isReturnValue() == false) {
+			if (param.isSingleReturnValue() == false) {
 				if (firstLoop) {
 					firstLoop = false;
 				} else {
