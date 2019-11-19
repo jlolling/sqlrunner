@@ -324,7 +324,7 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 		}
 		for (SQLCatalog cat : catalogs) {
 			for (SQLSchema schema : cat.getSchemas()) {
-				if (schema.getName().equalsIgnoreCase(schemaName)) {
+				if (schemaName == null || schema.getName().equalsIgnoreCase(schemaName)) {
 					SQLTable table = schema.getTable(tableName);
 					if (table != null) {
 						return table;

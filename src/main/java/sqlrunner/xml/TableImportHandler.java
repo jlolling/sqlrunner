@@ -20,13 +20,13 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import sqlrunner.base64.Base64;
-import sqlrunner.flatfileimport.Importer;
-import sqlrunner.flatfileimport.BasicDataType;
-import sqlrunner.generator.SQLCodeGenerator;
 import dbtools.DatabaseSession;
 import dbtools.SQLPSParam;
 import dbtools.SQLStatement;
+import sqlrunner.base64.Base64;
+import sqlrunner.flatfileimport.BasicDataType;
+import sqlrunner.flatfileimport.Importer;
+import sqlrunner.generator.SQLCodeGenerator;
 
 /**
  * @author lolling.jan
@@ -61,7 +61,7 @@ public class TableImportHandler extends DefaultHandler {
     private Locator locator;
     private boolean testOnly = false;
     private int status = Importer.NOT_STARTED;
-    public static final int COUNT_DS_UNTIL_COMMIT = 100;
+    public static final int COUNT_DS_UNTIL_COMMIT = 1000;
     private int countUntilCommit = 0;
     private boolean tableAlreadyDeletedBefore = false;
     
@@ -73,7 +73,7 @@ public class TableImportHandler extends DefaultHandler {
             boolean testOnly) {
         this.session = session;
         this.impDesc = impDesc;
-        this.tableName = impDesc.getTable().getName().toLowerCase();
+        this.tableName = impDesc.getTable().getAbsoluteName().toLowerCase();
         this.updateEnabled = updateEnabled;
         this.tableHasPrimaryKey = impDesc.getTable().hasPrimaryKeyFields();
         this.testOnly = testOnly;
@@ -152,7 +152,7 @@ public class TableImportHandler extends DefaultHandler {
     public void endDocument() throws SAXException {
         try {
             if (testOnly == false) {
-                commit();
+                commit(false);
             }
             if (psInsert != null) {
                 psInsert.close();
@@ -275,7 +275,7 @@ public class TableImportHandler extends DefaultHandler {
         }
     }
 
-    private boolean insertDataset() {
+    private boolean insertDataset(boolean usebatch) {
         boolean ok = false;
         if (sqlPsInsert != null) {
             SQLPSParam psParam = null;
@@ -294,7 +294,11 @@ public class TableImportHandler extends DefaultHandler {
             if (setupParameterValues(psInsert, sqlPsInsert)) {
                 try {
                     if (testOnly == false) {
-                        psInsert.executeUpdate();
+                    	if (usebatch) {
+                            psInsert.addBatch();
+                    	} else {
+                            psInsert.executeUpdate();
+                    	}
                     }
                     ok = true;
                 } catch (SQLException sqle) {
@@ -341,13 +345,14 @@ public class TableImportHandler extends DefaultHandler {
 
     private void storeDataset() {
         final int count = countDatasets();
+        boolean usebatch = (updateEnabled == false) || (tableHasPrimaryKey == false);
         if (count != -1 && updateEnabled && tableHasPrimaryKey) {
             if (count == 1) {
                 if (updateDataset()) {
                     countDatasetUpdated++;
                 }
             } else if (count == 0) {
-                if (insertDataset()) {
+                if (insertDataset(usebatch)) {
                     countDatasetInserted++;
                 }
             } else {
@@ -357,21 +362,34 @@ public class TableImportHandler extends DefaultHandler {
                         null);
             }
         } else if (count < 1) {
-            if (insertDataset()) {
+            if (insertDataset(usebatch)) {
                 countDatasetInserted++;
             }
         }
         countCurrDatasets++;
         if (countUntilCommit == COUNT_DS_UNTIL_COMMIT) {
             if (testOnly == false) {
-                commit();
+                commit(usebatch);
             }
             countUntilCommit = -1;
         }
         countUntilCommit++;
     }
 
-    private void commit() {
+    private void commit(boolean usebatch) {
+    	if (usebatch) {
+        	try {
+            	psInsert.executeBatch();
+        	} catch (SQLException sqle) {
+        		SQLException ne = sqle.getNextException();
+        		if (ne != null) {
+                    logger.error("insertDataset in " + tableName + ".xml at line=" + locator.getLineNumber() + " failed: " + ne.getMessage(), sqle);
+        		} else {
+                    logger.error("insertDataset in " + tableName + ".xml at line=" + locator.getLineNumber() + " failed: " + sqle.getMessage(), sqle);
+        		}
+                status = Importer.FATALS;
+        	}
+    	}
         session.commit();
     }
 

@@ -105,7 +105,7 @@ public final class ImporterFrame extends JFrame implements ActionListener {
     private transient DatabaseSession       session = null;
     private ConnectionDescription cd;
     private transient XMLImporter           importer = null;
-    static final String           fileSeparator            = System.getProperty("file.separator"); //$NON-NLS-1$
+    static final String           fileSeparator            = "/"; //$NON-NLS-1$
     private transient SQLDataModel          sqlDataModel;
 
     /**
@@ -513,6 +513,11 @@ public final class ImporterFrame extends JFrame implements ActionListener {
         for (int i = 0; i < tableModel.getRowCount(); i++) {
             conf = tableModel.getImportDescriptionAt(i);
             xmlFile = new File(directory + fileSeparator + conf.getTable().getName() + ".xml"); //$NON-NLS-1$
+            if (xmlFile.exists()) {
+                conf.setXmlFile(xmlFile);
+            } else {
+            	xmlFile = new File(directory + fileSeparator + conf.getTable().getAbsoluteName() + ".xml"); //$NON-NLS-1$
+            }
             if (xmlFile.exists()) {
                 conf.setXmlFile(xmlFile);
             }

@@ -681,7 +681,7 @@ public final class ExporterFrame extends JFrame implements ActionListener {
                             final ResultSet rs1 = dbmd.getTables(null, schema, null, null);
                             if (rs1 != null) {
                                 while (rs1.next()) {
-                                    table = rs1.getString("TABLE_NAME"); //$NON-NLS-1$
+                                    table = rs1.getString("TABLE_SCHEM") + "." + rs1.getString("TABLE_NAME"); //$NON-NLS-1$
                                     if (table.indexOf("BIN$") == -1) { //$NON-NLS-1$
                                         type = rs1.getString("TABLE_TYPE"); //$NON-NLS-1$
                                         if (SQLTable.TYPE_VIEW.equalsIgnoreCase(type) == false) {

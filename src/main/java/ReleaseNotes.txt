@@ -5,6 +5,10 @@ http://jan-lolling.de/#sqlrunner
 
 release notes
 -------------
+Version 20.2
+- Main window: Bug solved: At the end of the query: number records will not be displayed
+- Model: for queries with nmo schema, the key fields will noit be detected
+
 Version 20.1
 - Model: PostgreSQL: procedure code is now reliable
 

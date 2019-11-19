@@ -4949,37 +4949,6 @@ public final class MainFrame extends JFrame implements ActionListener, ListSelec
     	return word;
     }
     
-    private String getWordAfterDot() {
-    	String word = "";
-    	String line = null;
-		try {
-			line = editor.getCurrentLine();
-			line = line.substring(0, currentOffsetInCurrLine);
-			// find dot before
-			int dotPos = -1;
-			for (int n = line.length() - 1, i = n; i >= 0; i--) {
-				char c = line.charAt(i);
-				if (Character.isWhitespace(c) == false) {
-					if (c == '.') {
-						dotPos = i;
-						break;
-					}
-				}
-			}
-			if (dotPos > 0) {
-				word = getWordAtPos(line, dotPos + 1);
-			} else {
-				word = getWordAtPos(line, currentOffsetInCurrLine);
-			}
-	    	if (logger.isDebugEnabled()) {
-	    		logger.debug("getWordBeforeDot returns: " + word);
-	    	}
-		} catch (BadLocationException e) {
-			logger.error(e);
-		}
-    	return word;
-    }
-
     private Action defaultEnterAction;
     private Action defaultCaretUpAction;
     private Action defaultCaretDownAction;

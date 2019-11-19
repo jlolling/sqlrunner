@@ -751,7 +751,7 @@ public final class SyntaxScanner {
 //								if (e > 0) {
 //									c0 = s.charAt(e - 1);
 //								}
-								if ((c == stringLimiter) || (c == '\n')) {
+								if (c == stringLimiter) {
 									break;
 								}
 							}

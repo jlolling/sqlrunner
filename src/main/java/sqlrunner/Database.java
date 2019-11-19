@@ -3437,12 +3437,30 @@ public final class Database implements TableModel {
 					if (localDbmd.getDatabaseProductName()
 							.toLowerCase()
 							.indexOf("oracle") != -1) {
-						schemaName = schemaName.toUpperCase();
+						if (schemaName != null) {
+							schemaName = schemaName.toUpperCase();
+						}
 						tableName = tableName.toUpperCase();
 					} else if (localDbmd.getDatabaseProductName()
 							.toLowerCase()
 							.indexOf("informix") != -1) {
-						schemaName = schemaName.toLowerCase();
+						if (schemaName != null) {
+							schemaName = schemaName.toLowerCase();
+						}
+						tableName = tableName.toLowerCase();
+					} else if (localDbmd.getDatabaseProductName()
+							.toLowerCase()
+							.indexOf("db2") != -1) {
+						if (schemaName != null) {
+							schemaName = schemaName.toLowerCase();
+						}
+						tableName = tableName.toLowerCase();
+					} else if (localDbmd.getDatabaseProductName()
+							.toLowerCase()
+							.indexOf("postgres") != -1) {
+						if (schemaName != null) {
+							schemaName = schemaName.toLowerCase();
+						}
 						tableName = tableName.toLowerCase();
 					}
 					final ResultSet rsc = localDbmd.getExportedKeys(null,
@@ -3551,7 +3569,7 @@ public final class Database implements TableModel {
 					}
 					final ResultSet rsc = localDbmd.getImportedKeys(
 							null,
-							schemaName.toUpperCase(),
+							(schemaName != null ? schemaName.toUpperCase() : null),
 							tableName.toUpperCase());
 					if (rsc != null) {
 						String column;
@@ -4109,7 +4127,7 @@ public final class Database implements TableModel {
 				removeAllElements();
 				columnTypeNames = null; // zurücksetzen, damit im TitleRenderer
 				// der Wechsel erkannt werden kann
-				mainFrame.setDatabaseBusyFiltered(true, "read data from query("
+				mainFrame.setDatabaseBusy(true, "read data from query("
 						+ String.valueOf(sqlStat.getIndex())
 						+ ")...");
 				int rowCount = 0; // zähler über alles
@@ -4339,6 +4357,7 @@ public final class Database implements TableModel {
 	                        + "):"
 	                        + " out of memory error: " + error.getMessage() + " . ABORT !";
 	                mainFrame.setStatusMessage(message);
+	                mainFrame.setDatabaseBusy(false, message);
 	                sqlStat.setMessage(message);
 					logger.error("out of memory error", error);
 				} finally {

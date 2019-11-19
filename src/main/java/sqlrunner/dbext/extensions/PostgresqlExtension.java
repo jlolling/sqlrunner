@@ -29,6 +29,8 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 		addSQLKeywords(
 				"on", 
 				"conflict", 
+				"similar", 
+				"ilike", 
 				"unnest", 
 				"vacuum", 
 				"vacuum full", 
@@ -50,10 +52,13 @@ public class PostgresqlExtension extends GenericDatabaseExtension {
 				"format",
 				"do",
 				"instead",
+				"excluded",
 				"conflict",
 				"excluded",
 				"substring");
 		addProcedureKeyword("returns");
+		addProcedureKeyword("plpgsql");
+		addProcedureKeyword("query");
 	}
 
 	@Override
