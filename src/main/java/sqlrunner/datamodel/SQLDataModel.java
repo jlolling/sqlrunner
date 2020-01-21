@@ -648,7 +648,11 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 								field.setOrdinalPosition(rs.getInt("ORDINAL_POSITION"));
 								field.setNullValueAllowed(rs.getInt("NULLABLE") == DatabaseMetaData.columnNullable);
 								field.setComment(rs.getString("REMARKS"));
-								field.setDefaultValue(rs.getString("COLUMN_DEF"));
+								try {
+									field.setDefaultValue(rs.getString("COLUMN_DEF"));
+								} catch (Exception ex) {
+									// ignore
+								}
 								try {
 									field.setSerial("YES".equalsIgnoreCase(rs.getString("IS_AUTOINCREMENT")) || "true".equalsIgnoreCase(rs.getString("IS_AUTOINCREMENT")));
 								} catch (Exception ex) {
@@ -938,8 +942,8 @@ public final class SQLDataModel extends SQLObject implements Comparable<SQLDataM
 							Object nonUnique = rs.getObject("NON_UNIQUE");
 							if (nonUnique instanceof Boolean) {
 								unique = !((Boolean) nonUnique).booleanValue();
-							} else if (nonUnique instanceof Integer) {
-								unique = ((Integer) nonUnique).intValue() == 0;
+							} else if (nonUnique instanceof Number) {
+								unique = ((Number) nonUnique).intValue() == 0;
 							} else if (nonUnique instanceof String) {
 								unique = !Boolean.parseBoolean((String) nonUnique);
 							}

@@ -5,6 +5,12 @@ http://jan-lolling.de/#sqlrunner
 
 release notes
 -------------
+Version 20.5
+- Model: Bug solved: if the index is an unique index, for some database types the uniqness was not recognized
+
+Version 20.4
+- Model: prevent problems in case of the driver throws an exception while fetching the column default value
+
 Version 20.2
 - Main window: Bug solved: At the end of the query: number records will not be displayed
 - Model: for queries with nmo schema, the key fields will noit be detected

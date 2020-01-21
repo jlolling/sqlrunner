@@ -3551,7 +3551,10 @@ public final class Database implements TableModel {
 	}
 
 	private void configColumnRefToInfo() {
-		final DatabaseSession localSession = DatabaseSessionPool.getDatabaseSession(session.getConnectionDescription().getUniqueId());
+		final DatabaseSession localSession = DatabaseSessionPool.getDatabaseSession(
+				session
+				.getConnectionDescription()
+				.getUniqueId());
 		if (localSession != null) {
 			columnRefToInfo = new String[columnNames.length][2];
 			try {
