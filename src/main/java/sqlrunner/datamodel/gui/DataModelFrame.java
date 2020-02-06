@@ -48,8 +48,6 @@ import javax.swing.JTree;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -315,6 +313,7 @@ public final class DataModelFrame extends JFrame {
     private JPanel getTreeFilterPanel() {
     	if (treeFilterTextField == null) {
     		treeFilterTextField = new JTextField();
+/*
     		treeFilterTextField.getDocument().addDocumentListener(new DocumentListener() {
 				
 				@Override
@@ -333,11 +332,13 @@ public final class DataModelFrame extends JFrame {
 				}
 				
 			});
+*/ 
     		treeFilterTextField.addKeyListener(new KeyListener() {
 				
 				@Override
 				public void keyTyped(KeyEvent e) {
 					if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+						treeAndTableModel.setObjectFilter(treeFilterTextField.getText());
 				    	tree.clearSelection();
 						treeAndTableModel.filterCurrentNodeChildren();
 					}

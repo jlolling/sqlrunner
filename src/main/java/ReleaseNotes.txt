@@ -5,8 +5,10 @@ http://jan-lolling.de/#sqlrunner
 
 release notes
 -------------
+Version 20.6
+- Model: Filter works now again
 Version 20.5
-- Model: Bug solved: if the index is an unique index, for some database types the uniqness was not recognized
+- Model: Bug solved: if the index is an unique index, for some database types the uniqueness was not recognized
 
 Version 20.4
 - Model: prevent problems in case of the driver throws an exception while fetching the column default value

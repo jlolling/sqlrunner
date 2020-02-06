@@ -1076,12 +1076,13 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
     }
     
     private synchronized void doBuildNodes(DefaultMutableTreeNode parentNode, List<? extends Object> newListOfChildUserObjects) {
+    	
     	List<Object> currentNewChildren = new ArrayList<Object>();
     	if (objectFilter != null) {
     		currentNewChildren = new ArrayList<Object>();
     		for (Object o : newListOfChildUserObjects) {
-    			if (o instanceof SQLTable || o instanceof SQLProcedure) {
-        			if (o.toString().toLowerCase().contains(objectFilter)) {
+    			if (o instanceof SQLTable || o instanceof SQLProcedure || o instanceof SQLSequence) {
+        			if (o.toString().toLowerCase().contains(objectFilter.toLowerCase())) {
             			currentNewChildren.add(o);
         			}
     			} else {
@@ -1112,7 +1113,9 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
     	}
     	if (parentNodeChildCount > currentNewChildren.size()) {
         	for (int i = parentNodeChildCount - 1; i >= currentNewChildren.size(); i--) {
-        		removeNodeFromParent((DefaultMutableTreeNode) parentNode.getChildAt(i));
+        		DefaultMutableTreeNode nodeToRemove = (DefaultMutableTreeNode) parentNode.getChildAt(i);
+        		nodeToRemove.setUserObject(null); // because the removal uses the userObject and this could potentially something what we do not want to remove
+        		removeNodeFromParent(nodeToRemove);
         	}
     	}
     }
