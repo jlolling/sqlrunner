@@ -1371,7 +1371,7 @@ public final class Main {
     	try {
 			MacOSXAdapterInterface adapter = (MacOSXAdapterInterface) Class.forName("sqlrunner.MacOSXAdapter").newInstance();
 			adapter.setup();
-    	} catch (Exception e) {
+    	} catch (Throwable e) {
 			logger.error("Instantiation of MacOS X adapter failed: " + e.getMessage(), e);
 		}
     }

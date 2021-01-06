@@ -5,6 +5,9 @@ http://jan-lolling.de/#sqlrunner
 
 release notes
 -------------
+Version 20.7
+- Export result-set data bug fixed: insert statement use always the first timestamp value instead of column specific value
+
 Version 20.6
 - Model: Filter works now again
 Version 20.5

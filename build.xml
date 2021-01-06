@@ -198,7 +198,7 @@
 		            version="${version}"
 		            mainclass="${mainclass}"
 		            jvmversion="1.8+"
-		            vmoptions="-Xmx8G -Dcom.sun.management.jmxremote=true -Dapple.awt.graphics.UseQuartz=true">
+		            vmoptions="-Xmx4G -Dcom.sun.management.jmxremote=true -Dapple.awt.graphics.UseQuartz=true">
 			<jarfileset dir="${lib}">
 				<include name="*.jar" />
                 <exclude name="ui.jar" />

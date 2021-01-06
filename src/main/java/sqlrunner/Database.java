@@ -2203,34 +2203,35 @@ public final class Database implements TableModel {
 		final StringBuilder sb = new StringBuilder();
 		sb.append(insertStart); // jetzt ist alles fertig bis zu values ( ...
 		for (int c = 0; c < getColumnCount(); c++) {
+			Object value = getValueAt(row, c);
 			if (getColumnBasicType(c) == BasicDataType.DATE.getId()) {
-				if (getValueAt(row, c) != null) {
-					final String s = sdf.format((java.util.Date) getValueAt(row,
-							c));
+				if (value != null) {
+					final String s = sdf.format((java.util.Date) value);
 					final int p0 = dateFormatTemplate.indexOf("<");
+					String dateStrValue = "";
 					if (p0 != -1) {
 						final int p1 = dateFormatTemplate.indexOf(">", p0 + 1);
-						dateFormatTemplate = dateFormatTemplate.substring(0, p0)
+						dateStrValue = dateFormatTemplate.substring(0, p0)
 								+ s
 								+ dateFormatTemplate.substring(p1 + 1,
 										dateFormatTemplate.length());
 					}
 					// dateFormatTemplate ist nun kein Template mehr
-					sb.append(dateFormatTemplate);
+					sb.append(dateStrValue);
 				} else {
 					sb.append("null");
 				}
 			} else if (BasicDataType.isStringType(getColumnBasicType(c))) {
 				sb.append('\'');
-				if (getValueAt(row, c) != null) {
-					sb.append(dublicateSingleQuotas(getValueAt(row, c).toString()
+				if (value != null) {
+					sb.append(dublicateSingleQuotas(value.toString()
 							.replace('\n', ' ')
 							.replace('\r', ' ')));
 				}
 				sb.append('\'');
 			} else {
-				if (getValueAt(row, c) != null) {
-					sb.append(getValueAt(row, c).toString()
+				if (value != null) {
+					sb.append(value.toString()
 							.replace('\n', ' ')
 							.replace('\r', ' '));
 				} else {
