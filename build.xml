@@ -16,11 +16,11 @@
 	<property name="localapp" location="distrib/localapp" />
     <property name="linuxdir" location="/usr/lib/sqlrunner" />
 	<property name="jws-jar-filename" value="sqlrunner-jws.jar" />
-	
+
 	<path id="project.class.path">
 		<fileset dir="${lib}" includes="**/*.jar" />
 	</path>
-	
+
     <path id="build.class.path">
         <fileset dir="${build}" includes="**/*.jar" />
     </path>
@@ -41,26 +41,26 @@
 
 	<target name="generateIconCode">
 	  <taskdef name="iconCodeGen" classname="org.jugbb.ant.iconcodegen.IconCodeGenTask" classpathref="build.class.path"/>
-	  <iconCodeGen 
-	  	sourceDir="${src}" 
+	  <iconCodeGen
+	  	sourceDir="${src}"
 	    iconPackage="sqlrunner.resources"
 	  	iconFileExtensions="png gif jpg"
 	  	encoding="UTF-8"
 	  />
-	</target> 
-	
+	</target>
+
 	<target name="generateImageCode">
 	  <taskdef name="imageCodeGen" classname="org.jugbb.ant.iconcodegen.ImageCodeGenTask" classpathref="build.class.path" />
-	  <imageCodeGen 
-	  	sourceDir="${src}" 
+	  <imageCodeGen
+	  	sourceDir="${src}"
 	    imagePackage="sqlrunner.resources.images"
 	  	imageFileExtensions="png gif jpg"
 	  	encoding="UTF-8"
 	  />
-	</target> 
+	</target>
 
 	<target name="compile" depends="clean, generateIconCode, generateImageCode" description="compile the source">
-		<javac 
+		<javac
 			classpathref="project.class.path"
 		    debug="true"
 		    deprecation="true"
@@ -79,7 +79,7 @@
 				<exclude name="CVS" />
 			</fileset>
 		</copy>
-		<native2ascii 
+		<native2ascii
 			encoding="UTF-8"
 		    includes="**/messages*.properties"
 		    src="${src}"
@@ -206,10 +206,10 @@
 			<jarfileset dir="${distrib}">
 				<include name="${jarfilename}" />
 			</jarfileset>
-			<documenttype 
-				name="SQL script" 
+			<documenttype
+				name="SQL script"
 				extensions="sql" role="Editor" />
-			<documenttype 
+			<documenttype
 				name="SQLRunner CSV Import Configuration"
 			    extensions="importconfig"
 			    role="Editor" />
@@ -217,9 +217,9 @@
 		<mkdir dir="${macappdir}/${appname}.app/Contents/Resources/German.lproj" />
 		<mkdir dir="${macappdir}/${appname}.app/Contents/Resources/English.lproj" />
 		<delete file="${macappdir}/${appname}.app/Contents/MacOS/JavaApplicationStub" />
-		<echo>copy JavaApplicationStub</echo>
+		<echo>copy universalJavaApplicationStub</echo>
 		<exec executable="cp">
-			<arg line="${build}/JavaApplicationStub" />
+			<arg line="${build}/universalJavaApplicationStub" />
 			<arg value="${macappdir}/${appname}.app/Contents/MacOS/JavaApplicationStub" />
 		</exec>
 		<chmod perm="guo+x" file="${macappdir}/${appname}.app/Contents/MacOS/JavaApplicationStub"></chmod>
@@ -316,5 +316,5 @@ Homepage:
 		</deb>
 		<echo>deb file: ${debfilename}</echo>
 	</target>
-	
+
 </project>
