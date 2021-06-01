@@ -577,16 +577,16 @@ public final class DBLoginDialog extends JDialog implements ListSelectionListene
             label.setText(element.getName());
             label.setToolTipText(element.getName());
             label.setHorizontalAlignment(JLabel.RIGHT);
-            label.setPreferredSize(new Dimension(90, 22));
-            label.setMaximumSize(new Dimension(90, 22));
-            label.setMinimumSize(new Dimension(90, 22));
+            label.setPreferredSize(new Dimension(90, 30));
+            label.setMaximumSize(new Dimension(90, 30));
+            label.setMinimumSize(new Dimension(90, 30));
             add(label);
             if (element.getName().equalsIgnoreCase(URLElement.PASSWORD_NAME)) {
                 passwdField = new JPasswordField();
                 passwdField.setBackground(Main.info);
-                passwdField.setPreferredSize(new Dimension(200, 22));
-                passwdField.setMaximumSize(new Dimension(200, 22));
-                passwdField.setMinimumSize(new Dimension(200, 22));
+                passwdField.setPreferredSize(new Dimension(200, 30));
+                passwdField.setMaximumSize(new Dimension(200, 30));
+                passwdField.setMinimumSize(new Dimension(200, 30));
                 passwdField.setText(element.getValue());
                 add(passwdField);
                 isPasswordField = true;
@@ -594,9 +594,9 @@ public final class DBLoginDialog extends JDialog implements ListSelectionListene
                 textField = new JTextField();
                 textField.setBackground(Main.info);
                 textField.setText(element.getValue());
-                textField.setPreferredSize(new Dimension(200, 22));
-                textField.setMaximumSize(new Dimension(200, 22));
-                textField.setMinimumSize(new Dimension(200, 22));
+                textField.setPreferredSize(new Dimension(200, 30));
+                textField.setMaximumSize(new Dimension(200, 30));
+                textField.setMinimumSize(new Dimension(200, 30));
                 add(textField);
             }
         }
