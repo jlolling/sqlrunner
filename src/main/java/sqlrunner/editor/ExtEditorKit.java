@@ -10,7 +10,7 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.TextAction;
 import javax.swing.text.ViewFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.Main;
 import sqlrunner.MainFrame;
@@ -18,7 +18,7 @@ import sqlrunner.MainFrame;
 public class ExtEditorKit extends DefaultEditorKit {
 	
 	private static final long serialVersionUID = 1L;
-	private static final Logger logger = Logger.getLogger(ExtEditorKit.class);
+	private static final Logger logger = LogManager.getLogger(ExtEditorKit.class);
 	private SyntaxContext preferences;
 	private MainFrame mainFrame;
 	private static int tabSize = 0;

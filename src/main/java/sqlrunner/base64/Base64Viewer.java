@@ -20,7 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.Main;
 
@@ -30,7 +30,7 @@ import sqlrunner.Main;
 public class Base64Viewer extends JFrame {
 
     private static final long serialVersionUID = 1L; 
-    private static final Logger logger = Logger.getLogger(Base64Viewer.class);
+    private static final Logger logger = LogManager.getLogger(Base64Viewer.class);
     private javax.swing.JPanel jContentPane = null;
     private JScrollPane jScrollPane = null;
     private JTextArea jTextArea = null;

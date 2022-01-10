@@ -38,7 +38,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.Main;
 import sqlrunner.MainFrame;
@@ -51,7 +51,7 @@ import dbtools.SQLStatement;
  */
 public class HistoryFrame extends JFrame implements ActionListener, ListSelectionListener {
 
-	private static final Logger logger = Logger.getLogger(HistoryFrame.class);
+	private static final Logger logger = LogManager.getLogger(HistoryFrame.class);
 
     private static final long      serialVersionUID      = 1L;
     private final JPanel           jPanel1               = new JPanel();
@@ -655,7 +655,7 @@ public class HistoryFrame extends JFrame implements ActionListener, ListSelectio
 		/**
 		 * Logger for this class
 		 */
-		private final Logger logger = Logger.getLogger(ListSaver.class);
+		private final Logger logger = LogManager.getLogger(ListSaver.class);
 
         BufferedWriter bw;
         JFrame         window;

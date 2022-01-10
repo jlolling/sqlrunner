@@ -7,7 +7,7 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.datamodel.Field;
 import sqlrunner.datamodel.SQLTable;
@@ -18,7 +18,7 @@ import sqlrunner.text.StringReplacer;
 public class MySQLExtension extends GenericDatabaseExtension {
 
 	private static final String name = "MySQL Extension";
-	private static final Logger logger = Logger.getLogger(MySQLExtension.class);
+	private static final Logger logger = LogManager.getLogger(MySQLExtension.class);
 	private SimpleDateFormat sdfTimestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public MySQLExtension() {

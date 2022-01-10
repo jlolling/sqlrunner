@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import dbtools.ConnectionDescription;
 import sqlrunner.datamodel.Field;
@@ -24,7 +24,7 @@ import sqlrunner.flatfileimport.BasicDataType;
 
 public class GenericDatabaseExtension implements DatabaseExtension {
 
-	private static final Logger logger = Logger.getLogger(GenericDatabaseExtension.class);
+	private static final Logger logger = LogManager.getLogger(GenericDatabaseExtension.class);
 	private List<String> listkeywords = new ArrayList<String>();
 	private List<String> listdatatypes = new ArrayList<String>();
 	private List<String> listprockeywords = new ArrayList<String>();

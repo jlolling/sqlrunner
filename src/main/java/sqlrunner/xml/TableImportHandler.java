@@ -13,7 +13,7 @@ import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -34,7 +34,7 @@ import sqlrunner.generator.SQLCodeGenerator;
  */
 public class TableImportHandler extends DefaultHandler {
 
-    private static final Logger staticLogger = Logger.getLogger(TableImportHandler.class);
+    private static final Logger staticLogger = LogManager.getLogger(TableImportHandler.class);
     private Logger logger = staticLogger;
     private ImportDescription impDesc;
     private DatabaseSession session;
@@ -358,8 +358,7 @@ public class TableImportHandler extends DefaultHandler {
             } else {
                 status = Importer.FATALS;
                 logger.error(
-                        "storeDataset() - primary key invalid ! more then ONE dataset found for pk condition !",
-                        null);
+                        "storeDataset() - primary key invalid ! more then ONE dataset found for pk condition !");
             }
         } else if (count < 1) {
             if (insertDataset(usebatch)) {

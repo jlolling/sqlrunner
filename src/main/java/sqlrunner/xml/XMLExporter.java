@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 import java.util.Locale;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import dbtools.ConnectionDescription;
 import dbtools.DatabaseSession;
@@ -27,7 +27,7 @@ import sqlrunner.flatfileimport.BasicDataType;
  */
 public class XMLExporter implements Exporter {
 	
-	private static final Logger defaultLogger = Logger.getLogger(XMLExporter.class);
+	private static final Logger defaultLogger = LogManager.getLogger(XMLExporter.class);
 	private Logger exportLogger = defaultLogger;
 	public static final String PROP_ENCODING = "encoding";
 	public static final String PROP_XML_INDENTION = "indention";

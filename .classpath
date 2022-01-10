@@ -30,7 +30,6 @@
 	<classpathentry kind="lib" path="libs/sapdbc-7_6_00_30_5567.jar"/>
 	<classpathentry kind="lib" path="libs/db2jcc_license_cu.jar"/>
 	<classpathentry kind="lib" path="libs/db2jcc4.jar"/>
-	<classpathentry kind="lib" path="libs/log4j-1.2.15.jar" sourcepath="libs/log4j-1.2.15-src.zip"/>
 	<classpathentry kind="lib" path="libs/jgoodies-looks-2.4.2.jar"/>
 	<classpathentry kind="lib" path="libs/tinylaf.jar"/>
 	<classpathentry kind="lib" path="libs/vertica_4.1.7_jdk_5.jar"/>
@@ -41,5 +40,7 @@
 	<classpathentry kind="lib" path="libs/postgresql-42.1.1.jar"/>
 	<classpathentry kind="lib" path="libs/ojdbc7.jar"/>
 	<classpathentry kind="lib" path="libs/mysql-connector-java-8.0.25.jar"/>
+	<classpathentry kind="lib" path="libs/log4j-api-2.17.1.jar" sourcepath="libs/log4j-api-2.17.1-sources.jar"/>
+	<classpathentry kind="lib" path="libs/log4j-core-2.17.1.jar" sourcepath="libs/log4j-core-2.17.1-sources.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

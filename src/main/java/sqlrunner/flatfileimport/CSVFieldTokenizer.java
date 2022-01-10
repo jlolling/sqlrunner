@@ -2,14 +2,14 @@ package sqlrunner.flatfileimport;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 /**
  * parser for a String-line
  */
 public class CSVFieldTokenizer extends AbstractFieldTokenizer {
 
-	private static final Logger logger = Logger.getLogger(CSVFieldTokenizer.class);
+	private static final Logger logger = LogManager.getLogger(CSVFieldTokenizer.class);
 	private String rowData;
     private char[] data;
 	private int lastPos;

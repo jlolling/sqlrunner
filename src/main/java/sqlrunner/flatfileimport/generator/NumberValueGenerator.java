@@ -1,11 +1,11 @@
 package sqlrunner.flatfileimport.generator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 
 public class NumberValueGenerator implements AutoValueGenerator {
 
-	private static final Logger logger = Logger.getLogger(NumberValueGenerator.class);
+	private static final Logger logger = LogManager.getLogger(NumberValueGenerator.class);
 	private long currentValue = 0;
 	private long startLongValue = 0;
 	private boolean descending = false;

@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import dbtools.ConnectionDescription;
 import sqlrunner.datamodel.Field;
@@ -14,7 +14,7 @@ import sqlrunner.flatfileimport.BasicDataType;
 
 public class MSSqlExtension extends GenericDatabaseExtension {
 	
-	private static final Logger logger = Logger.getLogger(MSSqlExtension.class);
+	private static final Logger logger = LogManager.getLogger(MSSqlExtension.class);
 	
 	public MSSqlExtension() {
 		addDriverClassName("net.sourceforge.jtds.jdbc.Driver");

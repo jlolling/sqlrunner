@@ -13,7 +13,7 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.Database;
 import sqlrunner.LongRunningAction;
@@ -23,7 +23,7 @@ import sqlrunner.swinghelper.WindowHelper;
 
 public class ResultTableExportDialog extends JDialog {
 
-	private static final Logger logger = Logger.getLogger(ResultTableExportDialog.class);
+	private static final Logger logger = LogManager.getLogger(ResultTableExportDialog.class);
 	private static final long serialVersionUID = 1L;
 	private JPanel jContentPane = null;
 	private ExportFormatPanel exportFormatPanel = null;

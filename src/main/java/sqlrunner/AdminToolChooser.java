@@ -22,7 +22,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import dbtools.SQLParser;
 import sqlrunner.resources.ApplicationIcons;
@@ -30,7 +30,7 @@ import sqlrunner.swinghelper.WindowHelper;
 
 public class AdminToolChooser extends JFrame implements ActionListener, ListSelectionListener {
 
-	private Logger logger = Logger.getLogger(AdminToolChooser.class);
+	private Logger logger = LogManager.getLogger(AdminToolChooser.class);
     private static final long serialVersionUID = 1L;
     private final JPanel panelList=new JPanel();
     private final JPanel panelControl=new JPanel();

@@ -51,7 +51,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import dbtools.ConnectionDescription;
 import dbtools.DatabaseSession;
@@ -74,7 +74,7 @@ import sqlrunner.text.GenericDateUtil;
 
 public final class Database implements TableModel {
 
-	private static final Logger logger = Logger.getLogger(Database.class);
+	private static final Logger logger = LogManager.getLogger(Database.class);
 	private ResultSetMetaData rsmd;
 	private DatabaseMetaData dbmd;
 	private DatabaseSession session;

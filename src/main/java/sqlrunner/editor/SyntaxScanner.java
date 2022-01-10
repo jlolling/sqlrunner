@@ -20,7 +20,7 @@ import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.MutableAttributeSet;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.Main;
 
@@ -34,7 +34,7 @@ public final class SyntaxScanner {
 	/**
 	 * Logger for this class
 	 */
-	private static final Logger logger = Logger.getLogger(SyntaxScanner.class.getName());
+	private static final Logger logger = LogManager.getLogger(SyntaxScanner.class.getName());
 
 	private Document doc;
 

@@ -21,7 +21,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.FileOpenChooserPanel;
 import sqlrunner.flatfileimport.DatasetProvider;
@@ -31,7 +31,7 @@ import sqlrunner.swinghelper.WindowHelper;
 
 public class SchemaImportFrame extends JFrame {
 
-	private static final Logger logger = Logger.getLogger(SchemaImportFrame.class);
+	private static final Logger logger = LogManager.getLogger(SchemaImportFrame.class);
 	private static final long serialVersionUID = 1L;
 	private FileOpenChooserPanel sourceFileChooser;
 	private FileOpenChooserPanel targetFileChooser;

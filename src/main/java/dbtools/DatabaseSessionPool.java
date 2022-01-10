@@ -13,8 +13,9 @@ import java.util.Vector;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.Appender;
 
 /**
  * A database pool with static access and config methods which can be used in standalone applications.
@@ -22,7 +23,7 @@ import org.apache.log4j.Logger;
  */
 public class DatabaseSessionPool {
 
-    private static final Logger logger = Logger.getLogger(DatabaseSessionPool.class);
+    private static final Logger logger = LogManager.getLogger(DatabaseSessionPool.class);
     private static final Vector<DatabaseSession> pool = new Vector<DatabaseSession>();
     private static String lastErrorMessage = null;
     private static final Object monitor = new Object();
@@ -45,26 +46,6 @@ public class DatabaseSessionPool {
 
     private DatabaseSessionPool() {}
 
-    /**
-     * add an appender only when appender is not already attached
-     * @param appender appender to add
-     */
-    public static void addAppender(Appender appender) {
-        if (logger.isAttached(appender) == false) {
-            logger.addAppender(appender);
-        }
-    }
-    
-    public static void removeAppender(Appender appender) {
-        if (logger.isAttached(appender)) {
-            logger.removeAppender(appender);
-        }
-    }
-    
-    public static void removeAllAppenders() {
-        logger.removeAllAppenders();
-    }
-    
     private static void error(String message, Exception e) {
         if (message == null) {
             message = "undeclared error";
@@ -432,7 +413,7 @@ public class DatabaseSessionPool {
         /**
          * Logger for this class
          */
-        private static final Logger logger = Logger.getLogger(CheckPoolTask.class);
+        private static final Logger logger = LogManager.getLogger(CheckPoolTask.class);
 
         public void run() {
             if (checkInProcess == false) {

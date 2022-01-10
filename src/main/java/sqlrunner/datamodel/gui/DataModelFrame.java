@@ -60,7 +60,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import dbtools.ConnectionDescription;
 import sqlrunner.Main;
@@ -90,7 +90,7 @@ import sqlrunner.talend.SchemaUtil;
 
 public final class DataModelFrame extends JFrame {
 
-	private static final Logger     logger = Logger.getLogger(DataModelFrame.class);
+	private static final Logger     logger = LogManager.getLogger(DataModelFrame.class);
 	private static final long       serialVersionUID = 1L;
     StatusBar                       status               = new StatusBar();
     private final JSplitPane        splitPaneModel        = new JSplitPane();
@@ -532,7 +532,7 @@ public final class DataModelFrame extends JFrame {
     }
     
     public boolean useFullName() {
-    	if (mainFrame != null) {
+    	if (mainFrame != null && currentDataModel != null) {
         	return miFullQualifiedNames.isSelected() || 
         		treeAndTableModel.isCurrentSchema(
         				currentDataModel.getLoginSchemaName()) == false;

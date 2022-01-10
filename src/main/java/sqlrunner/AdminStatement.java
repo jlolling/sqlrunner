@@ -6,7 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; 
+import org.apache.logging.log4j.LogManager;
 
 import dbtools.SQLStatement;
 
@@ -16,7 +17,7 @@ public class AdminStatement extends SQLStatement {
     /**
      * Logger for this class
      */
-    private static final Logger logger = Logger.getLogger(AdminStatement.class);
+    private static final Logger logger = LogManager.getLogger(AdminStatement.class);
     private String comment;
     private int dbType = -1;
     private char command;    // select editable or run

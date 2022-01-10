@@ -19,7 +19,7 @@ import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.swinghelper.WindowHelper;
 
@@ -28,7 +28,7 @@ import sqlrunner.swinghelper.WindowHelper;
  */
 public class GotoLineDialog extends JDialog implements ActionListener, KeyListener {
 
-	private final Logger logger = Logger.getLogger(GotoLineDialog.class);
+	private final Logger logger = LogManager.getLogger(GotoLineDialog.class);
     private static final long serialVersionUID = 1L;
     private JTextField textFieldIndex;
     private JButton buttonJumpToLine;

@@ -25,7 +25,7 @@ import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.datamodel.SQLCatalog;
 import sqlrunner.datamodel.SQLConstraint;
@@ -45,7 +45,7 @@ public final class SQLDataTreeTableModel extends DefaultTreeModel
         TreeWillExpandListener,
         ListSelectionListener { 
 
-	private static final Logger     logger = Logger.getLogger(SQLDataTreeTableModel.class);
+	private static final Logger     logger = LogManager.getLogger(SQLDataTreeTableModel.class);
     private static final long       serialVersionUID    = 1L;
     private String                  errorMessage;
     private boolean                 hasSuccessfulLoaded = false;

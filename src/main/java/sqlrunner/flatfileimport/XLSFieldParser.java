@@ -4,7 +4,7 @@ import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 
@@ -17,7 +17,7 @@ public class XLSFieldParser extends AbstractFieldTokenizer {
 
    	private Row row = null;
     private NumberFormat nf = NumberFormat.getInstance(Locale.ENGLISH);
-    private final Logger logger = Logger.getLogger(XLSFieldParser.class);
+    private final Logger logger = LogManager.getLogger(XLSFieldParser.class);
 
     public XLSFieldParser() {
         nf.setGroupingUsed(false);

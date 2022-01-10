@@ -18,9 +18,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.FileAppender;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import dbtools.ConnectionDescription;
 import dbtools.DatabaseSession;
@@ -35,7 +40,7 @@ import sqlrunner.text.StringReplacer;
  */
 public class FileImporter implements Importer {
 
-    private static final Logger staticLogger = Logger.getLogger(FileImporter.class);
+    private static final Logger staticLogger = LogManager.getLogger(FileImporter.class);
     private Logger instanceLogger = staticLogger;
     static final int ROWS_BETWEEN_COMMIT = 1000;
     private long countRowsBetweenCommit = ROWS_BETWEEN_COMMIT;
@@ -230,10 +235,17 @@ public class FileImporter implements Importer {
             error("load database-driver failed!", FATALS);
             setErrorCode(FATALS);
         }
-        if (instanceLogger != null) {
-            session.setLogger(instanceLogger);
-        }
+        clearAppenders();
         return session.isConnected();
+    }
+    
+    private void clearAppenders() {
+    	if (instanceLogger != null) {
+        	LoggerContext loggerContext = (LoggerContext) LogManager.getContext(true);
+        	Configuration configuration = loggerContext.getConfiguration();
+        	LoggerConfig loggerConfig = configuration.getLoggerConfig(instanceLogger.getName());
+        	loggerConfig.getAppenders().forEach((key, value) -> loggerConfig.removeAppender(value.getName()));    
+    	}
     }
 
     public void disconnect() {
@@ -243,9 +255,7 @@ public class FileImporter implements Importer {
         if (session != null && session.isConnected()) {
             session.close();
             session = null;
-            if (instanceLogger != null) {
-                instanceLogger.removeAllAppenders();
-            }
+            clearAppenders();
             instanceLogger = null;
         }
     }
@@ -284,9 +294,7 @@ public class FileImporter implements Importer {
         if (running) {
             throw new IllegalStateException("importer is already running");
         }
-        if (instanceLogger != null) {
-            instanceLogger.removeAllAppenders();
-        }
+        clearAppenders();
         instanceLogger = localLogger;
         if (session != null) {
             session.setLogger(instanceLogger);
@@ -297,12 +305,15 @@ public class FileImporter implements Importer {
     public FileAppender createFileAppender(String fileName) throws IOException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd_HH_mm_ss");
         errorLogFileName = fileName + "-" + sdf.format(new java.util.Date()) + ".import.log";
-        FileAppender appender = new FileAppender();
-        appender.setFile(errorLogFileName, false, true, 8000);
-        final PatternLayout layout = new PatternLayout();
-        layout.setConversionPattern("%d %-5p %m%n");
-        appender.setLayout(layout);
-        appender.setImmediateFlush(true);
+        final PatternLayout layout = PatternLayout.newBuilder().withPattern("%d %-5p %m%n").build();
+        FileAppender appender = FileAppender.newBuilder()
+        							.withFileName(errorLogFileName)
+        							.withBufferSize(8000)
+        							.withAppend(false)
+        							.withImmediateFlush(true)
+        							.setLayout(layout)
+        							.setName(fileName)
+        							.build();
         return appender;
     }
 
@@ -313,12 +324,14 @@ public class FileImporter implements Importer {
      */
     public Logger createLogger(String sourceFileName) {
         File f = new File(sourceFileName);
-        Logger localLogger = Logger.getLogger(getClass().getName() + "-" + f.getName());
+        Logger localLogger = LogManager.getLogger(getClass().getName() + "-" + f.getName());
         return localLogger;
     }
 
     public void setupLocalLoggerWithFileAppender(String sourceFileName) throws IOException {
-        setupLocalLogger(sourceFileName).addAppender(createFileAppender(sourceFileName));
+    	LoggerContext loggerContext = (LoggerContext) LogManager.getContext(true);
+    	Configuration configuration = loggerContext.getConfiguration();
+    	configuration.getLoggerConfig(instanceLogger.getName()).addAppender(createFileAppender(sourceFileName), Level.INFO, null);
     }
 
     public Logger setupLocalLogger(String sourceFileName) {

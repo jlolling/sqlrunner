@@ -25,14 +25,14 @@ import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.Main;
 import sqlrunner.swinghelper.WindowHelper;
 
 public final class DateConverter extends JFrame {
 
-    private static final Logger logger              = Logger.getLogger(DateConverter.class);
+    private static final Logger logger              = LogManager.getLogger(DateConverter.class);
 
     private static final long   serialVersionUID    = 1L;
     private int                 row;

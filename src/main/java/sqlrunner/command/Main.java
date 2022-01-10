@@ -9,10 +9,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
 import dbtools.DatabaseSession;
 
 public class Main {
@@ -46,8 +42,6 @@ public class Main {
     }
     
     public static void main(String[] args) {
-        BasicConfigurator.configure();
-        Logger.getRootLogger().setLevel(Level.INFO);
         // 1. Argument ist die URL die user+password enthalten muss
         // 2. user@password
         // 3. driver class name

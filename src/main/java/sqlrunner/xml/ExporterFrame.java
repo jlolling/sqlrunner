@@ -46,9 +46,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.appender.FileAppender;
+import org.apache.logging.log4j.LogManager;
 
 import dbtools.ConnectionDescription;
 import dbtools.DatabaseSession;
@@ -61,6 +61,7 @@ import sqlrunner.datamodel.SQLTable;
 import sqlrunner.dbext.DatabaseExtension;
 import sqlrunner.dbext.DatabaseExtensionFactory;
 import sqlrunner.flatfileimport.BasicDataType;
+import sqlrunner.log4jpanel.Log4J2Util;
 import sqlrunner.resources.ApplicationIcons;
 import sqlrunner.swinghelper.WindowHelper;
 
@@ -83,7 +84,7 @@ import sqlrunner.swinghelper.WindowHelper;
  */
 public final class ExporterFrame extends JFrame implements ActionListener {
 	
-    private static final Logger    logger                   = Logger.getLogger(ExporterFrame.class);
+    private static final Logger    logger                   = LogManager.getLogger(ExporterFrame.class);
     private static final long      serialVersionUID         = 1L;
     private ExporterFrame          self;
     private final List<String>     schemas                  = new ArrayList<String>();
@@ -127,7 +128,7 @@ public final class ExporterFrame extends JFrame implements ActionListener {
             this.cd = cd;
             WindowHelper.locateWindowAtMiddle(parent, this);
             setVisible(true);
-            DatabaseExtension ext = DatabaseExtensionFactory.getDatabaseExtension(cd);
+            DatabaseExtensionFactory.getDatabaseExtension(cd);
             SimpleMetaReader reader = new SimpleMetaReader(cd, jTextFieldSchema.getText());
             reader.start();
         } catch (Exception e) {
@@ -627,7 +628,7 @@ public final class ExporterFrame extends JFrame implements ActionListener {
      */
     private class SimpleMetaReader extends Thread {
     	
-        private final Logger    logger = Logger.getLogger(SimpleMetaReader.class);
+        private final Logger    logger = LogManager.getLogger(SimpleMetaReader.class);
         private String          user;
         private DatabaseSession session;
 
@@ -810,32 +811,25 @@ public final class ExporterFrame extends JFrame implements ActionListener {
             }
             SimpleDateFormat sdfLocal = new SimpleDateFormat("yyyy.MM.dd_HH_mm_ss"); 
             logFileName = baseDir + "/xml-export-" + sdfLocal.format(new java.util.Date()) + ".log";
-            FileAppender appender = new FileAppender();
-            appender.setFile(logFileName, false, true, 8000);
-            final PatternLayout layout = new PatternLayout();
-            layout.setConversionPattern("%d %-5p %m%n");
-            appender.setLayout(layout);
-            appender.setImmediateFlush(true);
+            FileAppender appender = Log4J2Util.createFileAppender(logFileName);
             return appender;
         }
         
         private void closeFileAppender() {
             if (fileAppender != null) {
-                fileAppender.close();
-                if (exportLogger != null) {
-                    exportLogger.removeAppender(fileAppender);
-                }
+                fileAppender.stop();
+                Log4J2Util.clearAppenders(exportLogger, fileAppender.getName());
             }
         }
 
         private void setupLocalLoggerWithFileAppender(String baseDir) throws IOException {
             fileAppender = createFileAppender(baseDir);
-            setupLocalLogger(baseDir).addAppender(fileAppender);
+            Log4J2Util.addAppender(setupLocalLogger(baseDir), fileAppender);
         }
 
         private Logger setupLocalLogger(String baseDir) {
             File f = new File(baseDir);
-            exportLogger = Logger.getLogger(getClass().getName() + "-" +f.getName());
+            exportLogger = LogManager.getLogger(getClass().getName() + "-" +f.getName());
             return exportLogger;
         }
 

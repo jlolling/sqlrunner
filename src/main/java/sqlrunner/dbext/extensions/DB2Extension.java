@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.datamodel.Field;
 import sqlrunner.datamodel.SQLProcedure;
@@ -19,7 +19,7 @@ import sqlrunner.flatfileimport.BasicDataType;
 
 public class DB2Extension extends GenericDatabaseExtension {
 
-	private Logger logger = Logger.getLogger(DB2Extension.class);
+	private Logger logger = LogManager.getLogger(DB2Extension.class);
 	private static final String driverClassName = "com.ibm.db2.jcc.DB2Driver";
 	private static final String name = "DB2 Extension";
 

@@ -20,11 +20,17 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JViewport;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.Layout;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.WriterAppender;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.Filter;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.WriterAppender;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.core.layout.PatternLayout;
+
 
 /**
  * contains a JTextArea for displaying loglines from Appender
@@ -32,7 +38,7 @@ import org.apache.log4j.WriterAppender;
  */
 public final class LogPanel extends JPanel {
 
-    private static final Logger      logger                  = Logger.getLogger(LogPanel.class);
+    private static final Logger      logger                  = LogManager.getLogger(LogPanel.class);
 
     private static final long        serialVersionUID        = 1L;
     private int                      maxLines                = 0;
@@ -58,10 +64,30 @@ public final class LogPanel extends JPanel {
      * Contructor for a standard logframe
      */
     public LogPanel() {
+    	final LoggerContext context = LoggerContext.getContext(false);
+        final Configuration config = context.getConfiguration();
         writer = new LogWriter(this);
-        layout = new PatternLayout("%d{HH:mm} [%-5p] %-25c - %m%n");
-        appender = new WriterAppender(layout, writer);
-        initialize();
+        layout = PatternLayout.newBuilder()
+        			.withPattern("%d{HH:mm} [%-5p] %-25c - %m%n")
+        			.build();
+        appender = WriterAppender.newBuilder()
+        			.setLayout(layout)
+        			.setTarget(writer)
+        			.setName("LogPanelAppender")
+        			.build();
+        appender.start();
+        config.addAppender(appender);
+        updateLoggers(appender, config);
+        initializeGUI();
+    }
+    
+    private void updateLoggers(final Appender appender, final Configuration config) {
+        final Level level = null;
+        final Filter filter = null;
+        for (final LoggerConfig loggerConfig : config.getLoggers().values()) {
+            loggerConfig.addAppender(appender, level, filter);
+        }
+        config.getRootLogger().addAppender(appender, level, filter);
     }
 
     public static LogPanel getInstance() {
@@ -71,7 +97,7 @@ public final class LogPanel extends JPanel {
         return logPanel;
     }
 
-    private void initialize() {
+    private void initializeGUI() {
         setLayout(new BorderLayout());
         this.setSize(new java.awt.Dimension(321, 109));
         scrollPane = new JScrollPane();
@@ -89,26 +115,6 @@ public final class LogPanel extends JPanel {
      */
     public Appender getAppender() {
         return appender;
-    }
-
-    public void setAppenderLayout(Layout layout) {
-        appender.setLayout(layout);
-    }
-
-    public Layout getAppenderLayout() {
-        return appender.getLayout();
-    }
-
-    /**
-     * set the PatternLayout format
-     * @param format
-     */
-    public void setConversionPattern(String format) {
-        layout.setConversionPattern(format);
-    }
-
-    public String getConversionPattern() {
-        return layout.getConversionPattern();
     }
 
     public void setMaxLogLines(int maxLines) {

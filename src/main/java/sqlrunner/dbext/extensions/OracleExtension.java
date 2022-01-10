@@ -7,7 +7,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.datamodel.Field;
 import sqlrunner.datamodel.SQLProcedure;
@@ -21,7 +21,7 @@ import sqlrunner.flatfileimport.BasicDataType;
 
 public class OracleExtension extends GenericDatabaseExtension {
 
-	private static Logger logger = Logger.getLogger(OracleExtension.class);
+	private static Logger logger = LogManager.getLogger(OracleExtension.class);
 	private static final String name = "Oracle Extension";
 
 	public OracleExtension() {

@@ -19,7 +19,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 
 /**
  *
@@ -84,7 +84,7 @@ public class Log4JPanel extends JPanel {
 		private static final long serialVersionUID = 1L;
 		private JComboBox<String> cb = null;
 
-        LevelCellEditor() {
+		LevelCellEditor() {
             super(new JComboBox<String>());
             cb = (JComboBox<String>) super.getComponent();
             cb.addItem(Level.ALL.toString());

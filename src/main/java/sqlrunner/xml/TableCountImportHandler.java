@@ -1,13 +1,13 @@
 package sqlrunner.xml;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class TableCountImportHandler extends DefaultHandler {
 
-    private static final Logger staticLogger = Logger.getLogger(TableImportHandler.class);
+    private static final Logger staticLogger = LogManager.getLogger(TableImportHandler.class);
     private Logger logger = staticLogger;
     private ImportDescription impDesc;
     private int countCurrDatasets;

@@ -20,6 +20,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import sqlrunner.FileOpenChooserPanel;
+import sqlrunner.fileconverter.TextFileConverter.LineSeparator;
 import sqlrunner.swinghelper.WindowHelper;
 
 public class TextFileConverterFrame extends JFrame {
@@ -28,9 +29,9 @@ public class TextFileConverterFrame extends JFrame {
 	private FileOpenChooserPanel sourceFileChooser;
 	private FileOpenChooserPanel targetFileChooser;
 	private JTextField textFieldMaxLinesPerFile;
-	private JComboBox comboBoxSourceEncoding;
-	private JComboBox comboBoxTargetEncoding;
-	private JComboBox comboBoxTargetLineSeparator;
+	private JComboBox<String> comboBoxSourceEncoding;
+	private JComboBox<String> comboBoxTargetEncoding;
+	private JComboBox<LineSeparator> comboBoxTargetLineSeparator;
 	private JButton buttonStart;
 	private JButton buttonCancel;
 	private TextFileConverter converter = new TextFileConverter();
@@ -182,9 +183,9 @@ public class TextFileConverterFrame extends JFrame {
 		return targetFileChooser;
 	}
 	
-	private JComboBox getSourceEncodingComboBox() {
+	private JComboBox<String> getSourceEncodingComboBox() {
 		if (comboBoxSourceEncoding == null) {
-			comboBoxSourceEncoding = new JComboBox();
+			comboBoxSourceEncoding = new JComboBox<>();
 			comboBoxSourceEncoding.setEditable(true);
 			comboBoxSourceEncoding.addItem("UTF-8");
 			comboBoxSourceEncoding.addItem("UTF-16");
@@ -199,9 +200,9 @@ public class TextFileConverterFrame extends JFrame {
 		return comboBoxSourceEncoding;
 	}
 	
-	private JComboBox getTargetEncodingComboBox() {
+	private JComboBox<String> getTargetEncodingComboBox() {
 		if (comboBoxTargetEncoding == null) {
-			comboBoxTargetEncoding = new JComboBox();
+			comboBoxTargetEncoding = new JComboBox<>();
 			comboBoxTargetEncoding.setEditable(true);
 			comboBoxTargetEncoding.addItem("UTF-8");
 			comboBoxTargetEncoding.addItem("UTF-16");
@@ -216,9 +217,9 @@ public class TextFileConverterFrame extends JFrame {
 		return comboBoxTargetEncoding;
 	}
 
-	private JComboBox getTargetLineSeparatorComboBox() {
+	private JComboBox<LineSeparator> getTargetLineSeparatorComboBox() {
 		if (comboBoxTargetLineSeparator == null) {
-			comboBoxTargetLineSeparator = new JComboBox();
+			comboBoxTargetLineSeparator = new JComboBox<>();
 			comboBoxTargetLineSeparator.setEditable(false);
 			comboBoxTargetLineSeparator.addItem(TextFileConverter.LineSeparator.UNIX);
 			comboBoxTargetLineSeparator.addItem(TextFileConverter.LineSeparator.WINDOWS);

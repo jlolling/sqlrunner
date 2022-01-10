@@ -13,14 +13,14 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.MainFrame;
 import sqlrunner.swinghelper.WindowHelper;
 
 public class PreferencesDialog extends JDialog {
     
-    private static final Logger           logger               = Logger.getLogger(PreferencesDialog.class);
+    private static final Logger           logger               = LogManager.getLogger(PreferencesDialog.class);
 
     private static final long serialVersionUID = 1L;
     private JTabbedPane jTabbedPane;  //  @jve:decl-index=0:visual-constraint="10,106"

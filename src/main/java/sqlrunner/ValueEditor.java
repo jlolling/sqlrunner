@@ -33,7 +33,7 @@ import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.editor.SearchReplaceDialog;
 import sqlrunner.flatfileimport.BasicDataType;
@@ -44,7 +44,7 @@ import sqlrunner.text.StringReplacer;
 
 public final class ValueEditor extends JFrame {
 
-    private static final Logger logger              = Logger.getLogger(ValueEditor.class);
+    private static final Logger logger              = LogManager.getLogger(ValueEditor.class);
 
     private static final long   serialVersionUID    = 1L;
     private int                 contentType;

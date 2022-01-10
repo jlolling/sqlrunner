@@ -11,7 +11,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.flatfileimport.BasicDataType;
 import sqlrunner.flatfileimport.FieldDescription;
@@ -19,7 +19,7 @@ import sqlrunner.flatfileimport.FieldTokenizer;
 
 public class DescriptionTableModel implements TableModel {
 
-    private static Logger logger = Logger.getLogger(DescriptionTableModel.class);
+    private static Logger logger = LogManager.getLogger(DescriptionTableModel.class);
     private FieldTokenizer tokenizer;
     private ArrayList<FieldDescription> listDescriptions = new ArrayList<FieldDescription>();
     

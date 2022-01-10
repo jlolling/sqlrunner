@@ -11,7 +11,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import dbtools.ConnectionDescription;
 import dbtools.DatabaseSession;
@@ -26,7 +26,7 @@ import sqlrunner.flatfileimport.BasicDataType;
  */
 public class ExporterToTextFile implements Exporter {
 
-    private static Logger staticClassLogger = Logger.getLogger(ExporterToTextFile.class);
+    private static Logger staticClassLogger = LogManager.getLogger(ExporterToTextFile.class);
 	private Logger logger = staticClassLogger;
     private String sqlCode;
     private String delim = "|";

@@ -29,13 +29,13 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.swinghelper.WindowHelper;
 
 public class DatabaseMetaDataView extends JFrame implements TableModel, ActionListener {
 
-	private static Logger logger = Logger.getLogger(DatabaseMetaData.class);
+	private static Logger logger = LogManager.getLogger(DatabaseMetaData.class);
     private static final long          serialVersionUID = 1L;
     private final JPanel               jPanel1          = new JPanel();
     private final JPanel               jPanel2          = new JPanel();

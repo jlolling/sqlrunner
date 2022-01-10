@@ -16,7 +16,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.datamodel.DatamodelEvent;
 import sqlrunner.datamodel.DatamodelListener;
@@ -29,7 +29,7 @@ import sqlrunner.resources.ApplicationIcons;
 
 public class DataModelCompareFrame extends JFrame {
 
-	private static final Logger logger = Logger.getLogger(DataModelCompareFrame.class);
+	private static final Logger logger = LogManager.getLogger(DataModelCompareFrame.class);
 	private static final long serialVersionUID = 1L;
 	private JTextField jTextFieldReferenceSchemaName;
 	private JTextField jTextFieldTargetSchemaName;

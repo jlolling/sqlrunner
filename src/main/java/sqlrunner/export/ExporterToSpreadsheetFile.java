@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -20,7 +20,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExporterToSpreadsheetFile {
 	
-	private static final Logger logger = Logger.getLogger(ExporterToSpreadsheetFile.class);
+	private static final Logger logger = LogManager.getLogger(ExporterToSpreadsheetFile.class);
 	
 	public static enum SpreadsheetTyp {XLS, XLSX};
 	private SpreadsheetTyp currentInputType;

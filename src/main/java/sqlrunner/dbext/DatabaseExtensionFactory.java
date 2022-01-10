@@ -3,7 +3,7 @@ package sqlrunner.dbext;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import dbtools.ConnectionDescription;
 import sqlrunner.datamodel.SQLObject;
@@ -18,7 +18,7 @@ import sqlrunner.dbext.extensions.TeradataExtension;
 
 public class DatabaseExtensionFactory {
 	
-	private static final Logger logger = Logger.getLogger(DatabaseExtensionFactory.class);
+	private static final Logger logger = LogManager.getLogger(DatabaseExtensionFactory.class);
 	private static List<DatabaseExtension> listExtensions = new ArrayList<DatabaseExtension>();
 	private static DatabaseExtension genericExtension = new GenericDatabaseExtension();
 	

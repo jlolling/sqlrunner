@@ -13,15 +13,16 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 /**
  * Encapsulate a complete database.
  */
 public class DatabaseSession {
 
-    private static Logger staticLogger = Logger.getLogger(DatabaseSession.class);
+    private static Logger staticLogger = LogManager.getLogger(DatabaseSession.class);
 	private Logger currentLogger = staticLogger;
     
     /* id to provide access to multiple sessions */
@@ -151,20 +152,6 @@ public class DatabaseSession {
             return (System.currentTimeMillis() - connectedTimestamp) / 1000;
         } else {
             return (System.currentTimeMillis() - lastOccupiedTimestamp) / 1000;
-        }
-    }
-
-    /**
-     * set debug-mode
-     * @param debug=true if additional output by the activities of database
-     * @deprecated
-     */
-    @Deprecated
-	public void setDebug(boolean debug_loc) {
-        if (debug_loc) {
-            currentLogger.setLevel(Level.DEBUG);
-        } else {
-            currentLogger.setLevel(Level.INFO);
         }
     }
 

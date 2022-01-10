@@ -2,18 +2,26 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.logging.log4j.Logger;
+
 import sqlrunner.StatisticDate;
 import sqlrunner.generator.SQLCodeGenerator;
+import sqlrunner.log4jpanel.Log4J2Util;
 
 
 public class Test {
+	
+	static Logger log = Log4J2Util.getLogger(Test.class.getName());
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String path = "/mnt/navi/136750836/2017/35715029e0a2661db8b8763528b3f4a5.xlsx";
-		String root = "\\\\file02.gvl.local/NAVI";
+		testLog();
+	}
+	
+	private static void testLog() {
+		log.info("TEST");
 	}
 
 	private static void testStatisticDate() throws ParseException {
@@ -23,7 +31,7 @@ public class Test {
 		StatisticDate sd = new StatisticDate();
 		sd.addValue(d1);
 		sd.addValue(d2);
-		System.out.println(sd.toString());
+		log.info(sd.toString());
 	}
 	
 	

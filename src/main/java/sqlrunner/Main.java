@@ -26,10 +26,12 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import dbtools.ConnectionDescription;
 import dbtools.DatabaseSessionPool;
@@ -47,7 +49,7 @@ public final class Main {
     /**
      * Logger for this class
      */
-    private static final Logger logger = Logger.getLogger(Main.class);
+    private static final Logger logger = LogManager.getLogger(Main.class);
 
     static String                       script                     = null;
     static String                       programDirectory           = null;
@@ -109,7 +111,6 @@ public final class Main {
     static public String                currentCharSet             = null;
     static public String                currentLineSeparatorType   = null;
     static public String                currentLineSeparator       = null;
-    private static Properties           log4jProperties            = null;
     private static String[]             commandLineArguments       = null;
     private static String fileToLoad;
     private static boolean initializationFinished = false;
@@ -1167,13 +1168,13 @@ public final class Main {
         if (debug) {
             logger.info("set debug on");
             userprop.setProperty("DEBUG", "true");
-            final Logger rootLogger = Logger.getRootLogger();
-            rootLogger.setLevel(Level.DEBUG);
+            final Logger rootLogger = LogManager.getRootLogger();
+            Configurator.setLevel(rootLogger.getName(), Level.DEBUG);
         } else {
             logger.info("set debug off");
             userprop.setProperty("DEBUG", "false");
-            final Logger rootLogger = Logger.getRootLogger();
-            rootLogger.setLevel(Level.INFO);
+            final Logger rootLogger = LogManager.getRootLogger();
+            Configurator.setLevel(rootLogger.getName(), Level.INFO);
         }
     }
 
@@ -1181,29 +1182,13 @@ public final class Main {
      * lädt die Vorgabe-Properties aus cfg-Datei
      */
     static void setupLog4j() {
-        System.out.println("setup log4j...");
-        final InputStream inifileIn = Main.class.getResourceAsStream("/log4j.properties");
-        if (inifileIn != null) {
-            try {
-                log4jProperties = new Properties();
-                log4jProperties.load(inifileIn);
-                inifileIn.close();
-                PropertyConfigurator.configure(log4jProperties);
-                logger.info("log4j successful initiated");
-            } catch (IOException ioe) {
-                BasicConfigurator.configure();
-                logger.error("setupLog4j load from resource failed:" + ioe.getMessage(), ioe);
-            }
-        } else {
-            BasicConfigurator.configure();
-            logger.info("setupLog4j: no log4j.properties found, use basic configuration");
-        }
-        logger.info(" ready.");
-        Logger.getRootLogger().addAppender(LogPanel.getInstance().getAppender());
+    	LoggerContext loggerContext = (LoggerContext) LogManager.getContext(true);
+    	Configuration configuration = loggerContext.getConfiguration();
+    	configuration.getLoggerConfig(LogManager.getRootLogger().getName()).addAppender(LogPanel.getInstance().getAppender(), Level.INFO, null);
     }
 
     static public final boolean isDebug() {
-        Logger rootLogger = Logger.getRootLogger();
+        Logger rootLogger = LogManager.getRootLogger();
         return rootLogger.isDebugEnabled();
     }
 
@@ -1440,7 +1425,7 @@ public final class Main {
                                 break;
                             }
                             case 'd': {
-                                Logger.getRootLogger().setLevel(Level.DEBUG);
+                            	Configurator.setLevel(LogManager.getRootLogger().getName(), Level.DEBUG);
                                 break;
                             }
                             // autologin anhand übergebener Parameter

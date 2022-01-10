@@ -14,13 +14,13 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.flatfileimport.Importer;
 
 public class ImportProgressPanel extends JPanel {
 
-    private static final Logger logger = Logger.getLogger(ImportProgressPanel.class);
+    private static final Logger logger = LogManager.getLogger(ImportProgressPanel.class);
     private static final long serialVersionUID = 1L;
     private JLabel jLabel = null;
     private JLabel jLabel1 = null;

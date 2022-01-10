@@ -96,7 +96,7 @@ import javax.swing.text.NumberFormatter;
 import javax.swing.text.TextAction;
 import javax.swing.undo.UndoManager;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import dbtools.ConnectionDescription;
 import dbtools.DatabaseSession;
@@ -144,7 +144,7 @@ import sqlrunner.xml.ImporterFrame;
 public final class MainFrame extends JFrame implements ActionListener, ListSelectionListener {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger(MainFrame.class.getName());
+    private static final Logger logger = LogManager.getLogger(MainFrame.class.getName());
     
     private static boolean useMonospacedFont = false;
     private final JMenuBar menuBarMain = new JMenuBar();

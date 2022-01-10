@@ -3,13 +3,13 @@ package sqlrunner.flatfileimport;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.base64.Base64;
 
 public class ImportAttributes {
 	
-	private static Logger logger = Logger.getLogger(ImportAttributes.class);
+	private static Logger logger = LogManager.getLogger(ImportAttributes.class);
 	private String tableName;
 	private boolean insertEnabled;
 	private boolean updateEnabled;

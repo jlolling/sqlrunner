@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import dbtools.SQLStatement;
 import sqlrunner.datamodel.SQLProcedure;
@@ -14,7 +14,7 @@ import sqlrunner.dbext.GenericDatabaseExtension;
 
 public class EXASolutionExtension extends GenericDatabaseExtension {
 	
-	private Logger logger = Logger.getLogger(EXASolutionExtension.class);
+	private Logger logger = LogManager.getLogger(EXASolutionExtension.class);
 	private static final String driverClassName = "com.exasol.jdbc.EXADriver";
 	
 	public EXASolutionExtension() {

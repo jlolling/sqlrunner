@@ -46,7 +46,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.text.StringReplacer;
 import sqlrunner.swinghelper.WindowHelper;
@@ -60,7 +60,7 @@ public final class DBLoginDialog extends JDialog implements ListSelectionListene
     /**
      * Logger for this class
      */
-    private static final Logger logger = Logger.getLogger(DBLoginDialog.class.getName());
+    private static final Logger logger = LogManager.getLogger(DBLoginDialog.class.getName());
     private JButton buttonLogin;
     private JButton buttonSave;
     private JButton buttonDel;

@@ -12,7 +12,7 @@ import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.TransferHandler;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 
 /**
@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
  */
 public class ImportConfiguratorTransferHandler extends TransferHandler {
 
-	private static final Logger logger = Logger.getLogger(ImportConfiguratorTransferHandler.class);
+	private static final Logger logger = LogManager.getLogger(ImportConfiguratorTransferHandler.class);
 	private static final long serialVersionUID = 1L;
     private ImportConfiguratorFrame configurator;
     private boolean dragActionIsActive = false;

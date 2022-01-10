@@ -9,7 +9,7 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import dbtools.ConnectionDescription;
 import dbtools.DatabaseSession;
@@ -19,7 +19,7 @@ import sqlrunner.dbext.DatabaseExtensionFactory;
 
 public final class SQLDataModel extends SQLObject implements Comparable<SQLDataModel> {
 
-	private static final Logger logger = Logger.getLogger(SQLDataModel.class);
+	private static final Logger logger = LogManager.getLogger(SQLDataModel.class);
 	private ConnectionDescription cd;
 	private String errorMessage;
 	private final List<SQLCatalog> catalogs = new ArrayList<SQLCatalog>();

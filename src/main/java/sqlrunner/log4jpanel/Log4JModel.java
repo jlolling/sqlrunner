@@ -1,15 +1,14 @@
 package sqlrunner.log4jpanel;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggerRepository;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 /**
  *
@@ -17,27 +16,13 @@ import org.apache.log4j.spi.LoggerRepository;
  */
 public class Log4JModel extends AbstractTableModel {
 
-	private static final Logger logger = Logger.getLogger(Log4JModel.class);
+	private static final Logger logger = LogManager.getLogger(Log4JModel.class);
 	private static final long serialVersionUID = 1L;
-	private Vector<Logger> loggerList = new Vector<Logger>();
+	private List<Logger> loggerList = new ArrayList<Logger>();
     
-    @SuppressWarnings("unchecked")
 	public void init() {
     	logger.debug("init");
-    	loggerList.removeAllElements();
-        Logger rootLogger = Logger.getRootLogger();
-        LoggerRepository rep = rootLogger.getLoggerRepository();
-        for (Enumeration<Logger> el = rep.getCurrentLoggers(); el.hasMoreElements(); ) {
-            loggerList.add(el.nextElement());
-        }
-        Collections.sort(loggerList, new Comparator<Logger>() {
-
-			public int compare(Logger o1, Logger o2) {
-				return o1.getName().compareTo(o2.getName());
-			}
-        	
-		});
-        loggerList.add(0, rootLogger);
+    	loggerList = Log4J2Util.getAllLoggers();
         fireTableDataChanged();
     }
 
@@ -87,23 +72,21 @@ public class Log4JModel extends AbstractTableModel {
     public void setValueAt(Object value, int rowIndex, int columnIndex) {
         Logger logger = loggerList.get(rowIndex);
         if (Level.ALL.toString().equals(value)) {
-            logger.setLevel(Level.ALL);
-        } else if (Level.ALL.toString().equals(value)) {
-            logger.setLevel(Level.ALL);
+        	Configurator.setLevel(logger.getName(), Level.ALL);
         } else if (Level.TRACE.toString().equals(value)) {
-            logger.setLevel(Level.TRACE);
+        	Configurator.setLevel(logger.getName(), Level.TRACE);
         } else if (Level.DEBUG.toString().equals(value)) {
-            logger.setLevel(Level.DEBUG);
+        	Configurator.setLevel(logger.getName(), Level.DEBUG);
         } else if (Level.ERROR.toString().equals(value)) {
-            logger.setLevel(Level.ERROR);
+        	Configurator.setLevel(logger.getName(), Level.ERROR);
         } else if (Level.FATAL.toString().equals(value)) {
-            logger.setLevel(Level.FATAL);
+        	Configurator.setLevel(logger.getName(), Level.FATAL);
         } else if (Level.INFO.toString().equals(value)) {
-            logger.setLevel(Level.INFO);
+        	Configurator.setLevel(logger.getName(), Level.INFO);
         } else if (Level.OFF.toString().equals(value)) {
-            logger.setLevel(Level.OFF);
+        	Configurator.setLevel(logger.getName(), Level.OFF);
         } else if (Level.WARN.toString().equals(value)) {
-            logger.setLevel(Level.WARN);
+        	Configurator.setLevel(logger.getName(), Level.WARN);
         } 
     }
     

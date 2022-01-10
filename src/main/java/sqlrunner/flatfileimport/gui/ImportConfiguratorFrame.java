@@ -67,7 +67,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableCellRenderer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.Database;
 import sqlrunner.LongRunningAction;
@@ -89,7 +89,7 @@ import sqlrunner.talend.SchemaUtil;
 
 public final class ImportConfiguratorFrame extends JFrame {
 
-    private static final Logger logger = Logger.getLogger(ImportConfiguratorFrame.class);
+    private static final Logger logger = LogManager.getLogger(ImportConfiguratorFrame.class);
     private static final long serialVersionUID = 1L;
     private JPanel jContentPane = null;
     private JTabbedPane jTabbedPane = null;

@@ -9,7 +9,7 @@ import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.datamodel.SQLField;
 import sqlrunner.datamodel.SQLTable;
@@ -18,7 +18,7 @@ import sqlrunner.flatfileimport.FieldDescription;
 
 public class SchemaUtil {
 	
-	private static final Logger logger = Logger.getLogger(SchemaUtil.class);
+	private static final Logger logger = LogManager.getLogger(SchemaUtil.class);
 	private static Properties dbmsIds = new Properties();
 	
 	public SchemaUtil() {

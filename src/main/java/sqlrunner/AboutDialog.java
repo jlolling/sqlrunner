@@ -29,12 +29,13 @@ import javax.swing.Timer;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import dbtools.DatabaseSessionPoolInfoPanel;
 import sqlrunner.log4jpanel.Log4JPanel;
 import sqlrunner.log4jpanel.LogPanel;
 import sqlrunner.swinghelper.WindowHelper;
-import dbtools.DatabaseSessionPoolInfoPanel;
 
 /**
  * Klasse für das Info-Dialogfenster
@@ -45,7 +46,7 @@ import dbtools.DatabaseSessionPoolInfoPanel;
  */
 public final class AboutDialog extends JDialog implements ActionListener {
 
-    private static final Logger logger = Logger.getLogger(AboutDialog.class);
+    private static final Logger logger = LogManager.getLogger(AboutDialog.class);
     private static final long serialVersionUID = 1L;
     private JButton buttonCancel;
     private long freeMem;

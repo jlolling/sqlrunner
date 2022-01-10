@@ -42,9 +42,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.appender.FileAppender;
 import org.xml.sax.SAXException;
 
 import dbtools.ConnectionDescription;
@@ -59,6 +59,7 @@ import sqlrunner.dbext.DatabaseExtension;
 import sqlrunner.dbext.DatabaseExtensionFactory;
 import sqlrunner.flatfileimport.Importer;
 import sqlrunner.flatfileimport.gui.ImportProgressPanel;
+import sqlrunner.log4jpanel.Log4J2Util;
 import sqlrunner.resources.ApplicationIcons;
 import sqlrunner.swinghelper.WindowHelper;
 
@@ -69,7 +70,7 @@ import sqlrunner.swinghelper.WindowHelper;
  */
 public final class ImporterFrame extends JFrame implements ActionListener {
     
-    private static final Logger logger = Logger.getLogger(ImporterFrame.class);
+    private static final Logger logger = LogManager.getLogger(ImporterFrame.class);
 
     private static final long serialVersionUID = 1L;
     // enthält alle Tabellen und Views des aktuellen Datenbanknutzes
@@ -124,7 +125,7 @@ public final class ImporterFrame extends JFrame implements ActionListener {
             status.infoActionLabel.setText("CONN"); //$NON-NLS-1$
             status.infoActionLabel.setToolTipText(cd.toString());
         }
-        DatabaseExtension ext = DatabaseExtensionFactory.getDatabaseExtension(cd);
+        DatabaseExtensionFactory.getDatabaseExtension(cd);
         sqlDataModel = new SQLDataModel(cd);
         setTitle(Messages.getString("ImporterFrame.title") + " " + cd.toString()); //$NON-NLS-1$ //$NON-NLS-2$
         WindowHelper.locateWindowAtMiddle(mainFrame, this);
@@ -805,7 +806,7 @@ public final class ImporterFrame extends JFrame implements ActionListener {
         private long stopTime;
         private int statusCode = Importer.NOT_STARTED;
         private String logFileName = null;
-        private FileAppender fileAppender = null;
+        private org.apache.logging.log4j.core.appender.FileAppender fileAppender = null;
         private String sourceFileBaseDir = null;
 
         public XMLImporter(DatabaseSession session, String sourceFileBaseDir) {
@@ -819,32 +820,25 @@ public final class ImporterFrame extends JFrame implements ActionListener {
             }
             SimpleDateFormat sdfLocal = new SimpleDateFormat("yyyy.MM.dd_HH_mm_ss"); 
             logFileName = baseDir + "/xml-import-" + sdfLocal.format(new java.util.Date()) + ".log";
-            FileAppender appender = new FileAppender();
-            appender.setFile(logFileName, false, true, 8000);
-            final PatternLayout layout = new PatternLayout();
-            layout.setConversionPattern("%d %-5p %m%n");
-            appender.setLayout(layout);
-            appender.setImmediateFlush(true);
+            FileAppender appender = Log4J2Util.createFileAppender(logFileName);
             return appender;
         }
         
         private void closeFileAppender() {
             if (fileAppender != null) {
-                fileAppender.close();
-                if (importLogger != null) {
-                    importLogger.removeAppender(fileAppender);
-                }
+                fileAppender.stop();
+                Log4J2Util.clearAppenders(importLogger, fileAppender.getName());
             }
         }
 
         private void setupLocalLoggerWithFileAppender(String baseDir) throws IOException {
             fileAppender = createFileAppender(baseDir);
-            setupLocalLogger(baseDir).addAppender(fileAppender);
+            Log4J2Util.addAppender(setupLocalLogger(baseDir), fileAppender);
         }
 
         private Logger setupLocalLogger(String baseDir) {
             File f = new File(baseDir);
-            importLogger = Logger.getLogger(getClass().getName() + "-" +f.getName());
+            importLogger = LogManager.getLogger(getClass().getName() + "-" +f.getName());
             return importLogger;
         }
 

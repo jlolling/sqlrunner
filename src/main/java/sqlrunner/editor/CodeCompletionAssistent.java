@@ -22,7 +22,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.MainFrame;
 import sqlrunner.datamodel.SQLField;
@@ -35,7 +35,7 @@ import sqlrunner.resources.ApplicationIcons;
 
 public class CodeCompletionAssistent extends JWindow {
 
-	private final Logger logger = Logger.getLogger(CodeCompletionAssistent.class);
+	private final Logger logger = LogManager.getLogger(CodeCompletionAssistent.class);
 	private static final long serialVersionUID = 1L;
 	@SuppressWarnings("rawtypes")
 	private JList jList;
@@ -324,14 +324,6 @@ public class CodeCompletionAssistent extends JWindow {
 			}
 		}
 
-		public boolean isSearchMethodStartsWith() {
-			return searchMethodStartsWith;
-		}
-
-		public void setSearchMethodStartsWith(boolean searchMethodStartsWith) {
-			this.searchMethodStartsWith = searchMethodStartsWith;
-		}
-		
 	}
 
 	@Override

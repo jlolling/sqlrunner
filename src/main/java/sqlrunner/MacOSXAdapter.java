@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import com.apple.eawt.AboutHandler;
 import com.apple.eawt.AppReOpenedListener;
@@ -23,7 +23,7 @@ import com.apple.eawt.AppEvent.SystemSleepEvent;
 
 public class MacOSXAdapter implements MacOSXAdapterInterface {
 
-	private static final Logger logger = Logger.getLogger(MacOSXAdapter.class);
+	private static final Logger logger = LogManager.getLogger(MacOSXAdapter.class);
 	
     public void setup() {
 		if (logger.isDebugEnabled()) {

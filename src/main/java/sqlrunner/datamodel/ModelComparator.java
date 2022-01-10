@@ -3,7 +3,7 @@ package sqlrunner.datamodel;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.generator.SQLCodeGenerator;
 
@@ -13,7 +13,7 @@ import sqlrunner.generator.SQLCodeGenerator;
  */
 public final class ModelComparator {
 
-	private static final Logger logger = Logger.getLogger(ModelComparator.class);
+	private static final Logger logger = LogManager.getLogger(ModelComparator.class);
     private List<SQLTable> tablesToAdd = new ArrayList<SQLTable>();
     private List<SQLField> fieldsToAdd = new ArrayList<SQLField>();
     private List<SQLIndex> indicesToAdd = new ArrayList<SQLIndex>();

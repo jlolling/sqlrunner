@@ -8,7 +8,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import sqlrunner.text.StringReplacer;
 
@@ -17,7 +18,7 @@ import sqlrunner.text.StringReplacer;
  */
 public final class SQLParser {
 
-	private static final Logger logger = Logger.getLogger(SQLParser.class);
+	private static final Logger logger = LogManager.getLogger(SQLParser.class);
     private List<SQLStatement> parsedStatements;
     protected int           blockCount;             // zählt die Anzahl der veschachtelten Codeblöcke
     private boolean         parserDisabled  = false;

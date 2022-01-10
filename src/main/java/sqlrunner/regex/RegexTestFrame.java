@@ -26,13 +26,13 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.text.StringReplacer;
 
 public class RegexTestFrame extends JFrame {
 
-	private static final Logger logger = Logger.getLogger(RegexTestFrame.class);
+	private static final Logger logger = LogManager.getLogger(RegexTestFrame.class);
 	private static final long serialVersionUID = 1L;
 	private JPanel jContentPane = null;
 	private JScrollPane jScrollPaneTestText = null;

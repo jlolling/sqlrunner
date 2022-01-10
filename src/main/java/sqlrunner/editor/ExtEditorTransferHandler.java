@@ -14,7 +14,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Position;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger; import org.apache.logging.log4j.LogManager;
 
 import sqlrunner.MainFrame;
 import sqlrunner.text.StringReplacer;
@@ -25,7 +25,7 @@ import sqlrunner.text.StringReplacer;
  */
 public class ExtEditorTransferHandler extends TransferHandler {
 
-	private static final Logger logger = Logger.getLogger(ExtEditorTransferHandler.class);
+	private static final Logger logger = LogManager.getLogger(ExtEditorTransferHandler.class);
 	private static final long serialVersionUID = 1L;
 	private transient Position p0 = null;
 	private transient Position p1 = null; // Anfang und Ende zu exportierender
