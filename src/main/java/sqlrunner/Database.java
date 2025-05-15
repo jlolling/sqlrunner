@@ -3366,7 +3366,10 @@ public final class Database implements TableModel {
 				final int cols = rsmd.getColumnCount();
 				columnNames = new String[cols];
 				for (int i = 0; i < cols; i++) {
-					columnNames[i] = rsmd.getColumnName(i + 1);
+					columnNames[i] = rsmd.getColumnLabel(i + 1);
+					if (columnNames[i] == null || columnNames[i].isBlank()) {
+						columnNames[i] = rsmd.getColumnName(i + 1);
+					}
 				}
 			} // if (rsmd != null)
 		} catch (SQLException sqle) {
