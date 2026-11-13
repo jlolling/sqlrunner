@@ -5,6 +5,9 @@ http://jan-lolling.de/#sqlrunner
 
 release notes
 -------------
+Version 21.0
+- Log4j v1 replaced by log4j v2 with version 2.17.1
+
 Version 20.7
 - Export result-set data bug fixed: insert statement use always the first timestamp value instead of column specific value
 

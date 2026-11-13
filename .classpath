@@ -38,9 +38,10 @@
 	<classpathentry kind="lib" path="libs/poi-ooxml-3.16.jar"/>
 	<classpathentry kind="lib" path="libs/poi-ooxml-schemas-3.16.jar"/>
 	<classpathentry kind="lib" path="libs/postgresql-42.1.1.jar"/>
-	<classpathentry kind="lib" path="libs/ojdbc7.jar"/>
-	<classpathentry kind="lib" path="libs/mysql-connector-java-8.0.25.jar"/>
 	<classpathentry kind="lib" path="libs/log4j-api-2.17.1.jar" sourcepath="libs/log4j-api-2.17.1-sources.jar"/>
 	<classpathentry kind="lib" path="libs/log4j-core-2.17.1.jar" sourcepath="libs/log4j-core-2.17.1-sources.jar"/>
+	<classpathentry kind="lib" path="libs/mysql-connector-j-8.0.33.jar"/>
+	<classpathentry kind="lib" path="libs/ojdbc8.jar"/>
+	<classpathentry kind="lib" path="libs/ucp.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

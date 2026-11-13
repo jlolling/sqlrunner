@@ -11,11 +11,9 @@
 	<property name="distrib" location="distrib" />
     <property name="appname" value="SQLRunner" />
     <property name="mainclass" value="sqlrunner.Main" />
-	<property name="javawebstart" location="distrib/javawebstart" />
 	<property name="macappdir" location="distrib/${appname}MacOSX" />
 	<property name="localapp" location="distrib/localapp" />
     <property name="linuxdir" location="/usr/lib/sqlrunner" />
-	<property name="jws-jar-filename" value="sqlrunner-jws.jar" />
 
 	<path id="project.class.path">
 		<fileset dir="${lib}" includes="**/*.jar" />
